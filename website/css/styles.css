@@ -65,10 +65,6 @@ h1 {
     border-color: #3a3a3c;
 }
 
-#keyboard {
-    margin-top: 20px;
-}
-
 .keyboard-row {
     display: flex;
     justify-content: center;
@@ -87,7 +83,7 @@ h1 {
     cursor: pointer;
     text-transform: uppercase;
     flex-grow: 1; /* Allows keys to expand */
-    min-width: 40px; /* Minimum width for keys */
+    min-width: 40px;
 }
 
 .key.large {
@@ -133,4 +129,48 @@ h1 {
 
 #reset-button:hover {
     background-color: #6aaa52;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    #game-board {
+        margin-bottom: 6vh;
+        gap: 15px;
+    }
+
+    .cell {
+        width: 12vw;
+        height: 12vw;
+        font-size: 1.5em;
+    }
+
+    .keyboard-row {
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    .key {
+        padding: 8px 7px;
+        font-size: 0.7em;
+        min-width: unset;
+        flex-basis: 0;
+        flex-grow: 1;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .key.large {
+        flex-grow: 1.5;
+        font-size: 0.7em;
+        padding: 15px 5px;
+    }
 }
