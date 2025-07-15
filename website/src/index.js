@@ -1,5 +1,5 @@
 import { Game } from './classes/game.js';
-import { initializePyodideAndSetup, runPythonFile } from './utils/pythonScriptUtils.js';
+import { Python } from './classes/python.js';
 
 
 // List of possible words (you can expand this significantly)
@@ -14,7 +14,8 @@ const ALL_WORDS = [
 ];
 
 const game = new Game(ALL_WORDS);
+const python = new Python();
 
-initializePyodideAndSetup();
-window._runPythonFile = (filepath) => runPythonFile(filepath);
+python.init();
+window._runPythonFile = async (filepath) => await python.run(filepath);
 game.start();
