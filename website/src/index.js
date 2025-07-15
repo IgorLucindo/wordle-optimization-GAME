@@ -1,4 +1,5 @@
 import { Game } from './classes/game.js';
+import { initializePyodideAndSetup, runPythonFile } from './utils/pythonScriptUtils.js';
 
 
 // List of possible words (you can expand this significantly)
@@ -14,4 +15,6 @@ const ALL_WORDS = [
 
 const game = new Game(ALL_WORDS);
 
+initializePyodideAndSetup();
+window._runPythonFile = (filepath) => runPythonFile(filepath);
 game.start();
