@@ -1,5 +1,4 @@
 import { Game } from './classes/game.js';
-import { Python } from './classes/python.js';
 
 
 // List of possible words (you can expand this significantly)
@@ -13,9 +12,11 @@ const ALL_WORDS = [
     "ivory", "jokes", "kiosk", "lunar", "mirth", "niche", "oasis", "prism", "quart", "relay"
 ];
 
-const game = new Game(ALL_WORDS);
-const python = new Python();
+// --- Streamlit Component Integration START ---
+Streamlit.setComponentReady();
+Streamlit.setFrameHeight();
+// --- Streamlit Component Integration END ---
 
-python.init();
-window._runPythonFile = async (filepath) => await python.run(filepath);
+const game = new Game(ALL_WORDS);
+
 game.start();
