@@ -13,8 +13,8 @@ const ALL_WORDS = [
 ];
 
 // --- Streamlit Component Integration START ---
-Streamlit.setComponentReady();
-Streamlit.setFrameHeight();
+// Streamlit.setComponentReady();
+// Streamlit.setFrameHeight();
 // --- Streamlit Component Integration END ---
 
 const game = new Game(ALL_WORDS);

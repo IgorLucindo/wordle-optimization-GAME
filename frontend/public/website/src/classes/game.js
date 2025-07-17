@@ -5,8 +5,8 @@ export class Game {
     constructor(words) {
         this.words = words;
         this.gameBoardElement = document.getElementById('game-board');
-        this.messageElement = document.getElementById('reset-button');
-        this.resetButton = document.getElementById('message');
+        this.resetButton = document.getElementById('reset-button');
+        this.messageElement = document.getElementById('message');
 
         this.wordSize = 5;
         this.numOfGuesses = 6;
