@@ -1,4 +1,4 @@
-# this is just a draft that in python
+# this is just a draft in python
 # to run locally, enter in terminal: streamlit run game.py
 
 import streamlit as st
