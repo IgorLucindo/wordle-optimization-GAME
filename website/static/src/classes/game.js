@@ -2,8 +2,8 @@ import { Keyboard } from './keyboard.js';
 
 
 export class Game {
-    constructor(words) {
-        this.words = words;
+    constructor() {
+        this.words = [];
         this.gameBoardElement = document.getElementById('game-board');
         this.resetButton = document.getElementById('reset-button');
         this.messageElement = document.getElementById('message');
@@ -20,6 +20,12 @@ export class Game {
 
         this.resetButton.addEventListener('click', () => this.start());
         document.addEventListener('keydown', (event) => this.handlePhysicalKeyPress(event));
+    }
+
+
+    init(variables) {
+        this.words = variables.dataset.words
+        this.start();
     }
 
 
