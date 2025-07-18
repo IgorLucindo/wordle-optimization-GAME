@@ -4,5 +4,12 @@ Optimization for Wordle game
 
 # Execution
 
-To play the game you can open the website in the following link:
-* **Github Pages:** [Link to Game](https://igorlucindo.github.io/wordle-optimization-GAME)
+To play the game you can open the website on the following link:
+* **Render:** [Link to Game](https://wordle-optimization-game.onrender.com)
+
+
+# Dev
+
+To access render workspace click on the following link:
+
+https://dashboard.render.com/web/srv-d1sttd3uibrs738lgipg
