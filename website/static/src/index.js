@@ -12,11 +12,6 @@ const ALL_WORDS = [
     "ivory", "jokes", "kiosk", "lunar", "mirth", "niche", "oasis", "prism", "quart", "relay"
 ];
 
-// --- Streamlit Component Integration START ---
-// Streamlit.setComponentReady();
-// Streamlit.setFrameHeight();
-// --- Streamlit Component Integration END ---
-
 const game = new Game(ALL_WORDS);
 
 game.start();
