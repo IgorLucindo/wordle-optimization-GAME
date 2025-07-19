@@ -11,14 +11,14 @@ from utils.wordle_tools_utils import *
 def main(flags, game_results=[]):
     # Get instance
     instance = get_instance()
-    num_of_letters, num_of_attempts, possible_words_dict = instance
+    all_words, num_of_letters, num_of_attempts, possible_words_dict = instance
     
     # Create model
     # model = create_model(instance)
 
     # Handle testing mode or normal mode
     if flags['test']:
-        selected_word = get_random_word()
+        selected_word = get_random_word(all_words)
 
         for _ in range(num_of_attempts):
             word_guess = solve(model, game_results)
@@ -26,7 +26,7 @@ def main(flags, game_results=[]):
             game_results = update_game_results(game_results, selected_word, word_guess)
             possible_words_dict = update_possible_words_dict(possible_words_dict, game_results)
     else:
-        word_guess = get_random_word()
+        word_guess = get_random_word(all_words)
         # word_guess = solve(model, game_results)
 
     return word_guess

@@ -7,7 +7,7 @@ def create_model(instance):
     Create model for maximum mean return
     """
     # Unpack data
-    num_of_letters, num_of_attempts, possible_words_dict = instance
+    all_words, num_of_letters, num_of_attempts, possible_words_dict = instance
 
     # Create model
     model = gp.Model("Optimal_Guess")

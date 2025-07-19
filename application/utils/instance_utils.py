@@ -7,7 +7,7 @@ def get_instance():
     possible_words_dict = _get_possible_words_dict(all_words)
     num_of_attempts = 6
 
-    return num_of_letters, num_of_attempts, possible_words_dict
+    return all_words, num_of_letters, num_of_attempts, possible_words_dict
 
 
 def _get_possible_words_dict(all_words):

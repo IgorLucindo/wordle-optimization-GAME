@@ -1,3 +1,6 @@
+import random
+
+
 def update_possible_words_dict(possible_words_dict, game_results):
     """
     Handle game results in order to update possible words dict
@@ -17,8 +20,8 @@ def update_possible_words_dict(possible_words_dict, game_results):
     return possible_words_dict
     
 
-def get_random_word():
-    return "hello"
+def get_random_word(all_words):
+    return random.choice(all_words)
 
 
 def update_game_results(game_results, selected_word, word_guess):
