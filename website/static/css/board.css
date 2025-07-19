@@ -56,7 +56,7 @@
 /* in mobile */
 @media screen and (max-width: 768px) {
     #game-board {
-        margin-bottom: 10%;
+        margin-bottom: 5%;
         gap: 15px;
     }
 
