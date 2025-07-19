@@ -26,7 +26,7 @@ def main(flags, game_results=[]):
             game_results = update_game_results(game_results, selected_word, word_guess)
             possible_words_dict = update_possible_words_dict(possible_words_dict, game_results)
     else:
-        word_guess = "hello"
+        word_guess = get_random_word()
         # word_guess = solve(model, game_results)
 
     return word_guess
