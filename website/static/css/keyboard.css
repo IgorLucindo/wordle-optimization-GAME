@@ -1,0 +1,65 @@
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.key {
+    background-color: #818384;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 15px 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    flex-grow: 1; /* Allows keys to expand */
+    min-width: 40px;
+}
+
+.key.large {
+    padding: 15px 20px; /* Adjust for Enter/Backspace */
+}
+
+.key:hover {
+    background-color: #929394;
+}
+
+.key.correct {
+    background-color: #538d4e;
+}
+
+.key.present {
+    background-color: #b59f3b;
+}
+
+.key.absent {
+    background-color: #3a3a3c;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    .keyboard-row {
+        gap: 4px;
+    }
+
+    .key {
+        padding: 8px 7px;
+        font-size: 1em;
+        min-width: unset;
+        flex-basis: 0;
+        flex-grow: 1;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .key.large {
+        flex-grow: 1.5;
+        font-size: 0.9em;
+        padding: 15px 5px;
+    }
+}

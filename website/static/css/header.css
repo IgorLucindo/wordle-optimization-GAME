@@ -1,0 +1,40 @@
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    border-bottom: 1px solid #3a3a3c;
+    padding: 1rem 0;
+    width: 100%;
+    top: 0;
+    z-index: 10;
+}
+
+header > h1 {
+    position: absolute;
+}
+
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    gap: 5%;
+    margin-left: auto;
+}
+
+#info-btn {
+    display: none;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    .header-buttons {
+        width: 30%;
+        gap: 12%;
+    }
+
+    #info-btn {
+        display: block;
+    }
+}

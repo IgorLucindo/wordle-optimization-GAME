@@ -10,6 +10,6 @@ To play the game you can open the website on the following link:
 
 # Dev
 
-To access render workspace click on the following link:
+To access Render workspace click on the following link:
 
 https://dashboard.render.com/web/srv-d1sttd3uibrs738lgipg

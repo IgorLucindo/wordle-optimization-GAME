@@ -1,0 +1,52 @@
+footer {
+    width: 100%;
+    background-color: #1a1a1b;
+    color: #888;
+    padding: 20px 0;
+    margin-top: auto;
+    z-index: 10;
+    text-align: center;
+    border-top: 1px solid #333;
+}
+
+.footer-content {
+    max-width: 60vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.website-purpose {
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.team-members {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    footer {
+        position: absolute;
+        bottom: 0;
+        height: 0;
+        padding: 0;
+        pointer-events: none;
+        overflow: hidden;
+        visibility: hidden;
+        transition: height 0.6s ease, padding 0.6s ease, visibility 0.6s ease;
+    }
+
+    footer.visible {
+        height: 25vh;
+        padding: 3vh 0;
+        visibility: visible;
+    }
+
+    .footer-content {
+        max-width: 90vw; /* Adjust for smaller screens */
+        padding: 0 10px;
+    }
+}

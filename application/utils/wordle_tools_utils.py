@@ -1,16 +1,3 @@
-from collections import defaultdict
-
-
-def get_possible_words_dict(all_words):
-    possible_words_dict = defaultdict(lambda: defaultdict(list))
-
-    for word in all_words:
-        for i in range(len(word)):
-            possible_words_dict[word[i]][i].append(word)
-
-    return possible_words_dict
-
-
 def update_possible_words_dict(possible_words_dict, game_results):
     """
     Handle game results in order to update possible words dict
@@ -35,16 +22,16 @@ def get_random_word():
 
 
 def update_game_results(game_results, selected_word, word_guess):
-    word_guess_results = []
+    word_result = []
 
     for i in range(len(selected_word)):
         if selected_word[i] == word_guess[i]:
-            word_guess_results.append(2)
+            word_result.append(2)
         elif selected_word[i] in word_guess:
-            word_guess_results.append(1)
+            word_result.append(1)
         else:
-            word_guess_results.append(0)
+            word_result.append(0)
 
-    game_results.append(word_guess)
+    game_results.append(word_result)
 
     return game_results
