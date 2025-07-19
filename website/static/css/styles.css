@@ -30,10 +30,8 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-grow: 1;
     width: 100%;
     min-height: 30px;
-    background-color: #6aaa52;
 }
 
 #message {
@@ -85,9 +83,5 @@ main {
     .container {
         margin-top: 10%;
         box-sizing: border-box;
-    }
-
-    #message-container {
-        margin-bottom: 35%;
     }
 }
