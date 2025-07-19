@@ -3,11 +3,11 @@ header {
     justify-content: center;
     align-items: center;
     position: sticky;
-    border-bottom: 1px solid #3a3a3c;
-    padding: 1rem 0;
-    width: 100%;
     top: 0;
+    width: 100%;
+    padding: 0.5% 0;
     z-index: 10;
+    border-bottom: 1px solid #3a3a3c;
 }
 
 header > h1 {
@@ -18,9 +18,13 @@ header > h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50%;
     gap: 5%;
+    width: 50%;
     margin-left: auto;
+}
+
+#hint-btn {
+    cursor: pointer;
 }
 
 #info-btn {
@@ -29,6 +33,10 @@ header > h1 {
 
 /* in mobile */
 @media screen and (max-width: 768px) {
+    header {
+        padding: 2% 0;
+    }
+    
     .header-buttons {
         width: 30%;
         gap: 12%;
