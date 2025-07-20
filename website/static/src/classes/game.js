@@ -11,7 +11,8 @@ export class Game {
         this.currentGuess = [];
         this.wordOfTheDay = '';
         this.gameEnded = false;
-        this.results = []
+        this.results = [];
+        this.messageTimeout = null;
     }
 
 
@@ -93,7 +94,6 @@ export class Game {
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
-        const word_result = Array(this.wordSize).fill(0);;
 
         // Skip if it is not a word
         if (!this.words.includes(guessString.toLowerCase())) {
@@ -116,7 +116,7 @@ export class Game {
             cell.classList.add('correct');
             this.keyboard.updateKeyColor(guessLetters[i], 'correct');
             wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            word_result[i] = 2;
+            this.results.push({ letter: guessLetters[i], pos: i, status: 2 });
         }
 
         // Second pass: Mark 'present' (yellow) and 'absent' (grey) letters
@@ -130,11 +130,12 @@ export class Game {
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(guessLetters[i], 'present');
                 wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                word_result[i] = 1;
+                this.results.push({ letter: guessLetters[i], pos: i, status: 1 });
             }
             else {
                 cell.classList.add('absent');
                 this.keyboard.updateKeyColor(guessLetters[i], 'absent');
+                this.results.push({ letter: guessLetters[i], pos: i, status: 0 });
             }
         }
 
@@ -152,10 +153,6 @@ export class Game {
             this.currentRow++;
             this.currentGuess = [];
         }
-
-        // Push results
-        this.results.push(word_result);
-        console.log(this.results)
     }
 
     
@@ -163,6 +160,9 @@ export class Game {
     showMessage(msg) {
         this.messageElement.innerHTML = msg;
 
-        setTimeout(() => {this.messageElement.textContent = '';}, 3000);
+        if (this.messageTimeout) clearTimeout(this.messageTimeout);
+        this.messageTimeout = setTimeout(() => {
+            this.messageElement.textContent = '';
+        }, 3000);
     }
 }

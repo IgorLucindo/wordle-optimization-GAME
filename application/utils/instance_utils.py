@@ -1,23 +1,17 @@
-from collections import defaultdict
+from utils.wordle_tools_utils import *
 
 
-def get_instance():
+def get_instance(game_results):
+    """
+    Return instance for wordle solver model
+    """
     all_words = _get_all_words()
     num_of_letters = len(all_words[0])
-    possible_words_dict = _get_possible_words_dict(all_words)
     num_of_attempts = 6
+    words_map = create_words_map(all_words)
+    words_map = filter_words_map(words_map, game_results)
 
-    return all_words, num_of_letters, num_of_attempts, possible_words_dict
-
-
-def _get_possible_words_dict(all_words):
-    possible_words_dict = defaultdict(lambda: defaultdict(list))
-
-    for word in all_words:
-        for i in range(len(word)):
-            possible_words_dict[word[i]][i].append(word)
-
-    return possible_words_dict
+    return all_words, num_of_letters, num_of_attempts, words_map
 
 
 def _get_all_words():

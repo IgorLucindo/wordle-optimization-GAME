@@ -23,8 +23,13 @@ header > h1 {
     margin-left: auto;
 }
 
-#hint-btn {
+#hint-btn, #info-btn {
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#hint-btn:active, #info-btn:active {
+    transform: scale(1.15);
 }
 
 #info-btn {
