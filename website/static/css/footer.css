@@ -17,6 +17,10 @@ footer {
     flex-direction: column;
 }
 
+.footer-content a {
+    color: #888;
+}
+
 .website-purpose {
     font-size: 0.9em;
     line-height: 1.5;
