@@ -1,6 +1,7 @@
 export class Dataset {
     constructor() {
         this.words = [];
+        this.solution_words = [];
     }
 
 
@@ -19,6 +20,7 @@ export class Dataset {
         const words1 = data1.split(/\r?\n/).filter(line => line.trim() !== '');
         const words2 = data2.split(/\r?\n/).filter(line => line.trim() !== '');
 
+        this.solution_words = words1;
         this.words = words1.concat(words2);
     }
 }

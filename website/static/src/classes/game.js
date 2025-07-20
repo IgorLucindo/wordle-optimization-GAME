@@ -24,8 +24,10 @@ export class Game {
 
 
     getVariables(variables) {
+        this.dataset = variables.dataset;
         this.board = variables.board;
         this.keyboard = variables.keyboard;
+
         this.words = variables.dataset.words
     }
 
@@ -59,7 +61,7 @@ export class Game {
 
     // Selects a random word from the provided word list
     selectRandomWord() {
-        return this.words[Math.floor(Math.random() * this.words.length)];
+        return this.dataset.solution_words[Math.floor(Math.random() * this.words.length)];
     }
 
 
