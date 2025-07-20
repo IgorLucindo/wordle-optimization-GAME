@@ -61,7 +61,8 @@ export class Game {
 
     // Selects a random word from the provided word list
     selectRandomWord() {
-        return this.dataset.solution_words[Math.floor(Math.random() * this.words.length)];
+        const solutionWords = this.dataset.solutionWords;
+        return solutionWords[Math.floor(Math.random() * solutionWords.length)];
     }
 
 
