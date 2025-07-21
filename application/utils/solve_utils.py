@@ -8,7 +8,7 @@ def create_model(instance):
     Create model for optimal word guess
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
 
     # Create model
     model = LpProblem("OptimalGuess", LpMaximize)
@@ -33,7 +33,7 @@ def solve(model, instance):
     Solve model for optimal word guess
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
 
     # Solve
     model.solve(PULP_CBC_CMD(msg=0))
@@ -54,11 +54,11 @@ def simulate_game_solver(model, instance):
     Simulate wordle and completely solve it for testing model
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
     game_results = []
     
     # Select random word
-    selected_word = get_random_word(all_words)
+    selected_word = get_random_word(words)
 
     # Solve game
     for _ in range(num_of_attempts):

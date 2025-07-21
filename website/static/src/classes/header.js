@@ -5,6 +5,7 @@ import { callPythonScript } from '../utils/api_utils.js';
 export class Header {
     constructor() {
         this.el = document.querySelector('header');
+        this.footerEl = document.querySelector('footer');
     }
 
 
@@ -41,7 +42,7 @@ export class Header {
 
         // Click window event
         const clickWindow = (e) => {
-            if (e.target.closest('#info-btn') !== infoBtn) {
+            if (!e.target.closest('#info-btn') && !e.target.closest('footer')) {
                 footer.classList.remove('visible');
                 hideOverlay();
             }

@@ -3,3 +3,5 @@ maybe objective function with total probability of letters solves this problem
 
 guessing words that are not feasible but has non-used letters can be a good strategy in some cases
 figure out these cases
+
+figure out legal issues

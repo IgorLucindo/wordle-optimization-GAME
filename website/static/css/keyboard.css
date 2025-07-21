@@ -46,7 +46,7 @@
 /* in mobile */
 @media screen and (max-width: 768px) {
     #keyboard {
-        width: 94%;
+        width: 88%;
     }
 
     .keyboard-row {
