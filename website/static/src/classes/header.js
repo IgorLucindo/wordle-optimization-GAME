@@ -29,7 +29,7 @@ export class Header {
         // Hint button
         const clickHintBtn = async () => {
             const inputData = { gameResults: this.game.results };
-            const data = await callPythonScript('/solve-wordle', inputData);
+            const data = await callPythonScript('/solve', inputData);
             const wordGuess = data.wordGuess.toUpperCase();
             this.game.showMessage(`Word hint: <span class="msg-highlight">${wordGuess}</span>`);
         };

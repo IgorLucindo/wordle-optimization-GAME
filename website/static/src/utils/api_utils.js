@@ -1,4 +1,4 @@
-export async function callPythonScript(route, inputData) {
+export async function callPythonScript(route, inputData={}) {
     try {
         const response = await fetch(route, {
             method: 'POST',

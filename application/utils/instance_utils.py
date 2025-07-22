@@ -1,4 +1,4 @@
-from utils.wordle_tools_utils import *
+from .wordle_tools_utils import *
 
 
 def get_instance():
@@ -18,6 +18,7 @@ def fiter_instance(instance, game_results):
     Return filtered instances given game results
     """
     words, num_of_letters, num_of_attempts, words_map = instance
+    print(words_map)
     words_map = filter_words_map(words_map, game_results)
 
     return words, num_of_letters, num_of_attempts, words_map

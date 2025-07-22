@@ -5,12 +5,13 @@ sys.path.append(os.path.join(current_dir, '..'))
 from application.utils.instance_utils import *
 from application.utils.solve_utils import *
 from application.utils.wordle_tools_utils import *
-from flask import Flask, request, jsonify, session, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_from_directory, render_template
 
 
 # Create app
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'
+instance = None
+
 
 # Set absolute paths
 DATASET_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'dataset'))
@@ -24,20 +25,19 @@ def home():
 def get_dataset(filename):
     return send_from_directory(DATASET_DIR, filename)
 
-@app.route('/create-model', methods=['POST'])
-def run_create_model():
+@app.route('/create-instance', methods=['POST'])
+def run_create_instance():
+    global instance
+
     # Get instance
     instance = get_instance()
 
-    # Store in session
-    session['instance'] = instance
+    return {}
 
-    return
-
-@app.route('/solve-model', methods=['POST'])
-def run_solve_model():
+@app.route('/solve', methods=['POST'])
+def run_solve():
+    global instance
     data = request.get_json()
-    instance = session.get('instance')
 
     # Filer instance
     instance = fiter_instance(instance, data['gameResults'])

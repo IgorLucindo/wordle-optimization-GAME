@@ -1,3 +1,6 @@
+import { callPythonScript } from '../utils/api_utils.js';
+
+
 export class Game {
     constructor() {
         this.words = [];
@@ -20,6 +23,7 @@ export class Game {
         this.getVariables(variables);
         this.createEvents();
         this.start();
+        callPythonScript('/create-instance');
     }
 
 

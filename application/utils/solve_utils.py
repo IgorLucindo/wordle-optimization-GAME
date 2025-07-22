@@ -1,31 +1,31 @@
-from utils.instance_utils import *
-from pulp import *
+from .instance_utils import *
+# from pulp import *
 import random
 
 
-def create_model(instance):
-    """
-    Create model for optimal word guess
-    """
-    # Unpack data
-    words, num_of_letters, num_of_attempts, words_map = instance
+# def create_model(instance):
+#     """
+#     Create model for optimal word guess
+#     """
+#     # Unpack data
+#     words, num_of_letters, num_of_attempts, words_map = instance
 
-    # Create model
-    model = LpProblem("OptimalGuess", LpMaximize)
+#     # Create model
+#     model = LpProblem("OptimalGuess", LpMaximize)
 
-    # Add decision variables
-    x = LpVariable("x", lowBound=0, cat=LpInteger)
-    y = LpVariable("y", lowBound=0, cat=LpInteger)
+#     # Add decision variables
+#     x = LpVariable("x", lowBound=0, cat=LpInteger)
+#     y = LpVariable("y", lowBound=0, cat=LpInteger)
 
-    # Set objective function
-    model += 20 * x + 30 * y, "objfn"
+#     # Set objective function
+#     model += 20 * x + 30 * y, "objfn"
 
-    # Add constraints
-    model += 2 * x + 3 * y <= 120, "c1"
-    model += 1 * x + 2 * y <= 80, "c2"
-    model += x >= 10, "c3"
+#     # Add constraints
+#     model += 2 * x + 3 * y <= 120, "c1"
+#     model += 1 * x + 2 * y <= 80, "c2"
+#     model += x >= 10, "c3"
 
-    return model
+#     return model
 
 
 def solve(instance):
