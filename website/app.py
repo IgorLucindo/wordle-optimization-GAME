@@ -11,6 +11,7 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 # Create app
 app = Flask(__name__)
 instance = None
+word_guess = None
 
 
 # Set absolute paths
@@ -36,7 +37,7 @@ def run_create_instance():
 
 @app.route('/solve', methods=['POST'])
 def run_solve():
-    global instance
+    global instance, word_guess
     data = request.get_json()
 
     # Filer instance
@@ -44,6 +45,12 @@ def run_solve():
 
     # Solve
     word_guess = solve(instance)
+
+    return {}
+
+@app.route('/get-guess', methods=['POST'])
+def run_get_guess():
+    global word_guess
 
     return jsonify({"wordGuess": word_guess})
 

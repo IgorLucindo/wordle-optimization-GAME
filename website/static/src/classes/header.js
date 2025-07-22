@@ -28,8 +28,7 @@ export class Header {
 
         // Hint button
         const clickHintBtn = async () => {
-            const inputData = { gameResults: this.game.results };
-            const data = await callPythonScript('/solve', inputData);
+            const data = await callPythonScript('/get-guess');
             const wordGuess = data.wordGuess.toUpperCase();
             this.game.showMessage(`Word hint: <span class="msg-highlight">${wordGuess}</span>`);
         };

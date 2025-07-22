@@ -18,7 +18,6 @@ def fiter_instance(instance, game_results):
     Return filtered instances given game results
     """
     words, num_of_letters, num_of_attempts, words_map = instance
-    print(words_map)
     words_map = filter_words_map(words_map, game_results)
 
     return words, num_of_letters, num_of_attempts, words_map
@@ -27,12 +26,9 @@ def fiter_instance(instance, game_results):
 def _get_words(filepath):
     words = []
 
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                word = line.strip()
-                words.append(word)
-    except FileNotFoundError:
-        print(f"Error: The file '{filepath}' was not found.")
+    with open(filepath, 'r') as f:
+        for line in f:
+            word = line.strip()
+            words.append(word)
 
     return words

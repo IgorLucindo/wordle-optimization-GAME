@@ -14,7 +14,6 @@ export class Game {
         this.currentGuess = [];
         this.wordOfTheDay = '';
         this.gameEnded = false;
-        this.results = [];
         this.messageTimeout = null;
     }
 
@@ -24,6 +23,7 @@ export class Game {
         this.createEvents();
         this.start();
         callPythonScript('/create-instance');
+        callPythonScript('/solve', { gameResults: {} });
     }
 
 
@@ -101,6 +101,7 @@ export class Game {
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
+        const results = [];
 
         // Skip if it is not a word
         if (!this.words.includes(guessString.toLowerCase())) {
@@ -123,7 +124,7 @@ export class Game {
             cell.classList.add('correct');
             this.keyboard.updateKeyColor(guessLetters[i], 'correct');
             wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            this.results.push({ letter: guessLetters[i], pos: i, status: 2 });
+            results.push({ letter: guessLetters[i], pos: i, status: 2 });
         }
 
         // Second pass: Mark 'present' (yellow) and 'absent' (grey) letters
@@ -137,15 +138,16 @@ export class Game {
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(guessLetters[i], 'present');
                 wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                this.results.push({ letter: guessLetters[i], pos: i, status: 1 });
+                results.push({ letter: guessLetters[i], pos: i, status: 1 });
             }
             else {
                 cell.classList.add('absent');
                 this.keyboard.updateKeyColor(guessLetters[i], 'absent');
-                this.results.push({ letter: guessLetters[i], pos: i, status: 0 });
+                results.push({ letter: guessLetters[i], pos: i, status: 0 });
             }
         }
 
+        // Handle game over
         if (guessString === this.wordOfTheDay) {
             this.showMessage('You guessed it! 🎉');
             this.gameEnded = true;
@@ -160,6 +162,9 @@ export class Game {
             this.currentRow++;
             this.currentGuess = [];
         }
+
+        // Send results
+        callPythonScript('/solve', { gameResults: results });
     }
 
     
