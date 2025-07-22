@@ -43,15 +43,11 @@ def filter_words_map(words_map, game_results):
     # Set params
     possible_words_sets = []
     status_map = {'correct': 2, 'present': 1, 'incorrect': 0}
-    num_of_letters = next(
-        (len(word) for d in words_map.values() for lst in d.values() for word in lst),
-        None
-    )
 
     # Handle each letter result
     for result in game_results:
         possible_words_sets.append(
-            handle_status(status_map, words_map, result, game_results, num_of_letters)
+            handle_status(status_map, words_map, result, game_results)
         )
 
     # Get intersection of possible words and recreate mapping
@@ -61,11 +57,12 @@ def filter_words_map(words_map, game_results):
     return words_map
 
 
-def handle_status(status_map, words_map, result, game_results, num_of_letters):
+def handle_status(status_map, words_map, result, game_results):
     """
     Handle results status in order to update possible words set
     """
     # Count how many times the letter appears
+    num_of_letters = len(game_results)
     letter_count = sum(
         1 for r in game_results[-num_of_letters:]
         if r['letter'] == result['letter'] and r['status'] != 0
