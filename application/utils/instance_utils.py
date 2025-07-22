@@ -1,24 +1,26 @@
 from utils.wordle_tools_utils import *
 
 
-def get_instance(game_results):
+def get_instance():
     """
     Return instance for wordle solver model
     """
-    all_words = _get_all_words()
-    num_of_letters = len(all_words[0])
+    words = _get_words("dataset/solutions.txt")
+    num_of_letters = len(words[0])
     num_of_attempts = 6
-    words_map = create_words_map(all_words)
+    words_map = create_words_map(words)
+
+    return words, num_of_letters, num_of_attempts, words_map
+
+
+def fiter_instance(instance, game_results):
+    """
+    Return filtered instances given game results
+    """
+    words, num_of_letters, num_of_attempts, words_map = instance
     words_map = filter_words_map(words_map, game_results)
 
-    return all_words, num_of_letters, num_of_attempts, words_map
-
-
-def _get_all_words():
-    solution_words = _get_words("dataset/solutions.txt")
-    non_solution_words = _get_words("dataset/non_solutions.txt")
-
-    return solution_words + non_solution_words
+    return words, num_of_letters, num_of_attempts, words_map
 
 
 def _get_words(filepath):

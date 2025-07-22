@@ -37,9 +37,6 @@ def filter_words_map(words_map, game_results):
     """
     Handle game results in order to update possible words dict
     """
-    if not game_results:
-        return words_map
-
     # Set params
     possible_words_sets = []
     status_map = {'correct': 2, 'present': 1, 'incorrect': 0}

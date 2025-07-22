@@ -1,4 +1,4 @@
-from utils.wordle_tools_utils import *
+from utils.instance_utils import *
 from pulp import *
 import random
 
@@ -8,7 +8,7 @@ def create_model(instance):
     Create model for optimal word guess
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
 
     # Create model
     model = LpProblem("OptimalGuess", LpMaximize)
@@ -28,15 +28,15 @@ def create_model(instance):
     return model
 
 
-def solve(model, instance):
+def solve(instance):
     """
     Solve model for optimal word guess
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
 
     # Solve
-    model.solve(PULP_CBC_CMD(msg=0))
+    # model.solve(PULP_CBC_CMD(msg=0))
 
 
     # START TEST
@@ -54,17 +54,17 @@ def simulate_game_solver(model, instance):
     Simulate wordle and completely solve it for testing model
     """
     # Unpack data
-    all_words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts, words_map = instance
     game_results = []
     
     # Select random word
-    selected_word = get_random_word(all_words)
+    selected_word = get_random_word(words)
 
     # Solve game
     for _ in range(num_of_attempts):
+        instance = fiter_instance(instance, game_results)
         word_guess = solve(model, instance)
         print(word_guess)
         game_results = update_game_results(game_results, selected_word, word_guess)
-        words_map = filter_words_map(words_map, game_results)
 
     return word_guess
