@@ -7,7 +7,7 @@ def simulate_games(instance, flags):
     Simulate wordle games and solve them for all words
     """
     # Unpack data
-    words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts = instance
     simulation_results = []
 
     # Solve games
@@ -23,7 +23,7 @@ def simulate_game_solver(instance, selected_word, flags):
     Simulate wordle and completely solve it for testing model
     """
     # Unpack data
-    words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts = instance
 
     word_guess = None
     results = {

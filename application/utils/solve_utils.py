@@ -8,7 +8,7 @@ import random
 #     Create model for optimal word guess
 #     """
 #     # Unpack data
-#     words, num_of_letters, num_of_attempts, words_map = instance
+#     words, num_of_letters, num_of_attempts = instance
 
 #     # Create model
 #     model = LpProblem("OptimalGuess", LpMaximize)
@@ -33,7 +33,7 @@ import random
 #     Solve model for optimal word guess
 #     """
 #     # Unpack data
-#     words, num_of_letters, num_of_attempts, words_map = instance
+#     words, num_of_letters, num_of_attempts = instance
 
 #     # Solve
 #     model.solve(PULP_CBC_CMD(msg=0))
@@ -47,10 +47,9 @@ def solve_random(instance):
     Solve model for random word guess
     """
     # Unpack data
-    words, num_of_letters, num_of_attempts, words_map = instance
+    words, num_of_letters, num_of_attempts = instance
 
     # Solve
-    possible_idx = flatten_words_map(words_map)
-    word_guess = random.choice(list(possible_idx))
+    word_guess = random.choice(words)
 
     return word_guess
