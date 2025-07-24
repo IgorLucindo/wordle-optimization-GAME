@@ -46,7 +46,7 @@ def handle_correct_status(words, result):
     return words_with_letter_pos
 
 
-def handle_present_status(words_map, result, letter_count):
+def handle_present_status(words, result, letter_count):
     """
     Letter is in the word but NOT at this position
     """
@@ -55,7 +55,7 @@ def handle_present_status(words_map, result, letter_count):
 
     words_with_letter_elsewhere = {
         word
-        for p, word_list in words_map[letter].items()
+        for word in words
         if p != pos
         for word in word_list
         if word.count(letter) == letter_count[letter] and pos not in [i for i, c in enumerate(word) if c == letter]
@@ -68,12 +68,14 @@ def handle_incorrect_status(words, result, letter_count):
     """
     Letter appears in the word a defined amount of times
     """
+    pos = result['pos']
     letter = result['letter'].lower()
 
     words_with_num_of_letters = {
         word
         for word in words
-        if word.count(letter) == letter_count[letter]
+        if word.count(letter) <= letter_count[letter]
+        if word[pos] != letter
     }
     
     return words_with_num_of_letters
