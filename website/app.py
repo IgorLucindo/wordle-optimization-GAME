@@ -41,10 +41,10 @@ def run_solve():
     data = request.get_json()
 
     # Filer instance
-    instance = fiter_instance(instance, data['gameResults'])
+    instance = fiter_instance(instance, data['guessResults'])
 
     # Solve
-    word_guess = solve(instance)
+    word_guess = solve_random(instance)
 
     return {}
 
@@ -53,6 +53,7 @@ def run_get_guess():
     global word_guess
 
     return jsonify({"wordGuess": word_guess})
+
 
 if __name__ == "__main__":
     app.run(debug=True)

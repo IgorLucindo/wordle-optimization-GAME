@@ -23,7 +23,7 @@ export class Game {
         this.createEvents();
         this.start();
         callPythonScript('/create-instance');
-        callPythonScript('/solve', { gameResults: {} });
+        callPythonScript('/solve', { guessResults: {} });
     }
 
 
@@ -101,7 +101,7 @@ export class Game {
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
-        const results = [];
+        const guessResults = [];
 
         // Skip if it is not a word
         if (!this.words.includes(guessString.toLowerCase())) {
@@ -124,7 +124,7 @@ export class Game {
             cell.classList.add('correct');
             this.keyboard.updateKeyColor(guessLetters[i], 'correct');
             wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            results.push({ letter: guessLetters[i], pos: i, status: 2 });
+            guessResults.push({ letter: guessLetters[i], pos: i, status: 2 });
         }
 
         // Second pass: Mark 'present' (yellow) and 'absent' (grey) letters
@@ -138,12 +138,12 @@ export class Game {
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(guessLetters[i], 'present');
                 wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                results.push({ letter: guessLetters[i], pos: i, status: 1 });
+                guessResults.push({ letter: guessLetters[i], pos: i, status: 1 });
             }
             else {
                 cell.classList.add('absent');
                 this.keyboard.updateKeyColor(guessLetters[i], 'absent');
-                results.push({ letter: guessLetters[i], pos: i, status: 0 });
+                guessResults.push({ letter: guessLetters[i], pos: i, status: 0 });
             }
         }
 
@@ -164,7 +164,7 @@ export class Game {
         }
 
         // Send results
-        callPythonScript('/solve', { gameResults: results });
+        callPythonScript('/solve', { guessResults });
     }
 
     

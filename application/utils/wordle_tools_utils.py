@@ -33,21 +33,21 @@ def flatten_words_map(words_map):
     return flattened_words
 
 
-def filter_words_map(words_map, game_results):
+def filter_words_map(words_map, guess_results):
     """
-    Handle game results in order to update possible words dict
+    Handle guess results in order to update possible words dict
     """
-    if not game_results:
+    if not guess_results:
         return words_map
-
+    
     # Set params
     possible_words_sets = []
     status_map = {'correct': 2, 'present': 1, 'incorrect': 0}
 
     # Handle each letter result
-    for result in game_results:
+    for result in guess_results:
         possible_words_sets.append(
-            handle_status(status_map, words_map, result, game_results)
+            handle_status(status_map, words_map, result, guess_results)
         )
 
     # Get intersection of possible words and recreate mapping
@@ -57,14 +57,14 @@ def filter_words_map(words_map, game_results):
     return words_map
 
 
-def handle_status(status_map, words_map, result, game_results):
+def handle_status(status_map, words_map, result, guess_results):
     """
     Handle results status in order to update possible words set
     """
     # Count how many times the letter appears
-    num_of_letters = len(game_results)
+    num_of_letters = len(guess_results)
     letter_count = sum(
-        1 for r in game_results[-num_of_letters:]
+        1 for r in guess_results[-num_of_letters:]
         if r['letter'] == result['letter'] and r['status'] != 0
     )
 
@@ -122,18 +122,3 @@ def handle_incorrect_status(words_map, result, letter_count):
     }
     
     return words_with_num_of_letters
-    
-
-def update_game_results(game_results, selected_word, word_guess):
-    """
-    Update game results for a single guess
-    """
-    for i in range(len(selected_word)):
-        if selected_word[i] == word_guess[i]:
-            game_results.append({'letter': selected_word[i], 'pos': i, 'status': 2})
-        elif selected_word[i] in word_guess:
-            game_results.append({'letter': selected_word[i], 'pos': i, 'status': 1})
-        else:
-            game_results.append({'letter': selected_word[i], 'status': 0})
-
-    return game_results

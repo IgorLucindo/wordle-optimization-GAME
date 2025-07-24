@@ -1,23 +1,19 @@
-import os
-import sys
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(current_dir))
 from utils.instance_utils import *
-from utils.solve_utils import *
-from utils.wordle_tools_utils import *
+from utils.simulate_utils import *
+
+
+flags = {
+    'solver': 'random',     # 'random', 'optimal' or
+    'save_results': True
+}
 
 
 def main():
     # Get instance
     instance = get_instance()
-    
-    # Create model
-    model = create_model(instance)
 
     # Simulate game with solver
-    word_guess = simulate_game_solver(model, instance)
-
-    return word_guess
+    results = simulate_games(instance, flags)
 
 
 if __name__ == "__main__":

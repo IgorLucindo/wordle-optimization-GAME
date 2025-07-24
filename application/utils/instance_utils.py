@@ -13,12 +13,12 @@ def get_instance():
     return words, num_of_letters, num_of_attempts, words_map
 
 
-def fiter_instance(instance, game_results):
+def fiter_instance(instance, guess_results):
     """
-    Return filtered instances given game results
+    Return filtered instances given guess results
     """
     words, num_of_letters, num_of_attempts, words_map = instance
-    words_map = filter_words_map(words_map, game_results)
+    words_map = filter_words_map(words_map, guess_results)
 
     return words, num_of_letters, num_of_attempts, words_map
 
@@ -32,3 +32,23 @@ def _get_words(filepath):
             words.append(word)
 
     return words
+
+ 
+def get_guess_results(selected_word, word_guess):
+    """
+    Update game results for a single guess
+    """
+    if not word_guess:
+        return []
+
+    guess_results = []
+
+    for i in range(len(selected_word)):
+        if word_guess[i] == selected_word[i]:
+            guess_results.append({'letter': word_guess[i], 'pos': i, 'status': 2})
+        elif word_guess[i] in selected_word:
+            guess_results.append({'letter': word_guess[i], 'pos': i, 'status': 1})
+        else:
+            guess_results.append({'letter': word_guess[i], 'pos': i, 'status': 0})
+
+    return guess_results

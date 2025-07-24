@@ -1,6 +1,6 @@
 from .instance_utils import *
-# from pulp import *
 import random
+# from pulp import *
 
 
 # def create_model(instance):
@@ -28,43 +28,29 @@ import random
 #     return model
 
 
-def solve(instance):
+# def solve(instance):
+#     """
+#     Solve model for optimal word guess
+#     """
+#     # Unpack data
+#     words, num_of_letters, num_of_attempts, words_map = instance
+
+#     # Solve
+#     model.solve(PULP_CBC_CMD(msg=0))
+
+
+#     return word_guess
+
+
+def solve_random(instance):
     """
-    Solve model for optimal word guess
+    Solve model for random word guess
     """
     # Unpack data
     words, num_of_letters, num_of_attempts, words_map = instance
 
     # Solve
-    # model.solve(PULP_CBC_CMD(msg=0))
-
-
-    # START TEST
-    # Get random possible word
     possible_idx = flatten_words_map(words_map)
     word_guess = random.choice(list(possible_idx))
-    # END TEST
-
-
-    return word_guess
-
-
-def simulate_game_solver(model, instance):
-    """
-    Simulate wordle and completely solve it for testing model
-    """
-    # Unpack data
-    words, num_of_letters, num_of_attempts, words_map = instance
-    game_results = []
-    
-    # Select random word
-    selected_word = get_random_word(words)
-
-    # Solve game
-    for _ in range(num_of_attempts):
-        instance = fiter_instance(instance, game_results)
-        word_guess = solve(model, instance)
-        print(word_guess)
-        game_results = update_game_results(game_results, selected_word, word_guess)
 
     return word_guess
