@@ -42,12 +42,30 @@ def filter_words_map(words_map, guess_results):
     
     # Set params
     possible_words_sets = []
-    status_map = {'correct': 2, 'present': 1, 'incorrect': 0}
+
+    # Count how many times the letter appears
+    all_guess_results = guess_results['correct'] + guess_results['present'] + guess_results['incorrect']
+    guess_letters = {result['letter'] for result in all_guess_results}
+    letter_count = {
+        letter: sum(
+            1 for r in all_guess_results
+            if r['letter'] == letter and r['status'] != 0
+        )
+        for letter in guess_letters
+    }
 
     # Handle each letter result
-    for result in guess_results:
+    for result in guess_results['correct']:
         possible_words_sets.append(
-            handle_status(status_map, words_map, result, guess_results)
+            handle_correct_status(words_map, result)
+        )
+    for result in guess_results['incorrect']:
+        possible_words_sets.append(
+            handle_incorrect_status(words_map, result, letter_count)
+        )
+    for result in guess_results['present']:
+        possible_words_sets.append(
+            handle_present_status(words_map, result, letter_count)
         )
 
     # Get intersection of possible words and recreate mapping
@@ -55,28 +73,6 @@ def filter_words_map(words_map, guess_results):
     words_map = create_words_map(possible_words)
 
     return words_map
-
-
-def handle_status(status_map, words_map, result, guess_results):
-    """
-    Handle results status in order to update possible words set
-    """
-    # Count how many times the letter appears
-    num_of_letters = len(guess_results)
-    letter_count = sum(
-        1 for r in guess_results[-num_of_letters:]
-        if r['letter'] == result['letter'] and r['status'] != 0
-    )
-
-    # Handle status
-    if result['status'] == status_map['correct']:
-        possible_words = handle_correct_status(words_map, result)
-    elif result['status'] == status_map['present']:
-        possible_words = handle_present_status(words_map, result, letter_count)
-    elif result['status'] == status_map['incorrect']:
-        possible_words = handle_incorrect_status(words_map, result, letter_count)
-
-    return possible_words
 
 
 def handle_correct_status(words_map, result):
@@ -103,7 +99,7 @@ def handle_present_status(words_map, result, letter_count):
         for p, word_list in words_map[letter].items()
         if p != pos
         for word in word_list
-        if word.count(letter) == letter_count and pos not in [i for i, c in enumerate(word) if c == letter]
+        if word.count(letter) == letter_count[letter] and pos not in [i for i, c in enumerate(word) if c == letter]
     }
 
     return words_with_letter_elsewhere
@@ -118,7 +114,7 @@ def handle_incorrect_status(words_map, result, letter_count):
     words_with_num_of_letters = {
         word
         for word in flatten_words_map(words_map)
-        if word.count(letter) == letter_count
+        if word.count(letter) == letter_count[letter]
     }
     
     return words_with_num_of_letters

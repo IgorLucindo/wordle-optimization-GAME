@@ -48,7 +48,7 @@
     border-color: #b59f3b;
 }
 
-.cell.absent {
+.cell.incorrect {
     background-color: #3a3a3c; /* Grey */
     border-color: #3a3a3c;
 }

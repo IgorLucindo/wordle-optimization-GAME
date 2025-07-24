@@ -8,14 +8,14 @@ def simulate_games(instance, flags):
     """
     # Unpack data
     words, num_of_letters, num_of_attempts, words_map = instance
+    simulation_results = []
 
     # Solve games
     for selected_word in words:
-        selected_word = "trunk"
-        results = simulate_game_solver(instance, selected_word, flags)
+        simulation_results.append(simulate_game_solver(instance, selected_word, flags))
         break
 
-    return results
+    return simulation_results
 
 
 def simulate_game_solver(instance, selected_word, flags):

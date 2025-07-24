@@ -68,20 +68,20 @@ export class Keyboard {
     /**
      * Updates the color of a specific key on the keyboard.
      * @param {string} key The key character (e.g., 'A', 'ENTER').
-     * @param {string} status The status to apply ('correct', 'present', 'absent').
+     * @param {string} status The status to apply ('correct', 'present', 'incorrect').
      */
     updateKeyColor(key, status) {
         const keyButton = document.getElementById(`key-${key.toLowerCase()}`);
         if (keyButton) {
-            // Ensure 'correct' takes precedence over 'present', and 'present' over 'absent'
+            // Ensure 'correct' takes precedence over 'present', and 'present' over 'incorrect'
             if (status === 'correct') {
-                keyButton.classList.remove('present', 'absent');
+                keyButton.classList.remove('present', 'incorrect');
                 keyButton.classList.add('correct');
             } else if (status === 'present' && !keyButton.classList.contains('correct')) {
-                keyButton.classList.remove('absent');
+                keyButton.classList.remove('incorrect');
                 keyButton.classList.add('present');
-            } else if (status === 'absent' && !keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
-                keyButton.classList.add('absent');
+            } else if (status === 'incorrect' && !keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
+                keyButton.classList.add('incorrect');
             }
         }
     }
@@ -92,7 +92,7 @@ export class Keyboard {
      */
     resetKeyColors() {
         document.querySelectorAll('.key').forEach(key => {
-            key.classList.remove('correct', 'present', 'absent');
+            key.classList.remove('correct', 'present', 'incorrect');
         });
     }
 }

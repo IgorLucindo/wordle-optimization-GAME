@@ -101,7 +101,11 @@ export class Game {
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
-        const guessResults = [];
+        const guessResults = {
+            correct: [],
+            present: [],
+            incorrect: []
+        };
 
         // Skip if it is not a word
         if (!this.words.includes(guessString.toLowerCase())) {
@@ -124,10 +128,10 @@ export class Game {
             cell.classList.add('correct');
             this.keyboard.updateKeyColor(guessLetters[i], 'correct');
             wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            guessResults.push({ letter: guessLetters[i], pos: i, status: 2 });
+            guessResults.correct.push({ letter: guessLetters[i], pos: i, status: 2 });
         }
 
-        // Second pass: Mark 'present' (yellow) and 'absent' (grey) letters
+        // Second pass: Mark 'present' (yellow) and 'incorrect' (grey) letters
         for (let i = 0; i < this.wordSize; i++) {
             const cell = currentRowElement.children[i];
 
@@ -138,12 +142,12 @@ export class Game {
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(guessLetters[i], 'present');
                 wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                guessResults.push({ letter: guessLetters[i], pos: i, status: 1 });
+                guessResults.present.push({ letter: guessLetters[i], pos: i, status: 1 });
             }
             else {
-                cell.classList.add('absent');
-                this.keyboard.updateKeyColor(guessLetters[i], 'absent');
-                guessResults.push({ letter: guessLetters[i], pos: i, status: 0 });
+                cell.classList.add('incorrect');
+                this.keyboard.updateKeyColor(guessLetters[i], 'incorrect');
+                guessResults.incorrect.push({ letter: guessLetters[i], pos: i, status: 0 });
             }
         }
 

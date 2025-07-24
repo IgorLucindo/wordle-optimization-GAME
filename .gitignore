@@ -1,2 +1,4 @@
-*.pyc
 venv
+
+application/results
+__pycache__

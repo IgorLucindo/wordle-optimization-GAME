@@ -1,3 +1,4 @@
+from classes.results import *
 from utils.instance_utils import *
 from utils.simulate_utils import *
 
@@ -9,11 +10,14 @@ flags = {
 
 
 def main():
-    # Get instance
+    results = Results(flags)
     instance = get_instance()
 
     # Simulate game with solver
-    results = simulate_games(instance, flags)
+    simulation_results = simulate_games(instance, flags)
+
+    results.set_data(simulation_results)
+    results.save()
 
 
 if __name__ == "__main__":
