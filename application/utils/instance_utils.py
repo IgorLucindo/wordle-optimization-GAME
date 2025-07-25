@@ -5,7 +5,7 @@ def get_instance():
     """
     Return instance for wordle solver model
     """
-    words = _get_words("dataset/solutions.txt")
+    words = _get_words("dataset/solutions.txt") + _get_words("dataset/non_solutions.txt")
     num_of_letters = len(words[0])
     num_of_attempts = 6
 
