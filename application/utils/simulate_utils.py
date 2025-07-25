@@ -21,7 +21,6 @@ def simulate_games(instance):
         results['list'].append(simulate_game_solver(instance, target_word, solver_type))
         results['runtime'] += time.time() - start_time
 
-
     return simulation_results
 
 
