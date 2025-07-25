@@ -33,7 +33,7 @@ def _get_words(filepath):
     return words
 
  
-def get_guess_results(selected_word, word_guess):
+def get_guess_results(target_word, word_guess):
     """
     Update game results for a single guess
     """
@@ -46,10 +46,10 @@ def get_guess_results(selected_word, word_guess):
         'incorrect': []
     }
 
-    for i in range(len(selected_word)):
-        if word_guess[i] == selected_word[i]:
+    for i in range(len(target_word)):
+        if word_guess[i] == target_word[i]:
             guess_results['correct'].append({'letter': word_guess[i], 'pos': i, 'status': 2})
-        elif word_guess[i] in selected_word:
+        elif word_guess[i] in target_word:
             guess_results['present'].append({'letter': word_guess[i], 'pos': i, 'status': 1})
         else:
             guess_results['incorrect'].append({'letter': word_guess[i], 'pos': i, 'status': 0})

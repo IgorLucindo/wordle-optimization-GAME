@@ -2,7 +2,7 @@ from .instance_utils import *
 from .solve_utils import *
 
 
-def simulate_games(instance, flags):
+def simulate_games(instance, config):
     """
     Simulate wordle games and solve them for all words
     """
@@ -11,14 +11,13 @@ def simulate_games(instance, flags):
     simulation_results = []
 
     # Solve games
-    for selected_word in words:
-        simulation_results.append(simulate_game_solver(instance, selected_word, flags))
-        break
+    for target_word in words:
+        simulation_results.append(simulate_game_solver(instance, target_word, config))
 
     return simulation_results
 
 
-def simulate_game_solver(instance, selected_word, flags):
+def simulate_game_solver(instance, target_word, config):
     """
     Simulate wordle and completely solve it for testing model
     """
@@ -33,18 +32,18 @@ def simulate_game_solver(instance, selected_word, flags):
 
     # Simulate
     for _ in range(num_of_attempts):
-        guess_results = get_guess_results(selected_word, word_guess)
+        guess_results = get_guess_results(target_word, word_guess)
         instance = fiter_instance(instance, guess_results)
 
         # Solve
-        if flags['solver'] == 'random':
+        if config['solver'] == 'random':
             word_guess = solve_random(instance)
         
         # Set results
         results['guesses'].append(word_guess)
 
         # Stop condition
-        if word_guess == selected_word:
+        if word_guess == target_word:
             results['correct_guess'] = True
             break
 

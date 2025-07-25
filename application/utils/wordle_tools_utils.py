@@ -29,7 +29,7 @@ def filter_words(words, guess_results):
     for result in guess_results['incorrect']:
         words = handle_incorrect_status(words, result, letter_count)
     for result in guess_results['present']:
-        words = handle_present_status(words, result, letter_count)
+        words = handle_present_status(words, result)
 
     return words
 
@@ -41,25 +41,23 @@ def handle_correct_status(words, result):
     letter = result['letter'].lower()
     pos = result['pos']
 
-    words_with_letter_pos = {word for word in words if word[pos] == letter}
+    words_with_letter_pos = [word for word in words if word[pos] == letter]
 
     return words_with_letter_pos
 
 
-def handle_present_status(words, result, letter_count):
+def handle_present_status(words, result):
     """
     Letter is in the word but NOT at this position
     """
     letter = result['letter'].lower()
     pos = result['pos']
 
-    words_with_letter_elsewhere = {
+    words_with_letter_elsewhere = [
         word
         for word in words
-        if p != pos
-        for word in word_list
-        if word.count(letter) == letter_count[letter] and pos not in [i for i, c in enumerate(word) if c == letter]
-    }
+        if letter in word and word[pos] != letter
+    ]
 
     return words_with_letter_elsewhere
 
@@ -68,14 +66,13 @@ def handle_incorrect_status(words, result, letter_count):
     """
     Letter appears in the word a defined amount of times
     """
-    pos = result['pos']
     letter = result['letter'].lower()
+    pos = result['pos']
 
-    words_with_num_of_letters = {
+    words_with_num_of_letters = [
         word
         for word in words
-        if word.count(letter) <= letter_count[letter]
-        if word[pos] != letter
-    }
+        if word.count(letter) <= letter_count[letter] and word[pos] != letter
+    ]
     
     return words_with_num_of_letters
