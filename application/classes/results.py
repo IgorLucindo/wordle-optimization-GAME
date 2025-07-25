@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 
 
@@ -6,13 +7,13 @@ class Results:
     """
     class that contains methods to print and save results
     """
-    def __init__(self, flags, config):
+    def __init__(self, flags):
         self.flags = flags
-        self.config = config
         
         self.data = []
         self.data_columns = [
-            'Average Guesses', 'Correct Guesses (%)'
+            'Solver Type', 'Correct Guesses (%)', 'Average Corrected Guesses',
+            'Standard Deviation Corrected Guesses', 'Average Runtime (s)'
         ]
         self.row_length = len(self.data_columns)
 
@@ -27,40 +28,27 @@ class Results:
         if not self.flags['save_results']:
             return
         
-        # Set params
-        guesses_len = []
-        correct_guesses = []
+        for solver_type, results in simulation_results.items():
+            # Set params
+            guesses_len = []
+            correct_guesses = []
+
+            for r in results['list']:
+                correct_guesses.append(r['correct_guess'])
+                if r['correct_guess']:
+                    guesses_len.append(len(r['guesses']))
+
+            # Calculate data
+            avg_correct_guesses = sum(correct_guesses) / len(correct_guesses) * 100
+            avg_guesses_len = sum(guesses_len) / len(guesses_len)
+            std_guesses_len = np.std(guesses_len)
+            runtime = results['runtime'] / len(correct_guesses)
         
-        for r in simulation_results:
-            guesses_len.append(len(r['guesses']))
-            correct_guesses.append(r['correct_guess'])
-
-
-        avg_guesses_len = sum(guesses_len) / len(guesses_len)
-        avg_correct_guesses = sum(correct_guesses) / len(correct_guesses) * 100
-    
-        # Set data
-        self.data.append([
-            avg_guesses_len, avg_correct_guesses
-        ])
-
-        # Set config data
-        self.set_data_config()
-
-
-    def fill_row(self, _list):
-        return (_list + [""] * self.row_length)[:self.row_length]
-    
-
-    def set_data_config(self):
-        """
-        Set configuration for saving
-        """
-        for _ in range(3):
-            self.data.append(self.fill_row([]))
-
-        for key, value in self.config.items():
-            self.data.append(self.fill_row([key, value]))
+            # Set data
+            self.data.append([
+                solver_type, avg_correct_guesses, avg_guesses_len,
+                std_guesses_len, runtime
+            ])
 
 
     def save(self):

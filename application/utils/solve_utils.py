@@ -53,3 +53,16 @@ def solve_random(instance):
     word_guess = random.choice(words)
 
     return word_guess
+
+
+def solve_optimal(instance):
+    """
+    Solve model for optimal word guess
+    """
+    # Unpack data
+    words, num_of_letters, num_of_attempts = instance
+
+    # Solve
+    word_guess = random.choice(words)
+
+    return word_guess

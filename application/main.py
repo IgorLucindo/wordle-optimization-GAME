@@ -7,17 +7,13 @@ flags = {
     'save_results': True
 }
 
-config = {
-    'solver': 'random',     # 'random', 'optimal' or
-}
-
 
 def main():
-    results = Results(flags, config)
+    results = Results(flags)
     instance = get_instance()
 
     # Simulate game with solver
-    simulation_results = simulate_games(instance, config)
+    simulation_results = simulate_games(instance)
 
     results.set_data(simulation_results)
     results.save()
