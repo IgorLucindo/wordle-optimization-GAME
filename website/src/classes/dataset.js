@@ -12,8 +12,8 @@ export class Dataset {
 
     async getWords() {
         const [res1, res2] = await Promise.all([
-            fetch('../datasets/words/solutions.txt'),
-            fetch('../datasets/words/non_solutions.txt')
+            fetch('./dataset/solutions.txt'),
+            fetch('./dataset/non_solutions.txt')
         ]);
         const [data1, data2] = await Promise.all([res1.text(), res2.text()]);
 
