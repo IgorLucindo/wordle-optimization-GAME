@@ -1,6 +1,6 @@
-# wordle-optimization-GAME
+# Wordle Optimization GAME
 
-Optimization for Wordle game
+Optimization for Wordle game.
 
 # Execution
 
