@@ -1,0 +1,53 @@
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 0.5% 0;
+    z-index: 10;
+    border-bottom: 1px solid #3a3a3c;
+}
+
+header > h1 {
+    position: absolute;
+}
+
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+    width: 50%;
+    margin-left: auto;
+}
+
+#hint-btn, #info-btn {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#hint-btn:active, #info-btn:active {
+    transform: scale(1.15);
+}
+
+#info-btn {
+    display: none;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    header {
+        padding: 2% 0;
+    }
+    
+    .header-buttons {
+        width: 30%;
+        gap: 12%;
+    }
+
+    #info-btn {
+        display: block;
+    }
+}
