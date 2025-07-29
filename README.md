@@ -5,7 +5,7 @@ Optimization for Wordle game.
 # Execution
 
 To play the game you can open the website on the following link:
-* **Github Pages:** [Link to Game](https://wordle-optimization-game.onrender.com)
+* **Github Pages:** [Link to Game](https://igorlucindo.github.io/wordle-optimization-GAME)
 
 Now just open the website on the following link:
 * **Localhost:** [Link to Game](http://127.0.0.1:5000)
