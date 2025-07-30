@@ -9,44 +9,50 @@ def simulate_games(instance):
     Simulate wordle games and solve them for all words
     """
     # Unpack data
-    words, num_of_letters, num_of_attempts = instance
-    simulation_results = {
-        'random': {'list': [], 'runtime': 0},
-        'optimal': {'list': [], 'runtime': 0}
+    words, key_words, num_of_letters, num_of_attempts = instance
+    simulation_data = {
+        'random': {'list': [], 'runtime': 0, 'solver': solve_random},
+        'optimal': {'list': [], 'runtime': 0, 'solver': solve_optimal},
+        'diver_opt': {'list': [], 'runtime': 0, 'solver': solve_optimal, 'presolve': presolve_diversification}
     }
 
     # Solve games
-    for target_word, (solver_type, results) in product(words, simulation_results.items()):
+    for target_word, (sim_type, sim_data) in product(key_words, simulation_data.items()):
         start_time = time.time()
-        results['list'].append(simulate_game_solver(instance, target_word, solver_type))
-        results['runtime'] += time.time() - start_time
+        sim_data['list'].append(simulate_game_solver(instance, target_word, sim_data))
+        sim_data['runtime'] += time.time() - start_time
 
-    return simulation_results
+    return simulation_data
 
 
-def simulate_game_solver(instance, target_word, solver_type):
+def simulate_game_solver(instance, target_word, sim_data):
     """
     Simulate wordle and completely solve it for testing model
     """
     # Unpack data
-    words, num_of_letters, num_of_attempts = instance
+    words, key_words, num_of_letters, num_of_attempts = instance
 
     word_guess = None
     results = {
         'guesses': [],
         'correct_guess': False
     }
+    first_guesses = []
+
+    # Presolve
+    if sim_data.get('presolve'):
+        first_guesses = sim_data['presolve'](instance)
 
     # Simulate
     for _ in range(num_of_attempts):
         guess_results = get_guess_results(target_word, word_guess)
         instance = fiter_instance(instance, guess_results)
 
-        # Solve
-        if solver_type == 'random':
-            word_guess = solve_random(instance)
-        elif solver_type == 'optimal':
-            word_guess = solve_optimal(instance)
+        # Solve word guess
+        if first_guesses:
+            word_guess = first_guesses.pop(0)
+        else:
+            word_guess = sim_data['solver'](instance)
         
         # Set results
         results['guesses'].append(word_guess)
