@@ -1,23 +1,26 @@
 from .instance_utils import *
 from .solve_utils import *
-from itertools import product
 import time
 
 
-def simulate_games(instance):
+def simulate_games(instance, solver_type):
     """
     Simulate wordle games and solve them for all words
     """
     # Unpack data
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
     simulation_data = {
-        'random': {'list': [], 'runtime': 0, 'solver': solve_random},
-        'optimal': {'list': [], 'runtime': 0, 'solver': solve_optimal},
-        'diver_opt': {'list': [], 'runtime': 0, 'solver': solve_optimal, 'presolve': presolve_diversification}
+        'random': {'solver': solve_random},
+        'greedy': {'solver': solve_greedy},
+        'diver_grd': {'solver': solve_greedy, 'presolve': presolve_diversification},
+        'trinary_search': {'solver': solve_trinary_search}
     }
+    sim_data = simulation_data[solver_type]
+    sim_data['list'] = []
+    sim_data['runtime'] = 0
 
     # Solve games
-    for target_word, (sim_type, sim_data) in product(key_words, simulation_data.items()):
+    for target_word in key_words:
         start_time = time.time()
         sim_data['list'].append(simulate_game_solver(instance, target_word, sim_data))
         sim_data['runtime'] += time.time() - start_time
@@ -30,7 +33,7 @@ def simulate_game_solver(instance, target_word, sim_data):
     Simulate wordle and completely solve it for testing model
     """
     # Unpack data
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
 
     word_guess = None
     results = {

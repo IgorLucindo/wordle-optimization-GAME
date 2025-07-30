@@ -10,7 +10,7 @@ def solve_random(instance):
     Solve model for random word guess
     """
     # Unpack data
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
 
     # Solve
     word_guess = random.choice(key_words)
@@ -18,12 +18,12 @@ def solve_random(instance):
     return word_guess
 
 
-def solve_optimal(instance):
+def solve_greedy(instance):
     """
     Solve model for optimal word guess
     """
     # Unpack data
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
     
     # Solve
     word_guess = max(key_words, key=lambda word: get_word_probability(word, key_words))
@@ -31,12 +31,23 @@ def solve_optimal(instance):
     return word_guess
 
 
+def solve_trinary_search(instance):
+    """
+    Solve model for trinary search word guess
+    """
+    # Unpack data
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
+
+    # Distances
+    
+
+
 def presolve_diversification(instance):
     """
     Presolve model for diversification and optimal word guess
     """
     # Unpack data
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
     alfabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
     model = gp.Model("Max_Diversification")
@@ -52,7 +63,7 @@ def presolve_diversification(instance):
     model.setObjective(obj_fn, GRB.MAXIMIZE)
 
     # Add constraints
-    model.addConstr(gp.quicksum(z[w] for w in words) == 3, name="c1")
+    model.addConstr(gp.quicksum(z[w] for w in words) == 2, name="c1")
     model.addConstrs(
         (y[l] <= gp.quicksum(z[w] for w in words if l in w) for l in alfabet),
         name="c2"
@@ -60,7 +71,6 @@ def presolve_diversification(instance):
     model.addConstrs((z[w] <= x[w] for w in key_words), name="c3")
     model.addConstrs((y[l] <= x[w] for w in key_words for l in w), name="c4")
     model.addConstrs((x[w] <= gp.quicksum(y[l] for l in w) for w in key_words), name="c5")
-    model.addConstr(gp.quicksum(y[l] for l in alfabet) <= 15, name="c6")
 
     # Solve
     model.optimize()

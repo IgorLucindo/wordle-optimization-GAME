@@ -6,22 +6,23 @@ def get_instance():
     Return instance for wordle solver model
     """
     key_words = _get_words("dataset/solutions.txt")
-    words = key_words + _get_words("dataset/non_solutions.txt")
+    all_words = key_words + _get_words("dataset/non_solutions.txt")
+    words = all_words.copy()
     num_of_letters = len(words[0])
     num_of_attempts = 6
 
-    return words, key_words, num_of_letters, num_of_attempts
+    return all_words, words, key_words, num_of_letters, num_of_attempts
 
 
 def fiter_instance(instance, guess_results):
     """
     Return filtered instances given guess results
     """
-    words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts = instance
     words = filter_words(words, guess_results)
     key_words = filter_words(key_words, guess_results)
 
-    return words, key_words, num_of_letters, num_of_attempts
+    return all_words, words, key_words, num_of_letters, num_of_attempts
 
 
 def _get_words(filepath):
