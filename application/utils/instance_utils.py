@@ -43,18 +43,14 @@ def get_guess_results(target_word, word_guess):
     if not word_guess:
         return []
 
-    guess_results = {
-        'correct': [],
-        'present': [],
-        'incorrect': []
-    }
+    guess_results = {'G': [], 'Y': [], 'B': []}
 
     for i in range(len(target_word)):
         if word_guess[i] == target_word[i]:
-            guess_results['correct'].append({'letter': word_guess[i], 'pos': i, 'status': 2})
+            guess_results['G'].append({'letter': word_guess[i], 'pos': i, 'status': 'G'})
         elif word_guess[i] in target_word:
-            guess_results['present'].append({'letter': word_guess[i], 'pos': i, 'status': 1})
+            guess_results['Y'].append({'letter': word_guess[i], 'pos': i, 'status': 'Y'})
         else:
-            guess_results['incorrect'].append({'letter': word_guess[i], 'pos': i, 'status': 0})
+            guess_results['B'].append({'letter': word_guess[i], 'pos': i, 'status': 'B'})
 
     return guess_results

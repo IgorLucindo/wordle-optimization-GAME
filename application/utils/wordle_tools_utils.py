@@ -13,22 +13,22 @@ def filter_words(words, guess_results):
         return words
 
     # Count how many times the letter appears
-    all_guess_results = guess_results['correct'] + guess_results['present'] + guess_results['incorrect']
+    all_guess_results = guess_results['G'] + guess_results['Y'] + guess_results['B']
     guess_letters = {result['letter'] for result in all_guess_results}
     letter_count = {
         letter: sum(
             1 for r in all_guess_results
-            if r['letter'] == letter and r['status'] != 0
+            if r['letter'] == letter and r['status'] != 'B'
         )
         for letter in guess_letters
     }
 
     # Handle each letter result
-    for result in guess_results['correct']:
+    for result in guess_results['G']:
         words = handle_correct_status(words, result)
-    for result in guess_results['incorrect']:
+    for result in guess_results['B']:
         words = handle_incorrect_status(words, result, letter_count)
-    for result in guess_results['present']:
+    for result in guess_results['Y']:
         words = handle_present_status(words, result)
 
     return words
