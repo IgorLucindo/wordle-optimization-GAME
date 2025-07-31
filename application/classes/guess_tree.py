@@ -19,7 +19,7 @@ class Guess_Tree:
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self, filtered_key_words, previous_word_guess=None):
+    def build(self, filtered_key_words, previous_word_guess=None, feedback=None):
         """
         Recursively obtain the best guess tree
         """
@@ -28,11 +28,11 @@ class Guess_Tree:
         word_guess = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
+        self.tree['nodes'].append(word_guess)
         if self.node_count == 1:
             self.tree['root'] = word_guess
         else:
-            self.tree['nodes'].append(word_guess)
-            self.tree['edges'][(previous_word_guess, word_guess)] = "label"
+            self.tree['edges'][(previous_word_guess, word_guess)] = feedback
 
         # Branch to other nodes
         all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
@@ -42,7 +42,7 @@ class Guess_Tree:
             if len(filtered_key_words) == 1:
                 continue
             else:
-                self.build(filtered_key_words, word_guess)
+                self.build(filtered_key_words, word_guess, feedback)
 
 
     def get_best_guess(self, filtered_key_words):
@@ -53,7 +53,7 @@ class Guess_Tree:
         best_balance_score = float('inf')  # smaller is better
 
         for i, w in enumerate(self.all_words):
-            self.print_diagnosis(i, len(self.all_words))
+            # self.print_diagnosis(i, len(self.all_words))
 
             all_feedbacks = get_all_feedbacks(filtered_key_words, w)
 
@@ -63,7 +63,8 @@ class Guess_Tree:
                 lengths.append(len(filtered))
             
             # Measure imbalance — use standard deviation or range
-            balance_score = np.std(lengths)
+            balance_score = np.mean(lengths)
+            # balance_score = np.std(lengths)
             
             if balance_score < best_balance_score:
                 best_balance_score = balance_score
