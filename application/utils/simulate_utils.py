@@ -15,17 +15,16 @@ def simulate_games(instance, solver_type):
         'diver_grd': {'solver': solve_greedy, 'presolve': presolve_diversification},
         'trinary_search': {'solver': solve_trinary_search}
     }
+    simulation_results = {'solver_type': solver_type, 'list': [], 'runtime': 0}
     sim_data = simulation_data[solver_type]
-    sim_data['list'] = []
-    sim_data['runtime'] = 0
 
     # Solve games
     for target_word in key_words:
         start_time = time.time()
-        sim_data['list'].append(simulate_game_solver(instance, target_word, sim_data))
-        sim_data['runtime'] += time.time() - start_time
+        simulation_results['list'].append(simulate_game_solver(instance, target_word, sim_data))
+        simulation_results['runtime'] += time.time() - start_time
 
-    return simulation_data
+    return simulation_results
 
 
 def simulate_game_solver(instance, target_word, sim_data):

@@ -49,6 +49,7 @@ def presolve_diversification(instance):
     # Unpack data
     all_words, words, key_words, num_of_letters, num_of_attempts = instance
     alfabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    num_of_guesses = 3
 
     model = gp.Model("Max_Diversification")
     model.setParam('OutputFlag', 0)
@@ -63,7 +64,7 @@ def presolve_diversification(instance):
     model.setObjective(obj_fn, GRB.MAXIMIZE)
 
     # Add constraints
-    model.addConstr(gp.quicksum(z[w] for w in words) == 2, name="c1")
+    model.addConstr(gp.quicksum(z[w] for w in words) == num_of_guesses, name="c1")
     model.addConstrs(
         (y[l] <= gp.quicksum(z[w] for w in words if l in w) for l in alfabet),
         name="c2"

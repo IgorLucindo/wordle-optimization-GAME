@@ -28,27 +28,26 @@ class Results:
         if not self.flags['save_results']:
             return
         
-        for solver_type, results in simulation_results.items():
-            # Set params
-            guesses_len = []
-            correct_guesses = []
+        # Set params
+        guesses_len = []
+        correct_guesses = []
 
-            for r in results['list']:
-                correct_guesses.append(r['correct_guess'])
-                if r['correct_guess']:
-                    guesses_len.append(len(r['guesses']))
+        for r in simulation_results['list']:
+            correct_guesses.append(r['correct_guess'])
+            if r['correct_guess']:
+                guesses_len.append(len(r['guesses']))
 
-            # Calculate data
-            avg_correct_guesses = sum(correct_guesses) / len(correct_guesses) * 100
-            avg_guesses_len = sum(guesses_len) / len(guesses_len)
-            std_guesses_len = np.std(guesses_len)
-            runtime = results['runtime'] / len(correct_guesses)
-        
-            # Set data
-            self.data.append([
-                solver_type, avg_correct_guesses, avg_guesses_len,
-                std_guesses_len, runtime
-            ])
+        # Calculate data
+        avg_correct_guesses = sum(correct_guesses) / len(correct_guesses) * 100
+        avg_guesses_len = sum(guesses_len) / len(guesses_len)
+        std_guesses_len = np.std(guesses_len)
+        avg_runtime = simulation_results['runtime'] / len(correct_guesses)
+    
+        # Set data
+        self.data.append([
+            simulation_results['solver_type'], avg_correct_guesses,
+            avg_guesses_len, std_guesses_len, avg_runtime
+        ])
 
 
     def save(self):
