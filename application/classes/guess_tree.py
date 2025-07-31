@@ -2,6 +2,7 @@ from utils.instance_utils import *
 from utils.wordle_tools_utils import *
 import numpy as np
 import json
+import time
 import sys
 import os
 
@@ -14,6 +15,7 @@ class Guess_Tree:
         self.all_words = all_words
         self.tree = {'root': None, 'nodes': {}, 'edges': []}
         self.node_count = 0
+        self.start_time = time.time()
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
@@ -35,15 +37,14 @@ class Guess_Tree:
             self.tree['nodes'][word_guess] = feedback
             self.tree['edges'].append([previous_word_guess, word_guess])
 
+        if len(filtered_key_words) == 1:
+            return
+
         # Branch to other nodes
         all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
         for feedback in all_feedbacks:
-            filtered_key_words = filter_words(filtered_key_words, word_guess, feedback)
-
-            if len(filtered_key_words) == 1:
-                continue
-            else:
-                self.build(filtered_key_words, word_guess, feedback)
+            new_filtered = filter_words(filtered_key_words, word_guess, feedback)
+            self.build(new_filtered, word_guess, feedback)
 
 
     def get_best_guess(self, filtered_key_words):
@@ -54,6 +55,7 @@ class Guess_Tree:
         best_balance_score = float('inf')  # smaller is better
 
         for i, w in enumerate(self.all_words):
+            # Print progress
             self.print_diagnosis(i, len(self.all_words))
 
             all_feedbacks = get_all_feedbacks(filtered_key_words, w)
@@ -78,7 +80,12 @@ class Guess_Tree:
         """
         Print current word guess number and node count
         """
-        sys.stdout.write(f"\rNode count: {self.node_count:<5} Word {word_num}/{total_words}")
+        current_time = time.time() - self.start_time
+        sys.stdout.write(
+            f"\rNode count: {self.node_count} | "
+            f"Progress: {word_num * 100 / total_words:>.1f}% | "
+            f"Time: {current_time:.2f}s"
+        )
         sys.stdout.flush()
 
 
