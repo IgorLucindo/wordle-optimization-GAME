@@ -36,6 +36,5 @@ def main():
     print("Balance score (std):", best_balance_score)
 
 
-
 if __name__ == "__main__":
     main()
