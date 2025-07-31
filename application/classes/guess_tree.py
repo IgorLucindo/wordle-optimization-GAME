@@ -12,7 +12,7 @@ class Guess_Tree:
 
         self.key_words = key_words
         self.all_words = all_words
-        self.tree = {'root': None, 'nodes': [], 'edges': {}}
+        self.tree = {'root': None, 'nodes': {}, 'edges': []}
         self.node_count = 0
 
         self.path = "application/results/"
@@ -28,11 +28,12 @@ class Guess_Tree:
         word_guess = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
-        self.tree['nodes'].append(word_guess)
         if self.node_count == 1:
             self.tree['root'] = word_guess
+            self.tree['nodes'][word_guess] = None
         else:
-            self.tree['edges'][(previous_word_guess, word_guess)] = feedback
+            self.tree['nodes'][word_guess] = feedback
+            self.tree['edges'].append([previous_word_guess, word_guess])
 
         # Branch to other nodes
         all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
@@ -53,7 +54,7 @@ class Guess_Tree:
         best_balance_score = float('inf')  # smaller is better
 
         for i, w in enumerate(self.all_words):
-            # self.print_diagnosis(i, len(self.all_words))
+            self.print_diagnosis(i, len(self.all_words))
 
             all_feedbacks = get_all_feedbacks(filtered_key_words, w)
 
