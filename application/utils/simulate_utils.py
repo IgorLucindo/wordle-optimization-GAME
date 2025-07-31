@@ -47,8 +47,8 @@ def simulate_game_solver(instance, target_word, sim_data):
 
     # Simulate
     for _ in range(num_of_attempts):
-        guess_results = get_guess_results(target_word, word_guess)
-        instance = fiter_instance(instance, guess_results)
+        feedback = get_feedback(target_word, word_guess)
+        instance = fiter_instance(instance, word_guess, feedback)
 
         # Solve word guess
         if first_guesses:

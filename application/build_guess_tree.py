@@ -7,6 +7,7 @@ def main():
 
     guess_tree = Guess_Tree(instance)
     guess_tree.build(guess_tree.key_words)
+    guess_tree.save()
     
 
 if __name__ == "__main__":

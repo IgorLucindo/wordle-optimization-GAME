@@ -14,13 +14,13 @@ def get_instance():
     return all_words, words, key_words, num_of_letters, num_of_attempts
 
 
-def fiter_instance(instance, guess_results):
+def fiter_instance(instance, word_guess, feedback):
     """
     Return filtered instances given guess results
     """
     all_words, words, key_words, num_of_letters, num_of_attempts = instance
-    words = filter_words(words, guess_results)
-    key_words = filter_words(key_words, guess_results)
+    words = filter_words(words, word_guess, feedback)
+    key_words = filter_words(key_words, word_guess, feedback)
 
     return all_words, words, key_words, num_of_letters, num_of_attempts
 
@@ -36,21 +36,35 @@ def _get_words(filepath):
     return words
 
  
-def get_guess_results(target_word, word_guess):
+def get_feedback(target_word, word_guess):
     """
     Update game results for a single guess
     """
     if not word_guess:
         return []
 
-    guess_results = {'G': [], 'Y': [], 'B': []}
+    feedback = []
 
     for i in range(len(target_word)):
         if word_guess[i] == target_word[i]:
-            guess_results['G'].append({'letter': word_guess[i], 'pos': i, 'status': 'G'})
+            feedback.append('G')
         elif word_guess[i] in target_word:
-            guess_results['Y'].append({'letter': word_guess[i], 'pos': i, 'status': 'Y'})
+            feedback.append('Y')
         else:
-            guess_results['B'].append({'letter': word_guess[i], 'pos': i, 'status': 'B'})
+            feedback.append('B')
 
-    return guess_results
+    return tuple(feedback)
+
+
+def get_all_feedbacks(key_words, word_guess):
+    """
+    Return all possible status results
+    """
+    all_feedbacks = set()
+
+    # Get all possible status combinations
+    for target_word in key_words:
+        feedback = get_feedback(target_word, word_guess)
+        all_feedbacks.add(feedback)
+
+    return list(all_feedbacks)

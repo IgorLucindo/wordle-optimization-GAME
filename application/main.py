@@ -5,7 +5,7 @@ from utils.simulate_utils import *
 
 flags = {
     'save_results': True,
-    'solver_type': 'diver_grd'          # 'random', 'greedy', 'diver_grd' or 'trinary_search'
+    'solver_type': 'random'          # 'random', 'greedy', 'diver_grd' or 'trinary_search'
 }
 
 
