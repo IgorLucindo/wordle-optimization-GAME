@@ -17,7 +17,7 @@ class Guess_Tree:
         self.tree = {
             'root': None,
             'nodes': {},
-            'edges': {}
+            'edges': []
         }
         self.node_count = 0
         self.start_time = time.time()
@@ -36,11 +36,12 @@ class Guess_Tree:
         word_guess, all_feedbacks = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
-        self.tree['nodes'][current_node_id] = {'word': word_guess}
+        self.tree['nodes'][current_node_id] = {'word': word_guess, 'successors': {}}
         if current_node_id == 1:
             self.tree['root'] = current_node_id
         else:
-            self.tree['edges'][str((previous_node_id, current_node_id))] = {'feedback': feedback}
+            self.tree['edges'].append([previous_node_id, current_node_id])
+            self.tree['nodes'][previous_node_id]['successors'][str(feedback)] = current_node_id
 
         # Stop condition
         if len(filtered_key_words) == 1:
