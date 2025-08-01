@@ -27,22 +27,22 @@ class Guess_Tree:
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self, filtered_key_words, previous_node_id=None, feedback=None):
+    def build(self, filtered_key_words, previous_node_id=None, previous_feedback=None):
         """
         Recursively obtain the best guess tree
         """
         self.node_count += 1
-        current_node_id = self.node_count
+        node_id = self.node_count
 
         word_guess, all_feedbacks = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
-        self.tree['nodes'][current_node_id] = {'word': word_guess, 'successors': {}}
-        if current_node_id == 1:
-            self.tree['root'] = current_node_id
+        self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
+        if node_id == 1:
+            self.tree['root'] = node_id
         else:
-            self.tree['edges'].append([previous_node_id, current_node_id])
-            self.tree['nodes'][previous_node_id]['successors'][feedback] = current_node_id
+            self.tree['edges'].append([previous_node_id, node_id])
+            self.tree['nodes'][previous_node_id]['successors'][previous_feedback] = node_id
 
         # Stop condition
         if len(filtered_key_words) == 1:
@@ -51,7 +51,7 @@ class Guess_Tree:
         # Branch to other nodes
         for feedback in all_feedbacks:
             new_filtered = filter_words(filtered_key_words, word_guess, feedback)
-            self.build(new_filtered, current_node_id, feedback)
+            self.build(new_filtered, node_id, feedback)
 
 
     def get_best_guess(self, filtered_key_words):
