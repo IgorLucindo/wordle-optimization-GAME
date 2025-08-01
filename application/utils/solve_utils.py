@@ -53,10 +53,11 @@ def solve_guess_tree(instance, presolve_solution, feedback):
         return word_guess
 
     # Solve other words based on feedback and guess tree
-    for edge, edge_val in tree['edges'].items():
-        if edge[0] == tree['current_node'] and edge_val['feedback'] == list(feedback):
-            word_guess = tree['nodes'][edge[1]]['word']
-            tree['current_node'] = edge[1]
+    current_node = tree['current_node']
+    for feedback_, next_node in tree['nodes'][current_node]['successors'].items():
+        if feedback_ == feedback:
+            tree['current_node'] = next_node
+            word_guess = tree['nodes'][next_node]['word']
             return word_guess
 
 
@@ -70,7 +71,6 @@ def presolve_guess_tree(instance=None):
     with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
         tree = json.load(f)
         tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
-        tree['edges'] = {ast.literal_eval(k): v for k, v in tree['edges'].items()}
         
     return {'guess_tree': tree}
 

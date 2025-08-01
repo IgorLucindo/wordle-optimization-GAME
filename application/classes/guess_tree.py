@@ -21,6 +21,7 @@ class Guess_Tree:
         }
         self.node_count = 0
         self.start_time = time.time()
+        self.previous_time = 0
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
@@ -87,16 +88,19 @@ class Guess_Tree:
         """
         Print current word guess number and node count
         """
-        if word_num % 20 or not self.flags['print_diagnosis']:
+        current_time = time.time() - self.start_time
+        current_second = int(current_time)
+
+        if current_second == self.previous_time or not self.flags['print_diagnosis']:
             return
         
-        current_time = time.time() - self.start_time
+        self.previous_time = current_second
         
         # Print
         sys.stdout.write(
             f"\rNode count: {self.node_count} | "
             f"Node Progress: {word_num * 100 / total_words:>.1f}% | "
-            f"Time: {current_time:.2f}s         "
+            f"Time: {current_second}s   "
         )
         sys.stdout.flush()
 
