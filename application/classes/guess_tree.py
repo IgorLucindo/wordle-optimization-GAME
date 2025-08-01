@@ -86,11 +86,10 @@ class Guess_Tree:
         current_time = time.time() - self.start_time
         
         # Print
-        sys.stdout.write('\r' + ' ' * 80 + '\r')  # clear line
         sys.stdout.write(
             f"\rNode count: {self.node_count} | "
             f"Node Progress: {word_num * 100 / total_words:>.1f}% | "
-            f"Time: {current_time:.2f}s"
+            f"Time: {current_time:.2f}s         "
         )
         sys.stdout.flush()
 
