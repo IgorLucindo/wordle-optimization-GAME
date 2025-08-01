@@ -4,6 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import random
 import json
+import ast
 
 
 def solve_random(instance, presolve_solution, feedback):
@@ -42,18 +43,21 @@ def solve_guess_tree(instance, presolve_solution, feedback):
     Solve model for trinary search word guess
     """
     # Gest guess tree
-    guess_tree = presolve_solution['guess_tree']
+    tree = presolve_solution['guess_tree']
 
     # Solve first word
     if not feedback:
-        root = str(guess_tree['root'])
-        word_guess = guess_tree['nodes'][root]['word']
+        root = tree['root']
+        tree['current_node'] = root
+        word_guess = tree['nodes'][root]['word']
         return word_guess
 
     # Solve other words based on feedback and guess tree
-    for node_val in guess_tree['nodes'].values():
-        if node_val['feedback'] == list(feedback):
-            return node_val['word']
+    for edge, edge_val in tree['edges'].items():
+        if edge[0] == tree['current_node'] and edge_val['feedback'] == list(feedback):
+            word_guess = tree['nodes'][edge[1]]['word']
+            tree['current_node'] = edge[1]
+            return word_guess
 
 
 def presolve_guess_tree(instance=None):
@@ -65,6 +69,8 @@ def presolve_guess_tree(instance=None):
     # Load graph
     with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
         tree = json.load(f)
+        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+        tree['edges'] = {ast.literal_eval(k): v for k, v in tree['edges'].items()}
         
     return {'guess_tree': tree}
 
