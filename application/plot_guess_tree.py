@@ -7,7 +7,7 @@ def main():
     graph_path = 'application/results/graphs/'
 
     # Load graph
-    with open(graph_path + 'guess_tree.json', 'r') as f:
+    with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
         tree = json.load(f)
 
     # Create graph

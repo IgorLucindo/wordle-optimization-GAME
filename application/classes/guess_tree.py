@@ -8,11 +8,12 @@ import os
 
 
 class Guess_Tree:
-    def __init__(self, instance):
+    def __init__(self, instance, flags):
         all_words, words, key_words, num_of_letters, num_of_attempts = instance
 
         self.key_words = key_words
         self.all_words = all_words
+        self.flags = flags
         self.tree = {'root': None, 'nodes': {}, 'edges': []}
         self.node_count = 0
         self.start_time = time.time()
@@ -79,7 +80,7 @@ class Guess_Tree:
         """
         Print current word guess number and node count
         """
-        if word_num % 10:
+        if word_num % 10 or not self.flags['print_diagnosis']:
             return
         
         current_time = time.time() - self.start_time
