@@ -15,7 +15,7 @@ def main():
     G.add_edges_from(tree['edges'])
 
     # Show graph
-    show_tree_graph(G, tree['root'], tree['vertex_labels'])
+    show_tree_graph(G, tree['root'])
 
 
 if __name__ == "__main__":
