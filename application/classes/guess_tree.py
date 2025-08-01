@@ -30,11 +30,10 @@ class Guess_Tree:
         word_guess = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
+        self.tree['nodes'][self.node_count] = {'word': word_guess, 'feedback': feedback}
         if self.node_count == 1:
             self.tree['root'] = word_guess
-            self.tree['nodes'][word_guess] = None
         else:
-            self.tree['nodes'][word_guess] = feedback
             self.tree['edges'].append([previous_word_guess, word_guess])
 
         if len(filtered_key_words) == 1:
