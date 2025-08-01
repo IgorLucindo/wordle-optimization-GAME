@@ -5,7 +5,7 @@ from utils.simulate_utils import *
 
 flags = {
     'save_results': True,
-    'solver_type': 'guess_tree'          # 'random', 'greedy', 'diver_grd' or 'guess_tree'
+    'solver_type': 'random'          # 'random', 'greedy', 'diver_grd' or 'guess_tree'
 }
 
 

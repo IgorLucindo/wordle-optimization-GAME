@@ -41,7 +41,7 @@ class Guess_Tree:
             self.tree['root'] = current_node_id
         else:
             self.tree['edges'].append([previous_node_id, current_node_id])
-            self.tree['nodes'][previous_node_id]['successors'][str(feedback)] = current_node_id
+            self.tree['nodes'][previous_node_id]['successors'][feedback] = current_node_id
 
         # Stop condition
         if len(filtered_key_words) == 1:

@@ -11,7 +11,6 @@ def main():
     with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
         tree = json.load(f)
         tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
-        tree['edges'] = {ast.literal_eval(k): v for k, v in tree['edges'].items()}
 
     # Create graph
     G = nx.Graph()

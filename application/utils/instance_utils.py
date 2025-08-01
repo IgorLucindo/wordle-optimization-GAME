@@ -41,7 +41,7 @@ def get_feedback(target_word, word_guess):
     Update game results for a single guess
     """
     if not word_guess:
-        return []
+        return ""
 
     feedback = []
 
@@ -53,7 +53,7 @@ def get_feedback(target_word, word_guess):
         else:
             feedback.append('B')
 
-    return tuple(feedback)
+    return "".join(feedback)
 
 
 def get_all_feedbacks(key_words, word_guess):
