@@ -22,7 +22,7 @@ def show_tree_graph(G, root, plot_flag=True):
     nx.draw(
         T,
         pos,
-        with_labels=True,
+        with_labels=False,
         node_color='lightblue',
         edge_color='gray',
         alpha=0.8,

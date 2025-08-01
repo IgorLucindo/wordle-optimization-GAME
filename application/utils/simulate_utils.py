@@ -13,7 +13,7 @@ def simulate_games(instance, solver_type):
         'random': {'solver': solve_random},
         'greedy': {'solver': solve_greedy},
         'diver_grd': {'solver': solve_greedy, 'presolve': presolve_diversification},
-        'trinary_search': {'solver': solve_trinary_search}
+        'guess_tree': {'solver': solve_guess_tree, 'presolve': presolve_guess_tree}
     }
     simulation_results = {'solver_type': solver_type, 'list': [], 'runtime': 0}
     sim_data = simulation_data[solver_type]
@@ -39,11 +39,11 @@ def simulate_game_solver(instance, target_word, sim_data):
         'guesses': [],
         'correct_guess': False
     }
-    first_guesses = []
+    presolve_solution = None
 
     # Presolve
     if sim_data.get('presolve'):
-        first_guesses = sim_data['presolve'](instance)
+        presolve_solution = sim_data['presolve'](instance)
 
     # Simulate
     for _ in range(num_of_attempts):
@@ -51,10 +51,7 @@ def simulate_game_solver(instance, target_word, sim_data):
         instance = fiter_instance(instance, word_guess, feedback)
 
         # Solve word guess
-        if first_guesses:
-            word_guess = first_guesses.pop(0)
-        else:
-            word_guess = sim_data['solver'](instance)
+        word_guess = sim_data['solver'](instance, presolve_solution, feedback)
         
         # Set results
         results['guesses'].append(word_guess)

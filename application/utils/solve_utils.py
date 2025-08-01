@@ -3,9 +3,10 @@ from .calculation_utils import *
 import gurobipy as gp
 from gurobipy import GRB
 import random
+import json
 
 
-def solve_random(instance):
+def solve_random(instance, presolve_solution, feedback):
     """
     Solve model for random word guess
     """
@@ -18,12 +19,17 @@ def solve_random(instance):
     return word_guess
 
 
-def solve_greedy(instance):
+def solve_greedy(instance, presolve_solution, feedback):
     """
     Solve model for optimal word guess
     """
     # Unpack data
     all_words, words, key_words, num_of_letters, num_of_attempts = instance
+
+    # Get first guesses from presolve
+    if presolve_solution.get('first_guesses'):
+        word_guess = presolve_solution['first_guesses'].pop(0)
+        return word_guess
     
     # Solve
     word_guess = max(key_words, key=lambda word: get_word_probability(word, key_words))
@@ -31,15 +37,36 @@ def solve_greedy(instance):
     return word_guess
 
 
-def solve_trinary_search(instance):
+def solve_guess_tree(instance, presolve_solution, feedback):
     """
     Solve model for trinary search word guess
     """
-    # Unpack data
-    all_words, words, key_words, num_of_letters, num_of_attempts = instance
+    # Gest guess tree
+    guess_tree = presolve_solution['guess_tree']
 
-    # Distances
-    
+    # Solve first word
+    if not feedback:
+        root = str(guess_tree['root'])
+        word_guess = guess_tree['nodes'][root]['word']
+        return word_guess
+
+    # Solve other words based on feedback and guess tree
+    for node_val in guess_tree['nodes'].values():
+        if node_val['feedback'] == list(feedback):
+            return node_val['word']
+
+
+def presolve_guess_tree(instance=None):
+    """
+    Solve model for trinary search word guess
+    """
+    graph_path = 'application/results/graphs/'
+
+    # Load graph
+    with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
+        tree = json.load(f)
+        
+    return {'guess_tree': tree}
 
 
 def presolve_diversification(instance):
@@ -79,4 +106,4 @@ def presolve_diversification(instance):
     # Get solution
     guesses = [w for w in words if z[w].x > 0.5]
 
-    return guesses
+    return {'first_guesses': guesses}

@@ -3,7 +3,7 @@ from classes.guess_tree import *
 
 
 flags = {
-    'print_diagnosis': False
+    'print_diagnosis': True
 }
 
 
