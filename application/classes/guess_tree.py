@@ -9,7 +9,7 @@ import os
 
 class Guess_Tree:
     def __init__(self, instance, flags):
-        all_words, words, key_words, num_of_letters, num_of_attempts = instance
+        all_words, _, key_words, _, _, _ = instance
 
         self.key_words = key_words
         self.all_words = all_words
