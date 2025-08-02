@@ -63,7 +63,6 @@ class Guess_Tree:
         """
         best_balance_score = float('inf')  # smaller is better
         best_w = None
-        filtered_dict = {}
 
         for i, w in enumerate(self.all_words):
             # Print progress
@@ -72,6 +71,7 @@ class Guess_Tree:
             all_feedbacks = get_all_feedbacks(filtered_key_words, w)
 
             lengths = []
+            filtered_dict = {}
             for feedback in all_feedbacks:
                 filtered = filter_words(filtered_key_words, w, feedback)
                 lengths.append(len(filtered))
@@ -84,8 +84,9 @@ class Guess_Tree:
             if balance_score < best_balance_score:
                 best_balance_score = balance_score
                 best_w = w
-
-        return best_w, filtered_dict
+                best_w_filtered_dict = filtered_dict
+        
+        return best_w, best_w_filtered_dict
     
 
     def print_diagnosis(self, word_num, total_words):
