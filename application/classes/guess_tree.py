@@ -34,7 +34,11 @@ class Guess_Tree:
         self.node_count += 1
         node_id = self.node_count
 
-        word_guess, all_feedbacks = self.get_best_guess(filtered_key_words)
+        # Get best guess
+        if len(filtered_key_words) == 1:
+            word_guess = filtered_key_words[0]
+        else:
+            word_guess, filtered_dict = self.get_best_guess(filtered_key_words)
 
         # Append node and edge to tree
         self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
@@ -49,8 +53,7 @@ class Guess_Tree:
             return
 
         # Branch to other nodes
-        for feedback in all_feedbacks:
-            new_filtered = filter_words(filtered_key_words, word_guess, feedback)
+        for feedback, new_filtered in filtered_dict.items():
             self.build(new_filtered, node_id, feedback)
 
 
@@ -58,8 +61,9 @@ class Guess_Tree:
         """
         Return guess with min std len
         """
-        best_w = None
         best_balance_score = float('inf')  # smaller is better
+        best_w = None
+        filtered_dict = {}
 
         for i, w in enumerate(self.all_words):
             # Print progress
@@ -71,6 +75,7 @@ class Guess_Tree:
             for feedback in all_feedbacks:
                 filtered = filter_words(filtered_key_words, w, feedback)
                 lengths.append(len(filtered))
+                filtered_dict[feedback] = filtered
             
             # Measure imbalance — use standard deviation or range
             balance_score = np.mean(lengths)
@@ -79,9 +84,8 @@ class Guess_Tree:
             if balance_score < best_balance_score:
                 best_balance_score = balance_score
                 best_w = w
-                best_w_feedbacks = all_feedbacks
 
-        return best_w, best_w_feedbacks
+        return best_w, filtered_dict
     
 
     def print_diagnosis(self, word_num, total_words):
