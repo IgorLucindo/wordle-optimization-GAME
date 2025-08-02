@@ -93,73 +93,75 @@ export class Game {
 
     // Checks the current guess against the word of the day and updates the UI
     checkGuess() {
-        const wordLetters = this.keyWord.split('');
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
+        const wordLetters = this.keyWord.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
-        let feedback = "";
 
-        // Skip if it is not a word
+        // Reject invalid word
         if (!this.words.includes(guessString.toLowerCase())) {
             this.board.shakeRow();
             return;
         }
 
-        // Create a mutable copy of letter counts for the word to handle duplicates
-        const wordLetterCounts = {};
+        // Letter counts to handle duplicates
+        const letterCounts = {};
         for (const char of wordLetters) {
-            wordLetterCounts[char] = (wordLetterCounts[char] || 0) + 1;
+            letterCounts[char] = (letterCounts[char] || 0) + 1;
         }
 
-        // First pass: Mark 'correct' (green) letters and consume counts
-        for (let i = 0; i < this.wordSize; i++) {
-            if (guessLetters[i] !== wordLetters[i]) continue;
+        const status = Array(this.wordSize).fill('');
+        let feedback = '';
 
-            const cell = currentRowElement.children[i];
-            
-            cell.classList.add('correct');
-            this.keyboard.updateKeyColor(guessLetters[i], 'correct');
-            wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            feedback += "G";
+        // First pass: mark correct letters
+        for (let i = 0; i < this.wordSize; i++) {
+            if (guessLetters[i] === wordLetters[i]) {
+                status[i] = 'correct';
+                letterCounts[guessLetters[i]]--;
+            }
         }
 
-        // Second pass: Mark 'present' (yellow) and 'incorrect' (grey) letters
+        // Second pass: mark present or incorrect
         for (let i = 0; i < this.wordSize; i++) {
             const cell = currentRowElement.children[i];
+            const char = guessLetters[i];
 
-            // Only process if not already marked 'correct'
-            if (cell.classList.contains('correct')) continue;
-
-            if (wordLetterCounts[guessLetters[i]] > 0) {
+            if (status[i] === 'correct') {
+                cell.classList.add('correct');
+                this.keyboard.updateKeyColor(char, 'correct');
+                feedback += 'G';
+            }
+            else if (letterCounts[char] > 0) {
                 cell.classList.add('present');
-                this.keyboard.updateKeyColor(guessLetters[i], 'present');
-                wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                feedback += "Y";
+                this.keyboard.updateKeyColor(char, 'present');
+                letterCounts[char]--;
+                feedback += 'Y';
             }
             else {
                 cell.classList.add('incorrect');
-                this.keyboard.updateKeyColor(guessLetters[i], 'incorrect');
-                feedback += "B";
+                this.keyboard.updateKeyColor(char, 'incorrect');
+                feedback += 'B';
             }
         }
 
-        // Handle game over
+        // Handle game end
         if (guessString === this.keyWord) {
             this.message.show('You guessed it! 🎉');
             this.gameEnded = true;
-            this.resetButton.style.display = 'block';
         }
         else if (this.currentRow === this.numOfGuesses - 1) {
             this.message.show(`Game Over! The word was "${this.keyWord}"`);
             this.gameEnded = true;
-            this.resetButton.style.display = 'block';
         }
         else {
             this.currentRow++;
             this.currentGuess = [];
         }
 
-        // Update guess result
+        // Show reset button if game ended
+        if (this.gameEnded) this.resetButton.style.display = 'block';
+
+        // Send feedback to hint system
         this.hint.solve(feedback);
     }
 }
