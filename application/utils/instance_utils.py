@@ -1,4 +1,6 @@
 from .wordle_tools_utils import *
+import json
+import ast
 
 
 def get_instance():
@@ -10,19 +12,28 @@ def get_instance():
     words = all_words.copy()
     num_of_letters = len(words[0])
     num_of_attempts = 6
+    tree = _get_guess_tree()
 
-    return all_words, words, key_words, num_of_letters, num_of_attempts
+    return all_words, words, key_words, num_of_letters, num_of_attempts, tree
 
 
 def fiter_instance(instance, word_guess, feedback):
     """
     Return filtered instances given guess results
     """
-    all_words, words, key_words, num_of_letters, num_of_attempts = instance
+    all_words, words, key_words, num_of_letters, num_of_attempts, tree = instance
     words = filter_words(words, word_guess, feedback)
     key_words = filter_words(key_words, word_guess, feedback)
 
-    return all_words, words, key_words, num_of_letters, num_of_attempts
+    return all_words, words, key_words, num_of_letters, num_of_attempts, tree
+
+
+def _get_guess_tree():
+    with open('dataset/guess_tree.json', 'r') as f:
+        tree = json.load(f)
+        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+
+    return tree
 
 
 def _get_words(filepath):
