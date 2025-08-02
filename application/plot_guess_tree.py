@@ -4,11 +4,8 @@ import ast
 
 
 def main():
-    # Set path
-    graph_path = 'application/results/graphs/'
-
     # Load graph
-    with open(graph_path + 'min_mean_guess_tree.json', 'r') as f:
+    with open('dataset/guess_tree.json', 'r') as f:
         tree = json.load(f)
         tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
 
