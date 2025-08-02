@@ -46,7 +46,7 @@ def _get_words(filepath):
 
     return words
 
- 
+
 def get_feedback(target_word, word_guess):
     """
     Update game results for a single guess
@@ -54,17 +54,31 @@ def get_feedback(target_word, word_guess):
     if not word_guess:
         return ""
 
-    feedback = []
+    feedback = [''] * len(target_word)
+    target_chars = list(target_word)
+    guess_chars = list(word_guess)
 
+    # Count letters for later 'present' (Y) check
+    from collections import Counter
+    letter_counts = Counter(target_word)
+
+    # First pass: Mark correct (G)
     for i in range(len(target_word)):
-        if word_guess[i] == target_word[i]:
-            feedback.append('G')
-        elif word_guess[i] in target_word:
-            feedback.append('Y')
-        else:
-            feedback.append('B')
+        if guess_chars[i] == target_chars[i]:
+            feedback[i] = 'G'
+            letter_counts[guess_chars[i]] -= 1  # Consume this letter
 
-    return "".join(feedback)
+    # Second pass: Mark present (Y) and incorrect (B)
+    for i in range(len(target_word)):
+        if feedback[i] == 'G':
+            continue
+        if letter_counts[guess_chars[i]] > 0:
+            feedback[i] = 'Y'
+            letter_counts[guess_chars[i]] -= 1  # Consume this letter
+        else:
+            feedback[i] = 'B'
+
+    return ''.join(feedback)
 
 
 def get_all_feedbacks(key_words, word_guess):
