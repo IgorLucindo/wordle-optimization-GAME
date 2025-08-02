@@ -52,7 +52,6 @@ export class Game {
         this.gameEnded = false;
         this.resetButton.style.display = 'none';
         this.keyWord = this.selectRandomWord().toUpperCase();
-        this.keyWord = "ACUTE"
         console.log("Word of the day:", this.keyWord); // For debugging
 
         this.keyboard.resetKeyColors();
@@ -159,9 +158,8 @@ export class Game {
         }
 
         // Show reset button if game ended
+        // else send feedback to hint system
         if (this.gameEnded) this.resetButton.style.display = 'block';
-
-        // Send feedback to hint system
-        this.hint.solve(feedback);
+        else this.hint.solve(feedback);
     }
 }
