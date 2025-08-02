@@ -45,20 +45,20 @@ def solve_guess_tree(instance, presolve_solution, feedback):
     # Gest guess tree
     tree = presolve_solution['guess_tree']
 
-    # Solve first word
+    # Solve get tree node depending on feedback
     if not feedback:
-        root = tree['root']
-        tree['current_node'] = root
-        word_guess = tree['nodes'][root]['word']
-        return word_guess
+        next_node = tree['root']
+    else:
+        current_node = tree['current_node']
+        successors = tree['nodes'][current_node]['successors']
+        next_node = successors[feedback]
 
-    # Solve other words based on feedback and guess tree
-    current_node = tree['current_node']
-    for feedback_, next_node in tree['nodes'][current_node]['successors'].items():
-        if feedback_ == feedback:
-            tree['current_node'] = next_node
-            word_guess = tree['nodes'][next_node]['word']
-            return word_guess
+    # Get word of node
+    word_guess = tree['nodes'][next_node]['word']
+
+    tree['current_node'] = next_node
+
+    return word_guess
 
 
 def presolve_guess_tree(instance=None):
