@@ -47,7 +47,6 @@ export class Hint {
         else {
             currentNode = this.tree.currentNode;
             successors = this.tree.nodes[currentNode].successors;
-            console.log(successors, feedback)
             nextNode = successors[feedback];
         }
 
