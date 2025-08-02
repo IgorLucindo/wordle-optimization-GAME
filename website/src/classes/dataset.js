@@ -1,12 +1,14 @@
 export class Dataset {
     constructor() {
-        this.words = [];
-        this.solutionWords = [];
+        this.allWords = [];
+        this.keyWords = [];
+        this.guessTree = {};
     }
 
 
     async init() {
         await this.getWords();
+        await this.getGuessTree();
     }
 
 
@@ -20,7 +22,13 @@ export class Dataset {
         const words1 = data1.split(/\r?\n/).filter(line => line.trim() !== '');
         const words2 = data2.split(/\r?\n/).filter(line => line.trim() !== '');
 
-        this.solutionWords = words1;
-        this.words = words1.concat(words2);
+        this.keyWords = words1;
+        this.allWords = words1.concat(words2);
+    }
+
+
+    async getGuessTree() {
+        const response = await fetch('./dataset/guess_tree.json');
+        this.guessTree = await response.json();
     }
 }

@@ -8,7 +8,7 @@ export class Game {
         this.words = [];
         this.currentRow = 0;
         this.currentGuess = [];
-        this.wordOfTheDay = '';
+        this.keyWord = "";
         this.gameEnded = false;
     }
 
@@ -28,7 +28,7 @@ export class Game {
         this.message = variables.message;
         this.hint = variables.hint;
 
-        this.words = variables.dataset.words
+        this.words = variables.dataset.allWords
     }
 
 
@@ -36,7 +36,7 @@ export class Game {
         // Reset button click event
         this.resetButton.addEventListener('click', () => {
             this.board.create();
-            this.start()
+            this.start();
         });
 
         // Press key event
@@ -51,8 +51,9 @@ export class Game {
         this.currentGuess = [];
         this.gameEnded = false;
         this.resetButton.style.display = 'none';
-        this.wordOfTheDay = this.selectRandomWord().toUpperCase();
-        console.log("Word of the day:", this.wordOfTheDay); // For debugging
+        this.keyWord = this.selectRandomWord().toUpperCase();
+        this.keyWord = "ACUTE"
+        console.log("Word of the day:", this.keyWord); // For debugging
 
         this.keyboard.resetKeyColors();
     }
@@ -60,8 +61,8 @@ export class Game {
 
     // Selects a random word from the provided word list
     selectRandomWord() {
-        const solutionWords = this.dataset.solutionWords;
-        return solutionWords[Math.floor(Math.random() * solutionWords.length)];
+        const keyWords = this.dataset.keyWords;
+        return keyWords[Math.floor(Math.random() * keyWords.length)];
     }
 
 
@@ -92,15 +93,11 @@ export class Game {
 
     // Checks the current guess against the word of the day and updates the UI
     checkGuess() {
-        const wordLetters = this.wordOfTheDay.split('');
+        const wordLetters = this.keyWord.split('');
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
-        const guessResults = {
-            correct: [],
-            present: [],
-            incorrect: []
-        };
+        let feedback = "";
 
         // Skip if it is not a word
         if (!this.words.includes(guessString.toLowerCase())) {
@@ -123,7 +120,7 @@ export class Game {
             cell.classList.add('correct');
             this.keyboard.updateKeyColor(guessLetters[i], 'correct');
             wordLetterCounts[guessLetters[i]]--; // Consume this letter
-            guessResults.correct.push({ letter: guessLetters[i].toLowerCase(), pos: i, status: 2 });
+            feedback += "G";
         }
 
         // Second pass: Mark 'present' (yellow) and 'incorrect' (grey) letters
@@ -137,23 +134,23 @@ export class Game {
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(guessLetters[i], 'present');
                 wordLetterCounts[guessLetters[i]]--; // Consume this letter
-                guessResults.present.push({ letter: guessLetters[i].toLowerCase(), pos: i, status: 1 });
+                feedback += "Y";
             }
             else {
                 cell.classList.add('incorrect');
                 this.keyboard.updateKeyColor(guessLetters[i], 'incorrect');
-                guessResults.incorrect.push({ letter: guessLetters[i].toLowerCase(), pos: i, status: 0 });
+                feedback += "B";
             }
         }
 
         // Handle game over
-        if (guessString === this.wordOfTheDay) {
+        if (guessString === this.keyWord) {
             this.message.show('You guessed it! 🎉');
             this.gameEnded = true;
             this.resetButton.style.display = 'block';
         }
         else if (this.currentRow === this.numOfGuesses - 1) {
-            this.message.show(`Game Over! The word was "${this.wordOfTheDay}"`);
+            this.message.show(`Game Over! The word was "${this.keyWord}"`);
             this.gameEnded = true;
             this.resetButton.style.display = 'block';
         }
@@ -163,6 +160,6 @@ export class Game {
         }
 
         // Update guess result
-        this.hint.solve(guessResults);
+        this.hint.solve(feedback);
     }
 }
