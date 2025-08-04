@@ -1,1 +1,2 @@
-if I have only 2 possible words. Testimg a word from key_words is better then testing a word from all_words
+- if I have only 2 possible words. Testimg a word from key_words is better then testing a word from all_words
+- maybe don't use trees because they don't work with other guesses

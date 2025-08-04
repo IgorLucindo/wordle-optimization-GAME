@@ -1,0 +1,5 @@
+- maybe call optimal narrowing/filtering, instead of narrowing
+- Have better explanation for getting best word for narrowing
+- ⁠fix height of tree
+- ⁠have results for percentage solved in n guesses (n in [6])
+- ⁠have running time for building tree

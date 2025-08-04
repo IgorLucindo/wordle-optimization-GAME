@@ -5,7 +5,7 @@ import random
 
 def solve_random(instance, feedback):
     """
-    Solve model for random word guess
+    Solve model for random approach
     """
     # Unpack data
     all_words, words, key_words, num_of_letters, num_of_attempts, tree = instance
@@ -18,7 +18,7 @@ def solve_random(instance, feedback):
 
 def solve_greedy(instance, feedback):
     """
-    Solve model for optimal word guess
+    Solve model for greedy approach
     """
     # Unpack data
     all_words, words, key_words, num_of_letters, num_of_attempts, tree = instance
@@ -29,9 +29,9 @@ def solve_greedy(instance, feedback):
     return word_guess
 
 
-def solve_guess_tree(instance, feedback):
+def solve_narrowing(instance, feedback):
     """
-    Solve model for trinary search word guess
+    Solve model for narrowing approach
     """
     # Unpack data
     all_words, words, key_words, num_of_letters, num_of_attempts, tree = instance

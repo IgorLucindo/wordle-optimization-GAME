@@ -12,7 +12,7 @@ def simulate_games(instance, solver_type):
     solvers = {
         'random': solve_random,
         'greedy': solve_greedy,
-        'guess_tree': solve_guess_tree
+        'narrowing': solve_narrowing
     }
     solver = solvers[solver_type]
     simulation_results = {'solver_type': solver_type, 'list': [], 'runtime': 0}
