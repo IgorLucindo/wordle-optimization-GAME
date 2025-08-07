@@ -12,7 +12,7 @@ def get_instance():
     words = all_words.copy()
     num_of_letters = len(words[0])
     num_of_attempts = 6
-    tree = _get_guess_tree()
+    tree = _get_decision_tree()
 
     return all_words, words, key_words, num_of_letters, num_of_attempts, tree
 
@@ -28,8 +28,8 @@ def fiter_instance(instance, word_guess, feedback):
     return all_words, words, key_words, num_of_letters, num_of_attempts, tree
 
 
-def _get_guess_tree():
-    with open('dataset/guess_tree.json', 'r') as f:
+def _get_decision_tree():
+    with open('dataset/decision_tree.json', 'r') as f:
         tree = json.load(f)
         tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
 

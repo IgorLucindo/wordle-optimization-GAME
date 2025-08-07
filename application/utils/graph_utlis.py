@@ -30,5 +30,5 @@ def show_tree_graph(G, root, plot_flag=True):
         ax=ax
     )
 
-    plt.title(f"Guess Tree (#vertices: {len(T.nodes)}, height: {max(levels.values())})")
+    plt.title(f"Guess Tree (#vertices: {len(T.nodes)}, height: {max(levels.values())+1})")
     plt.show()
