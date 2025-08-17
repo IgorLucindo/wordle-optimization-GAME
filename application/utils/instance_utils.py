@@ -1,4 +1,6 @@
-from .wordle_tools_utils import *
+from utils.wordle_tools_utils import *
+from utils.hash_utils import *
+from collections import Counter
 import json
 import ast
 
@@ -59,7 +61,6 @@ def get_feedback(target_word, word_guess):
     guess_chars = list(word_guess)
 
     # Count letters for later 'present' (Y) check
-    from collections import Counter
     letter_counts = Counter(target_word)
 
     # First pass: Mark correct (G)
@@ -81,15 +82,20 @@ def get_feedback(target_word, word_guess):
     return ''.join(feedback)
 
 
+get_all_feedbacks_cache = {}
 def get_all_feedbacks(key_words, word_guess):
     """
     Return all possible status results
     """
-    all_feedbacks = set()
+    # Memoization
+    cache_key = (word_guess, hash_word_set(key_words))
+    if cache_key in get_all_feedbacks_cache:
+        return get_all_feedbacks_cache[cache_key]
 
     # Get all possible status combinations
-    for target_word in key_words:
-        feedback = get_feedback(target_word, word_guess)
-        all_feedbacks.add(feedback)
+    all_feedbacks = {get_feedback(key_word, word_guess) for key_word in key_words}
 
-    return list(all_feedbacks)
+    # Storing for memoization
+    get_all_feedbacks_cache[cache_key] = all_feedbacks
+
+    return all_feedbacks

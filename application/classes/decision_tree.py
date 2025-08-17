@@ -1,5 +1,6 @@
 from utils.instance_utils import *
 from utils.wordle_tools_utils import *
+from utils.hash_utils import *
 import numpy as np
 import json
 import time
@@ -21,7 +22,7 @@ class Decision_Tree:
         }
         self.node_count = 0
         self.start_time = time.time()
-        self.previous_time = 0
+        self.previous_time = -1
 
         self.score_cache = {}
 
@@ -41,10 +42,7 @@ class Decision_Tree:
         node_id = self.node_count
 
         # Get best guess
-        if len(filtered_key_words) == 1:
-            word_guess = filtered_key_words[0]
-        else:
-            word_guess, filtered_dict = self.get_best_guess_n_step(filtered_key_words, 1)
+        word_guess = self.get_best_guess_n_step(filtered_key_words, 2)
 
         # Append node and edge to tree
         self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
@@ -59,49 +57,48 @@ class Decision_Tree:
             return
 
         # Branch to other nodes
-        for feedback, new_filtered in filtered_dict.items():
-            self.build(new_filtered, node_id, feedback)
+        all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
+        for f in all_feedbacks:
+            new_filtered = filter_words(filtered_key_words, word_guess, f)
+            self.build(new_filtered, node_id, f)
     
 
     def get_best_guess_n_step(self, filtered_key_words, depth):
+        if len(filtered_key_words) == 1:
+            return filtered_key_words[0], {}
+
         best_score = float('inf')
         best_w = None
-        best_w_filtered_dict = {}
 
         for i, w in enumerate(self.all_words):
-            self.print_diagnosis(i, len(self.all_words))
+            self.print_diagnosis(i)
 
-            score, filtered_dict = self.score_guess(w, filtered_key_words, depth)
+            score = self.score_guess(w, filtered_key_words, depth)
 
             if score < best_score:
                 best_score = score
                 best_w = w
-                best_w_filtered_dict = filtered_dict
 
-        return best_w, best_w_filtered_dict
+        return best_w
     
 
-    def score_guess(self, guess_word, filtered_key_words, depth):
+    def score_guess(self, word_guess, filtered_key_words, depth):
         """
         Recursively score a guess using N-step lookahead.
         Also returns the filtered_dict (feedback → filtered_words).
         """
         # Memoization
-        cache_key = (guess_word, tuple(sorted(filtered_key_words)), depth)
+        cache_key = (word_guess, hash_word_set(filtered_key_words), depth)
         if cache_key in self.score_cache:
-            print(1)
             return self.score_cache[cache_key]
-
-        # Get filtered keywords for each feedback of guess word
-        all_feedbacks = get_all_feedbacks(filtered_key_words, guess_word)
-        filtered_dict = {
-            f: filter_words(filtered_key_words, guess_word, f)
-            for f in all_feedbacks
-        }
 
         scores = []
         # weights = []
-        for filtered in filtered_dict.values():
+
+        all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
+        for f in all_feedbacks:
+            filtered = filter_words(filtered_key_words, word_guess, f)
+
             if depth > 1 and len(filtered) == 1:
                 scores.append(0)
                 # weights.append(len(filtered))
@@ -109,7 +106,7 @@ class Decision_Tree:
             
             if depth > 1:
                 best_sub_score = min(
-                    self.score_guess(next_guess, filtered, depth - 1)[0]
+                    self.score_guess(next_guess, filtered, depth - 1)
                     for next_guess in self.all_words
                 )
             else:
@@ -128,12 +125,12 @@ class Decision_Tree:
         #     avg_score = float('inf')
 
         # Storing for memoization
-        self.score_cache[cache_key] = (avg_score, filtered_dict)
+        self.score_cache[cache_key] = avg_score
 
-        return avg_score, filtered_dict
+        return avg_score
     
 
-    def print_diagnosis(self, word_num, total_words):
+    def print_diagnosis(self, word_num):
         """
         Print current word guess number and node count
         """
@@ -148,7 +145,7 @@ class Decision_Tree:
         # Print
         sys.stdout.write(
             f"\rNode count: {self.node_count} | "
-            f"Node Progress: {word_num * 100 / total_words:>.1f}% | "
+            f"Node Progress: {word_num * 100 / len(self.all_words):>.1f}% | "
             f"Time: {current_second}s   "
         )
         sys.stdout.flush()
