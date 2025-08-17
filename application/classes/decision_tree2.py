@@ -24,7 +24,8 @@ class Decision_Tree:
         self.start_time = time.time()
         self.previous_time = -1
 
-        self.score_cache = {}
+        self.score1_cache = {}
+        self.score2_cache = {}
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
@@ -42,7 +43,7 @@ class Decision_Tree:
         node_id = self.node_count
 
         # Get best guess
-        word_guess = self.get_best_guess_n_step(filtered_key_words, 2)
+        word_guess = self.get_best_guess(filtered_key_words, type=1)
 
         # Append node and edge to tree
         self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
@@ -63,7 +64,7 @@ class Decision_Tree:
             self.build(new_filtered, node_id, f)
     
 
-    def get_best_guess_n_step(self, filtered_key_words, depth):
+    def get_best_guess(self, filtered_key_words, type=2):
         if len(filtered_key_words) == 1:
             return filtered_key_words[0]
 
@@ -71,9 +72,11 @@ class Decision_Tree:
         best_w = None
 
         for i, w in enumerate(self.all_words):
-            self.print_diagnosis(i)
-
-            score = self.score_guess(w, filtered_key_words, depth)
+            if type == 1:
+                self.print_diagnosis(i)
+                score = self.score1_guess(w, filtered_key_words)
+            else:
+                score = self.score2_guess(w, filtered_key_words)
 
             if score < best_score:
                 best_score = score
@@ -82,50 +85,65 @@ class Decision_Tree:
         return best_w
     
 
-    def score_guess(self, word_guess, filtered_key_words, depth):
+    def score1_guess(self, word_guess, filtered_key_words):
         """
-        Recursively score a guess using N-step lookahead.
-        Also returns the filtered_dict (feedback → filtered_words).
+        Compute average number of guesses if starting with `word_guess`,
+        then building the rest of the tree using score2.
+        """
+        cache_key = (word_guess, hash_word_set(filtered_key_words))
+        if cache_key in self.score1_cache:
+            return self.score1_cache[cache_key]
+
+        total_guesses = 0
+        for key_word in filtered_key_words:
+            # Simulate a full game with this target
+            guesses = self.simulate_game(word_guess, key_word, filtered_key_words)
+            total_guesses += guesses
+
+        avg_guesses = total_guesses / len(filtered_key_words)
+        self.score1_cache[cache_key] = avg_guesses
+        return avg_guesses
+
+
+    def simulate_game(self, first_guess, key_word, filtered_key_words):
+        """
+        Simulate playing Wordle with a fixed target word.
+        First guess is fixed, then we use score2 to choose subsequent guesses.
+        """
+        guesses = 1
+        word_guess = first_guess
+        candidates = filtered_key_words
+
+        while word_guess != key_word:
+            feedback = get_feedback(key_word, word_guess)  # you probably already have this function
+            candidates = filter_words(candidates, word_guess, feedback)
+            word_guess = self.get_best_guess(candidates, type=2)  # use score2 for subsequent guesses
+            guesses += 1
+
+        return guesses
+    
+
+    def score2_guess(self, word_guess, filtered_key_words):
+        """
+        Return word with best score2
         """
         # Memoization
-        cache_key = (word_guess, hash_word_set(filtered_key_words), depth)
-        if cache_key in self.score_cache:
-            return self.score_cache[cache_key]
+        cache_key = (word_guess, hash_word_set(filtered_key_words))
+        if cache_key in self.score2_cache:
+            return self.score2_cache[cache_key]
 
         scores = []
-        # weights = []
 
         all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
         for f in all_feedbacks:
             filtered = filter_words(filtered_key_words, word_guess, f)
-
-            if depth > 1 and len(filtered) == 1:
-                scores.append(0)
-                # weights.append(len(filtered))
-                continue
-            
-            if depth > 1:
-                best_sub_score = min(
-                    self.score_guess(next_guess, filtered, depth - 1)
-                    for next_guess in self.all_words
-                )
-            else:
-                best_sub_score = len(filtered)
-
-            scores.append(best_sub_score)
-            # weights.append(len(filtered))
+            scores.append(len(filtered))
 
         # Simple average
         avg_score = np.mean(scores) if scores else float('inf')
 
-        # Weighted average
-        # if weights and sum(weights) > 0:
-        #     avg_score = sum(score * w for score, w in zip(scores, weights)) / sum(weights)
-        # else:
-        #     avg_score = float('inf')
-
         # Storing for memoization
-        self.score_cache[cache_key] = avg_score
+        self.score2_cache[cache_key] = avg_score
 
         return avg_score
     

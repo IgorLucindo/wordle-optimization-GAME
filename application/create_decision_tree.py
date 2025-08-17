@@ -1,5 +1,5 @@
 from utils.instance_utils import *
-from classes.decision_tree import *
+from classes.decision_tree2 import *
 
 
 flags = {
