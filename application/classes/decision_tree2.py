@@ -35,15 +35,16 @@ class Decision_Tree:
         self.build(self.key_words)
 
 
-    def build(self, filtered_key_words, previous_node_id=None, previous_feedback=None):
+    def build(self, filtered_key_words, previous_node_id=None, previous_feedback=None, previous_depth=0):
         """
         Recursively obtain the best decision tree
         """
         self.node_count += 1
         node_id = self.node_count
+        depth = previous_depth + 1
 
         # Get best guess
-        word_guess = self.get_best_guess(filtered_key_words, type=1)
+        word_guess = self.get_best_guess(filtered_key_words, depth, _type=1)
 
         # Append node and edge to tree
         self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
@@ -61,10 +62,10 @@ class Decision_Tree:
         all_feedbacks = get_all_feedbacks(filtered_key_words, word_guess)
         for f in all_feedbacks:
             new_filtered = filter_words(filtered_key_words, word_guess, f)
-            self.build(new_filtered, node_id, f)
+            self.build(new_filtered, node_id, f, depth)
     
 
-    def get_best_guess(self, filtered_key_words, type=2):
+    def get_best_guess(self, filtered_key_words, depth=1, _type=2):
         if len(filtered_key_words) == 1:
             return filtered_key_words[0]
 
@@ -72,9 +73,9 @@ class Decision_Tree:
         best_w = None
 
         for i, w in enumerate(self.all_words):
-            if type == 1:
+            if _type == 1:
                 self.print_diagnosis(i)
-                score = self.score1_guess(w, filtered_key_words)
+                score = self.score1_guess(w, filtered_key_words, depth)
             else:
                 score = self.score2_guess(w, filtered_key_words)
 
@@ -85,7 +86,7 @@ class Decision_Tree:
         return best_w
     
 
-    def score1_guess(self, word_guess, filtered_key_words):
+    def score1_guess(self, word_guess, filtered_key_words, depth):
         """
         Compute average number of guesses if starting with `word_guess`,
         then building the rest of the tree using score2.
@@ -97,7 +98,12 @@ class Decision_Tree:
         total_guesses = 0
         for key_word in filtered_key_words:
             # Simulate a full game with this target
-            guesses = self.simulate_game(word_guess, key_word, filtered_key_words)
+            guesses = self.simulate_game(word_guess, key_word, filtered_key_words, depth)
+
+            # Stop if didn't solve one keyword
+            if guesses == None:
+                return float('inf')
+
             total_guesses += guesses
 
         avg_guesses = total_guesses / len(filtered_key_words)
@@ -105,21 +111,23 @@ class Decision_Tree:
         return avg_guesses
 
 
-    def simulate_game(self, first_guess, key_word, filtered_key_words):
+    def simulate_game(self, word_guess, key_word, filtered_key_words, depth):
         """
         Simulate playing Wordle with a fixed target word.
         First guess is fixed, then we use score2 to choose subsequent guesses.
         """
-        guesses = 1
-        word_guess = first_guess
+        guesses = depth
         candidates = filtered_key_words
 
         while word_guess != key_word:
             feedback = get_feedback(key_word, word_guess)  # you probably already have this function
             candidates = filter_words(candidates, word_guess, feedback)
-            word_guess = self.get_best_guess(candidates, type=2)  # use score2 for subsequent guesses
+            word_guess = self.get_best_guess(candidates, _type=2)  # use score2 for subsequent guesses
             guesses += 1
 
+            if guesses == 6 and word_guess != key_word:
+                return None
+                
         return guesses
     
 
