@@ -66,7 +66,7 @@ class Decision_Tree:
     
 
     def get_best_guess(self, filtered_key_words, depth=1, _type=2):
-        if len(filtered_key_words) == 1:
+        if len(filtered_key_words) == 1 or len(filtered_key_words) == 2:
             return filtered_key_words[0]
 
         best_score = float('inf')
@@ -120,13 +120,16 @@ class Decision_Tree:
         candidates = filtered_key_words
 
         while word_guess != key_word:
-            feedback = get_feedback(key_word, word_guess)  # you probably already have this function
+            feedback = get_feedback(key_word, word_guess)
             candidates = filter_words(candidates, word_guess, feedback)
-            word_guess = self.get_best_guess(candidates, _type=2)  # use score2 for subsequent guesses
+
+            # Stop condition
+            if guesses == 5 and len(candidates) > 1:
+                return None
+            
+            word_guess = self.get_best_guess(candidates, _type=2)
             guesses += 1
 
-            if guesses == 6 and word_guess != key_word:
-                return None
                 
         return guesses
     
