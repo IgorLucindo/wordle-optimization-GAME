@@ -1,18 +1,23 @@
 from utils.instance_utils import *
-from classes.decision_tree2 import *
+from classes.decision_tree import *
 
 
 flags = {
-    'print_diagnosis': True
+    'print_diagnosis': True,
+    'evaluate': True,
+    'save': False
 }
 
 
 def main():
     instance = get_instance()
 
-    decision_tree = Decision_Tree(instance, flags)
-    decision_tree.create()
-    decision_tree.save()
+    dt = Decision_Tree(instance, flags)
+    dt.start_diagnosis()
+    dt.create()
+    dt.stop_diagnosis()
+    dt.evaluate()
+    dt.save()
     
 
 if __name__ == "__main__":

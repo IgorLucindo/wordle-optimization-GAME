@@ -6,18 +6,12 @@ def get_random_word(words):
     return random.choice(words)
 
 
-filter_words_cache = {}
 def filter_words(words, word_guess, feedback):
     """
     Handle guess results in order to update possible words
     """
     if not feedback:
         return words
-    
-    # Memoization
-    cache_key = (word_guess, hash_word_set(words), feedback)
-    if cache_key in filter_words_cache:
-        return filter_words_cache[cache_key]
 
     # Count how many times the letter appears
     letter_count = {
@@ -38,9 +32,6 @@ def filter_words(words, word_guess, feedback):
     for pos, fb in enumerate(feedback):
         if fb == 'Y':
             words = handle_present_status(words, word_guess[pos], pos)
-  
-    # Storing for memoization
-    filter_words_cache[cache_key] = words
 
     return words
 

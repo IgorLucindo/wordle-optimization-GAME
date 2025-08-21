@@ -1,3 +1,6 @@
+import cupy as cp
+
+
 def get_letter_pos_probabiliy(letter, pos, words):
     """
     Return probability of letter being in a specific position
@@ -18,3 +21,7 @@ def get_word_probability(word, words):
         word_probability *= get_letter_pos_probabiliy(letter, pos, words)
 
     return word_probability
+
+
+def encode_word(word):
+    return cp.array([ord(c) - 97 for c in word], dtype=cp.int8)
