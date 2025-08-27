@@ -47,7 +47,7 @@ class Decision_Tree:
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess_2_step(filtered)
+            word_guess = self.get_best_guess2(filtered)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
@@ -64,7 +64,7 @@ class Decision_Tree:
                 stack.append((new_filtered, node_id, int(fb.item())))
     
 
-    def get_best_guess_1_step(self, filtered_key_words):
+    def get_best_guess(self, filtered_key_words):
         """
         Finds the best guess by maximizing the number of partitions (1-step lookahead).
         """
@@ -81,56 +81,33 @@ class Decision_Tree:
         return best_w
     
 
-    def get_best_guess_2_step(self, filtered_key_words):
+    def get_best_guess2(self, filtered_key_words):
         """
-        Finds the best guess by minimizing the worst-case (largest) partition size
-        after the *next* guess (2-step lookahead).
+        Finds the best guess by maximizing the number of partitions (1-step lookahead).
+        Special case:
+        - If a candidate in filtered_key_words achieves exactly len(filtered_key_words) - 1 partitions,
+            return that candidate.
         """
-        if len(filtered_key_words) <= 2:
+        n = len(filtered_key_words)
+        if n <= 2:
             return filtered_key_words[0]
 
-        best_guess_A = -1
-        # We want to minimize the max partition size, so we start with infinity.
-        min_max_partition_size = float('inf')
+        feedbacks_sub = self.FB[filtered_key_words, :]
+        pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
+        unique_pairs = cp.unique(pairs)
+        cols = unique_pairs // 243
+        scores = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
 
-        # 1. Outer loop: Iterate through every possible word as our first guess.
-        for guess_A in self.all_words:
-            # This will track the largest partition we might end up with after two guesses.
-            worst_case_for_this_guess_A = 0
+        # --- special case ---
+        candidate_scores = scores[filtered_key_words]
+        mask = candidate_scores == n
+        if mask.any():
+            # Pick the first candidate achieving this score
+            return int(filtered_key_words[cp.argmax(mask)].item())
 
-            # 2. Partition the candidates based on guess_A.
-            feedbacks = self.FB[filtered_key_words, guess_A]
-            unique_feedbacks, inverse_indices = cp.unique(feedbacks, return_inverse=True)
-
-            # 3. Inner loop: For each resulting group, find the best next move.
-            for i in range(len(unique_feedbacks)):
-                partition = filtered_key_words[inverse_indices == i]
-
-                # If the group is already solved, its future partition size is 1.
-                if len(partition) <= 1:
-                    max_sub_partition_size = len(partition)
-                else:
-                    # Find the best next guess (guess_B) for this specific group.
-                    guess_B = self.get_best_guess_1_step(partition)
-                    
-                    # Find out how well guess_B splits this group.
-                    sub_feedbacks = self.FB[partition, guess_B]
-                    _, sub_counts = cp.unique(sub_feedbacks, return_counts=True)
-                    
-                    # The worst outcome for this branch is the largest sub-group.
-                    max_sub_partition_size = int(cp.max(sub_counts).item())
-
-                # Update the worst-case outcome for guess_A.
-                if max_sub_partition_size > worst_case_for_this_guess_A:
-                    worst_case_for_this_guess_A = max_sub_partition_size
-
-            # 4. Minimax check: If this guess_A gives us a better "worst-case"
-            # than the best one we've seen so far, it becomes our new best guess.
-            if worst_case_for_this_guess_A < min_max_partition_size:
-                min_max_partition_size = worst_case_for_this_guess_A
-                best_guess_A = guess_A
-
-        return best_guess_A
+        # --- default case ---
+        best_w = int(cp.argmax(scores).item())
+        return best_w
     
 
     def append2Tree(self, word_guess, node_id, previous_node_id, previous_feedback):
