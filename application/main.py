@@ -5,7 +5,8 @@ from classes.decision_tree import *
 flags = {
     'print_diagnosis': True,
     'evaluate': True,
-    'save': False
+    'save_tree': False,
+    'save_results': False
 }
 
 

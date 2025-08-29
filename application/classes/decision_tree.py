@@ -212,7 +212,7 @@ class Decision_Tree:
         """
         Saves the tree to a JSON file
         """
-        if not self.flags['save']:
+        if not self.flags['save_tree']:
             return
 
         with open(self.path + "decision_tree.json", "w") as f:

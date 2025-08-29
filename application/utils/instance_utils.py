@@ -46,31 +46,29 @@ def get_feedback_matrix(key_words_str, all_words_str):
     key_words = cp.stack([encode_word(w) for w in key_words_str])
     all_words = cp.stack([encode_word(w) for w in all_words_str])
     
-    T = key_words.shape[0]
+    K = key_words.shape[0]
     G = all_words.shape[0]
-    if T == 0 or G == 0:
-        return cp.array([], dtype=cp.uint8)
     L = key_words.shape[1]  # Length of each word
 
     # Compute letter counts for each target
-    flat_idx = cp.ravel(key_words) + cp.repeat(cp.arange(T), L) * 26
-    count_t = cp.bincount(flat_idx, minlength=T * 26).reshape(T, 26).astype(cp.int32)
+    flat_idx = cp.ravel(key_words) + cp.repeat(cp.arange(K), L) * 26
+    count_t = cp.bincount(flat_idx, minlength=K * 26).reshape(K, 26).astype(cp.int32)
 
     # Compute equality mask for greens
     equal = key_words[:, None, :] == all_words[None, :, :]
 
     # Initialize feedback
-    feedback = cp.zeros((T, G, L), dtype=cp.uint8)
+    feedback = cp.zeros((K, G, L), dtype=cp.uint8)
     feedback[equal] = 2
 
     # Compute green counts per letter per pair
-    green_counts = cp.zeros((T, G, 26), dtype=cp.int32)
+    green_counts = cp.zeros((K, G, 26), dtype=cp.int32)
     for l in range(L):
         mask_l = equal[:, :, l]
-        t, g = cp.where(mask_l)
-        if len(t):
-            c = key_words[t, l]
-            green_counts[t, g, c] += 1
+        k, g = cp.where(mask_l)
+        if len(k):
+            c = key_words[k, l]
+            green_counts[k, g, c] += 1
 
     # Remaining counts after greens
     remaining_counts = count_t[:, None, :] - green_counts
@@ -79,13 +77,13 @@ def get_feedback_matrix(key_words_str, all_words_str):
     for i in range(L):
         mask = (feedback[:, :, i] == 0)
         letter_i = all_words[:, i]
-        idx_t = cp.arange(T)[:, None]
+        idx_k = cp.arange(K)[:, None]
         idx_g = cp.arange(G)[None, :]
         idx_c = letter_i[None, :]
-        rem = remaining_counts[idx_t, idx_g, idx_c]
+        rem = remaining_counts[idx_k, idx_g, idx_c]
         cond = (rem > 0) & mask
         feedback[:, :, i][cond] = 1
-        remaining_counts[idx_t, idx_g, idx_c] -= cond.astype(cp.int32)
+        remaining_counts[idx_k, idx_g, idx_c] -= cond.astype(cp.int32)
 
     # Compute the encoded feedback codes
     powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
