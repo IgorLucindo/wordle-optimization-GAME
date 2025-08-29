@@ -1,13 +1,27 @@
-# Wordle Optimization GAME
+# 🔠 Wordle Optimization
 
-Optimization for Wordle game.
+A Python project that optimizes solving the game **Wordle** by using a **polynomial-time strategy** to guess the hidden word in as few attempts as possible.
 
-# Execution
+The solver applies optimization techniques to minimize the number of guesses while still ensuring correctness.
 
-For playing the game you can open the website on the following link:
-* **Github Pages:** [Link to Game](https://igorlucindo.github.io/wordle-optimization-GAME)
+## ✨ Features
 
-For running simulations of games choosing any solver, enter the following command:
+* Implements a **polytime approach** for Wordle optimization.
+* Builds a **decision tree** for solving the game efficiently.
+* Aims to solve in **the minimum number of guesses possible**.
+* Includes a playable version of the game hosted online.
+
+## 🚀 Execution
+
+* Play the game directly: [Wordle Optimization Game](https://igorlucindo.github.io/wordle-optimization-GAME)
+* Create and evaluate decision tree:
+
+```bash
+python application/main.py
 ```
-python application\simulate_games.py
-```
+
+## 📝 How it works
+
+* Uses **entropy-based scoring** to pick guesses that maximize expected information gain.
+* Breaks ties using **minimax partition size** and lexicographical order.
+* Runs in **polynomial time per guess**, making it fast enough to simulate thousands of games.

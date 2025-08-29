@@ -1,6 +1,3 @@
-from utils.wordle_tools_utils import *
-from utils.calculation_utils import *
-from utils.hash_utils import *
 import cupy as cp
 import json
 import ast
@@ -20,25 +17,6 @@ def get_instance():
     return all_words, words, key_words, num_of_letters, num_of_attempts, tree
 
 
-def fiter_instance(instance, word_guess, feedback):
-    """
-    Return filtered instances given guess results
-    """
-    all_words, words, key_words, num_of_letters, num_of_attempts, tree = instance
-    words = filter_words(words, word_guess, feedback)
-    key_words = filter_words(key_words, word_guess, feedback)
-
-    return all_words, words, key_words, num_of_letters, num_of_attempts, tree
-
-
-def _get_decision_tree():
-    with open('dataset/decision_tree.json', 'r') as f:
-        tree = json.load(f)
-        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
-
-    return tree
-
-
 def _get_words(filepath):
     words = []
 
@@ -50,35 +28,12 @@ def _get_words(filepath):
     return words
 
 
-def get_feedback(target, guess):
-    """
-    Compute feedback for a single target and guess, returning a uint8 base-3 encoded code.
-    target, guess: CuPy arrays of shape (L,) with values 0-25 (a-z).
-    """
-    L = target.shape[0]
-    feedback = cp.zeros(L, dtype=cp.uint8)  # 0=B, 1=Y, 2=G
+def _get_decision_tree():
+    with open('dataset/decision_tree.json', 'r') as f:
+        tree = json.load(f)
+        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
 
-    # Letter counts
-    counts = cp.bincount(target, minlength=26)
-
-    # First pass: greens
-    equal = (target == guess)
-    feedback[equal] = 2
-    counts = counts.astype(cp.int32)  # Ensure int32 for safe subtraction
-    counts[target[equal]] -= 1
-
-    # Second pass: yellows
-    for i in range(L):
-        if feedback[i] == 0:
-            idx = guess[i]
-            if counts[idx] > 0:
-                feedback[i] = 1
-                counts[idx] -= 1
-
-    # Encode as uint8 (base-3)
-    powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
-    code = cp.sum(feedback * powers, dtype=cp.uint8)
-    return code
+    return tree
 
 
 def get_feedback_matrix(key_words_str, all_words_str):
@@ -136,3 +91,7 @@ def get_feedback_matrix(key_words_str, all_words_str):
     powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
     code = cp.sum(feedback * powers[None, None, :], axis=2, dtype=cp.uint8)
     return code
+
+
+def encode_word(word):
+    return cp.array([ord(c) - 97 for c in word], dtype=cp.int8)

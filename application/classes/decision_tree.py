@@ -1,6 +1,4 @@
 from utils.instance_utils import *
-from utils.wordle_tools_utils import *
-from utils.hash_utils import *
 import numpy as np
 import cupy as cp
 import threading
