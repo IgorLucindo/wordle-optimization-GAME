@@ -47,7 +47,7 @@ class Decision_Tree:
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess2(filtered)
+            word_guess = self.get_best_guess_normalized(filtered)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
@@ -65,23 +65,6 @@ class Decision_Tree:
     
 
     def get_best_guess(self, filtered_key_words):
-        """
-        Finds the best guess by maximizing the number of partitions (1-step lookahead).
-        """
-        if len(filtered_key_words) <= 2:
-            return filtered_key_words[0]
-        
-        feedbacks_sub = self.FB[filtered_key_words, :]
-        pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
-        unique_pairs = cp.unique(pairs)
-        cols = unique_pairs // 243
-        scores = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
-        best_w = int(cp.argmax(scores).item())
-
-        return best_w
-    
-
-    def get_best_guess2(self, filtered_key_words):
         """
         Finds the best guess by maximizing the number of partitions (1-step lookahead).
         Special case:
@@ -107,6 +90,43 @@ class Decision_Tree:
 
         # --- default case ---
         best_w = int(cp.argmax(scores).item())
+        return best_w
+    
+
+    def get_best_guess_normalized(self, filtered_key_words):
+        """
+        Finds the best guess using a Pareto score:
+        score = (#feedbacks) / (1 + std(new_filtered_lengths))
+        """
+        n = len(filtered_key_words)
+        if n <= 2:
+            return filtered_key_words[0]
+
+        feedbacks_sub = self.FB[filtered_key_words, :]
+        pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
+        pairs_flat = pairs.ravel()
+        uniq_pairs, counts = cp.unique(pairs_flat, return_counts=True)
+        guess_idx = uniq_pairs // 243
+        num_feedbacks = cp.bincount(guess_idx, minlength=feedbacks_sub.shape[1])
+        sum_counts = cp.bincount(guess_idx, weights=counts, minlength=feedbacks_sub.shape[1])
+        sum_counts_sq = cp.bincount(guess_idx, weights=counts**2, minlength=feedbacks_sub.shape[1])
+        mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
+        mean_counts_sq = sum_counts_sq / cp.maximum(num_feedbacks, 1)
+        std_partition = cp.sqrt(cp.maximum(mean_counts_sq - mean_counts**2, 0))
+
+        # Score normalized
+        scores = num_feedbacks - 2*std_partition
+        
+        # --- special case ---
+        candidate_scores = scores[filtered_key_words]
+        mask = candidate_scores == n
+        if mask.any():
+            # Pick the first candidate achieving this score
+            return int(filtered_key_words[cp.argmax(mask)].item())
+
+        # Pick best guess
+        best_w = int(cp.argmax(scores).item())
+
         return best_w
     
 
