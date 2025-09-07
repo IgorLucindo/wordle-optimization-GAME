@@ -45,7 +45,7 @@ class Decision_Tree:
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess_normalized(filtered)
+            word_guess = self.get_best_guess_composite(filtered)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
@@ -91,7 +91,7 @@ class Decision_Tree:
         return best_w
     
 
-    def get_best_guess_normalized(self, filtered_key_words):
+    def get_best_guess_composite(self, filtered_key_words):
         """
         Finds the best guess using a Pareto score:
         score = (#feedbacks) / (1 + std(new_filtered_lengths))
