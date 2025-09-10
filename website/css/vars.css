@@ -1,0 +1,21 @@
+:root {
+  --bg-color: white;
+  --text-color: black;
+  --hover-color: #6a6a6a;
+  --border-color: #787c7e;
+  --green: #6aaa64;
+  --yellow: #c9b458;
+  --footer-bg-color: #f9f9f9;
+  --footer-text-color: black;
+}
+
+.dark-theme {
+  --bg-color: #121213;
+  --text-color: white;
+  --hover-color: #aaa;
+  --border-color: #3a3a3c;
+  --green: #538d4e;
+  --yellow: #b59f3b;
+  --footer-bg-color: #1a1a1b;
+  --footer-text-color: #888;
+}

@@ -7,9 +7,9 @@ footer {
     padding: 1% 0;
     z-index: 10;
     text-align: center;
-    color: #888;
-    background-color: #1a1a1b;
-    border-top: 1px solid #333;
+    color: var(--footer-text-color);
+    background-color: var(--footer-bg-color);
+    border-top: 1px solid var(--border-color);
 }
 
 .footer-content {

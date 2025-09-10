@@ -7,7 +7,7 @@ header {
     width: 100%;
     padding: 0.5% 0;
     z-index: 10;
-    border-bottom: 1px solid #3a3a3c;
+    border-bottom: 1px solid var(--border-color);
 }
 
 header > h1 {
@@ -23,6 +23,15 @@ header > h1 {
     margin-left: auto;
 }
 
+.header-buttons svg {
+    fill: var(--text-color);
+    transition: fill 0.3s ease;
+}
+
+.header-buttons svg:hover {
+    fill: var(--hover-color);
+}
+
 #hint-btn, #info-btn {
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -36,6 +45,19 @@ header > h1 {
     display: none;
 }
 
+.theme-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+.theme-btn:hover {
+  color: var(--hover-color);
+}
+
 /* in mobile */
 @media screen and (max-width: 768px) {
     header {
@@ -43,11 +65,14 @@ header > h1 {
     }
     
     .header-buttons {
-        width: 30%;
-        gap: 12%;
+        width: 33%;
+        gap: 6%;
     }
 
     #info-btn {
         display: block;
+    }
+    .theme-btn {
+        font-size: 1.3rem;
     }
 }

@@ -9,8 +9,8 @@ body {
     flex-direction: column;
     overflow: hidden;
     font-family: 'Inter', sans-serif;
-    color: white;
-    background-color: #121213;
+    color: var(--text-color);
+    background-color: var(--bg-color);
 }
 
 main {
