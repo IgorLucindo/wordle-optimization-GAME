@@ -5,16 +5,12 @@ import ast
 
 def get_instance():
     """
-    Return instance for wordle solver model
+    Return instance from dataset of words.
     """
-    key_words = _get_words("dataset/solutions.txt")
-    all_words = key_words + _get_words("dataset/non_solutions.txt")
-    words = all_words.copy()
-    num_of_letters = len(words[0])
-    num_of_attempts = 6
-    tree = _get_decision_tree()
+    T = _get_words("dataset/solutions.txt") # Target words
+    G = T + _get_words("dataset/non_solutions.txt") # Guesses
 
-    return all_words, words, key_words, num_of_letters, num_of_attempts, tree
+    return G, T
 
 
 def _get_words(filepath):
@@ -28,7 +24,7 @@ def _get_words(filepath):
     return words
 
 
-def _get_decision_tree():
+def get_decision_tree():
     with open('dataset/decision_tree.json', 'r') as f:
         tree = json.load(f)
         tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
@@ -37,6 +33,12 @@ def _get_decision_tree():
 
 
 def get_feedback_matrix(key_words_str, all_words_str):
+    """
+    """
+    pass
+
+
+def get_feedback_matrix_GPU(key_words_str, all_words_str):
     """
     Return feedback matrix of shape (T, G) with dtype=cp.uint8, where matrix[i, j] is the
     base-3 encoded feedback code for key_words[i] as target and all_words[j] as guess.

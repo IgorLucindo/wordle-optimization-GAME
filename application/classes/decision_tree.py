@@ -10,13 +10,12 @@ import os
 
 class Decision_Tree:
     def __init__(self, instance, flags):
-        all_words, _, key_words, _, _, _ = instance
+        G, T = instance # Guesses and target words
 
         # Words as an int not strings
-        self.words_map = all_words
-        self.key_words = cp.arange(len(key_words))
-        self.all_words = cp.arange(len(all_words))
-        self.FB = get_feedback_matrix(key_words, all_words)
+        self.words_map = G
+        self.T = cp.arange(len(T))
+        self.FB = get_feedback_matrix(T, G)
         self.flags = flags
         
         self._stop_diagnosis = False
@@ -37,70 +36,81 @@ class Decision_Tree:
         """
         Iterative build using explicit stack (DFS)
         """
-        stack = [(self.key_words, None, None)]
+        stack = [(self.T, None, None)]
 
         while stack:
-            filtered, parent_id, feedback = stack.pop()
+            T_filtered, parent_id, feedback = stack.pop()
 
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess_composite(filtered)
+            # word_guess = self.get_best_guess(T_filtered)
+            # word_guess = self.get_best_guess_GPU(T_filtered)
+            # word_guess = self.get_best_guess_composite(T_filtered)
+            word_guess = self.get_best_guess_composite_GPU(T_filtered)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
-            if len(filtered) == 1:
+            if len(T_filtered) == 1:
                 continue
 
             # Partition candidates by feedback
-            feedbacks = self.FB[filtered, word_guess]
+            feedbacks = self.FB[T_filtered, word_guess]
             unique_feedbacks, inverse_indices = cp.unique(feedbacks, return_inverse=True)
 
             # Expand children
             for i, fb in enumerate(unique_feedbacks):
-                new_filtered = filtered[inverse_indices == i]
-                stack.append((new_filtered, node_id, int(fb.item())))
+                T_new_filtered = T_filtered[inverse_indices == i]
+                stack.append((T_new_filtered, node_id, int(fb.item())))
+
+
+    def get_best_guess(self, T):
+        """
+        """
+        pass
     
 
-    def get_best_guess(self, filtered_key_words):
+    def get_best_guess_GPU(self, T):
         """
-        Finds the best guess by maximizing the number of partitions (1-step lookahead).
-        Special case:
-        - If a candidate in filtered_key_words achieves exactly len(filtered_key_words) - 1 partitions,
-            return that candidate.
+        Finds the best guess by maximizing the number of partitions (1-step lookahead)
         """
-        n = len(filtered_key_words)
+        n = len(T)
         if n <= 2:
-            return filtered_key_words[0]
+            return T[0]
 
-        feedbacks_sub = self.FB[filtered_key_words, :]
+        feedbacks_sub = self.FB[T, :]
         pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
         unique_pairs = cp.unique(pairs)
         cols = unique_pairs // 243
         scores = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
 
-        # --- special case ---
-        candidate_scores = scores[filtered_key_words]
+        # If a candidate in T achieves exactly len(T) partitions, return that candidate
+        candidate_scores = scores[T]
         mask = candidate_scores == n
         if mask.any():
-            # Pick the first candidate achieving this score
-            return int(filtered_key_words[cp.argmax(mask)].item())
+            return int(T[cp.argmax(mask)].item())
 
-        # --- default case ---
+        # Pick best guess
         best_w = int(cp.argmax(scores).item())
+
         return best_w
     
 
-    def get_best_guess_composite(self, filtered_key_words):
+    def get_best_guess_composite(self, T):
         """
-        Finds the best guess using a Pareto score:
-        score = (#feedbacks) / (1 + std(new_filtered_lengths))
         """
-        n = len(filtered_key_words)
-        if n <= 2:
-            return filtered_key_words[0]
+        pass
 
-        feedbacks_sub = self.FB[filtered_key_words, :]
+
+    def get_best_guess_composite_GPU(self, T):
+        """
+        Finds the best guess using a composite score
+        """
+        n = len(T)
+        if n <= 2:
+            return T[0]
+
+        feedbacks_sub = self.FB[T, :]
         pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
         pairs_flat = pairs.ravel()
         uniq_pairs, counts = cp.unique(pairs_flat, return_counts=True)
@@ -112,15 +122,14 @@ class Decision_Tree:
         mean_counts_sq = sum_counts_sq / cp.maximum(num_feedbacks, 1)
         std_partition = cp.sqrt(cp.maximum(mean_counts_sq - mean_counts**2, 0))
 
-        # Score normalized
+        # Composite score 
         scores = num_feedbacks - 2*std_partition
         
-        # --- special case ---
-        candidate_scores = scores[filtered_key_words]
+        # If a candidate in T achieves exactly len(T) partitions, return that candidate
+        candidate_scores = scores[T]
         mask = candidate_scores == n
         if mask.any():
-            # Pick the first candidate achieving this score
-            return int(filtered_key_words[cp.argmax(mask)].item())
+            return int(T[cp.argmax(mask)].item())
 
         # Pick best guess
         best_w = int(cp.argmax(scores).item())
@@ -149,7 +158,7 @@ class Decision_Tree:
 
         depths = []
         
-        for target in self.key_words:
+        for target in self.T:
             node_id = self.tree['root']
             depth = 1
             while True:

@@ -1,13 +1,11 @@
+from utils.instance_utils import *
 from utils.graph_utlis import *
-import json
-import ast
+import networkx as nx
 
 
 def main():
     # Load graph
-    with open('dataset/decision_tree.json', 'r') as f:
-        tree = json.load(f)
-        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+    tree = get_decision_tree()
 
     # Create graph
     G = nx.Graph()
