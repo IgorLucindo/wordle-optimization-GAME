@@ -1,24 +1,30 @@
 from utils.instance_utils import *
-from classes.decision_tree import *
+from classes.guess_tree import *
 
 
 flags = {
+    'GPU': True,
     'print_diagnosis': True,
     'evaluate': True,
     'save_tree': False,
     'save_results': False
 }
 
+configs = {
+    'GPU': True,
+    'composite_score': True
+}
+
 
 def main():
-    instance = get_instance()
+    instance = get_instance(configs)
 
-    dt = Decision_Tree(instance, flags)
-    dt.start_diagnosis()
-    dt.create()
-    dt.stop_diagnosis()
-    dt.evaluate()
-    dt.save()
+    gt = Guess_Tree(instance, flags)
+    gt.start_diagnosis()
+    gt.create()
+    gt.stop_diagnosis()
+    gt.evaluate()
+    gt.save()
     
 
 if __name__ == "__main__":

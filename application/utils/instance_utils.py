@@ -1,16 +1,30 @@
+from utils.guess_selection_utils import *
 import cupy as cp
 import json
 import ast
 
 
-def get_instance():
+def get_instance(configs):
     """
-    Return instance from dataset of words.
+    Return word lists from dataset of words, feedback matrix and best guess function
     """
     T = _get_words("dataset/solutions.txt") # Target words
     G = T + _get_words("dataset/non_solutions.txt") # Guesses
+    F = _get_feedback_matrix(T, G, configs['GPU'])
+    get_best_guess = best_guess_function(configs)
 
-    return G, T
+    return G, T, F, get_best_guess
+
+
+def get_guess_tree():
+    """
+    Loads the decision tree from a JSON file
+    """
+    with open('dataset/guess_tree.json', 'r') as f:
+        tree = json.load(f)
+        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+
+    return tree
 
 
 def _get_words(filepath):
@@ -24,15 +38,16 @@ def _get_words(filepath):
     return words
 
 
-def get_decision_tree():
-    with open('dataset/decision_tree.json', 'r') as f:
-        tree = json.load(f)
-        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+def _get_feedback_matrix(T, G, gpu_flag):
+    """
+    """
+    if gpu_flag:
+        return get_feedback_matrix_GPU(T, G)
+    else:
+        return get_feedback_matrix_CPU(T, G)
 
-    return tree
 
-
-def get_feedback_matrix(key_words_str, all_words_str):
+def get_feedback_matrix_CPU(key_words_str, all_words_str):
     """
     """
     pass
@@ -45,8 +60,8 @@ def get_feedback_matrix_GPU(key_words_str, all_words_str):
     Assumes key_words and all_words are pre-encoded CuPy arrays with values 0-25 for letters a-z.
     """
     # Create staks with encoded words
-    key_words = cp.stack([encode_word(w) for w in key_words_str])
-    all_words = cp.stack([encode_word(w) for w in all_words_str])
+    key_words = cp.stack([_encode_word(w) for w in key_words_str])
+    all_words = cp.stack([_encode_word(w) for w in all_words_str])
     
     K = key_words.shape[0]
     G = all_words.shape[0]
@@ -93,5 +108,5 @@ def get_feedback_matrix_GPU(key_words_str, all_words_str):
     return code
 
 
-def encode_word(word):
+def _encode_word(word):
     return cp.array([ord(c) - 97 for c in word], dtype=cp.int8)

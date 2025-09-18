@@ -14,7 +14,7 @@ The solver applies optimization techniques to minimize the number of guesses whi
 ## 🚀 Execution
 
 * Play the game directly: [Wordle Optimization Game](https://igorlucindo.github.io/wordle-optimization-GAME)
-* Create and evaluate decision tree:
+* Create and evaluate decision tree (NEED TO BE UPDATED):
 
 ```bash
 python application/main.py
