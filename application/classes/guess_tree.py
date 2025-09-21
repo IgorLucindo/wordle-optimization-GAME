@@ -59,6 +59,10 @@ class Guess_Tree:
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
+                # Skip target == guess
+                if f_new == 242:
+                    continue
+
                 T_new_filtered = T_filtered[inverse_indices == i]
                 stack.append((T_new_filtered, node_id, int(f_new.item())))
     
