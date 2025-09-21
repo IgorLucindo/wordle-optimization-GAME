@@ -52,17 +52,14 @@ class Guess_Tree:
             # Stop condition
             if len(T_filtered) == 1:
                 continue
-
+            
             # Partition candidates by feedback
+            # T_filtered = T_filtered[T_filtered != word_guess]
             feedbacks = self.F[T_filtered, word_guess]
             unique_feedbacks, inverse_indices = cp.unique(feedbacks, return_inverse=True)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
-                # Skip target == guess
-                if f_new == 242:
-                    continue
-
                 T_new_filtered = T_filtered[inverse_indices == i]
                 stack.append((T_new_filtered, node_id, int(f_new.item())))
     
