@@ -29,6 +29,7 @@ class Guess_Tree:
         }
         self.node_count = 0
         self.previous_time = -1
+        self.build_runtime = -1
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
@@ -38,6 +39,7 @@ class Guess_Tree:
         """
         Iterative build using explicit stack (DFS)
         """
+        start_time = time.time()
         stack = [(self.T, None, None)]
 
         while stack:
@@ -62,6 +64,8 @@ class Guess_Tree:
             for i, f_new in enumerate(unique_feedbacks):
                 T_new_filtered = T_filtered[inverse_indices == i]
                 stack.append((T_new_filtered, node_id, int(f_new.item())))
+
+        self.build_runtime = time.time() - start_time
     
 
     def append2Tree(self, word_guess, node_id, previous_node_id, previous_feedback):
@@ -110,6 +114,7 @@ class Guess_Tree:
             f"Std guesses: {depths.std():.2f}\n"
             f"Max guesses: {depths.max()}\n"
             f"Distribution: {distribution}\n"
+            f"Build Runtime: {self.build_runtime:.2f}s\n"
         )
 
 
