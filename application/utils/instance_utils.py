@@ -40,6 +40,7 @@ def _get_words(filepath):
 
 def _get_feedback_matrix(T, G, gpu_flag):
     """
+    Returns the feedback matrix based on the GPU flag
     """
     if gpu_flag:
         return get_feedback_matrix_GPU(T, G)
@@ -50,7 +51,8 @@ def _get_feedback_matrix(T, G, gpu_flag):
 def get_feedback_matrix_CPU(key_words_str, all_words_str):
     """
     """
-    pass
+    F = get_feedback_matrix_GPU(key_words_str, all_words_str)
+    return F.get()
 
 
 def get_feedback_matrix_GPU(key_words_str, all_words_str):

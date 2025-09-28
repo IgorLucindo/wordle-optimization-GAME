@@ -9,13 +9,15 @@ import os
 
 
 class Guess_Tree:
-    def __init__(self, instance, flags):
+    def __init__(self, instance, flags, configs):
         # Get instance
         G, T, F, get_best_guess = instance
+        self.xp = cp if configs['GPU'] else np
 
         # Words as an int not strings
         self.words_map = G
-        self.T = cp.arange(len(T))              # Target words
+        self.G = self.xp.arange(len(G))         # Guess words
+        self.T = self.xp.arange(len(T))         # Target words
         self.F = F                              # Feedback matrix
         self.get_best_guess = get_best_guess    # Best guess function
         self.flags = flags
@@ -48,7 +50,7 @@ class Guess_Tree:
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess(T_filtered, self.F)
+            word_guess = self.get_best_guess(T_filtered, self.G, self.F)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
@@ -58,7 +60,7 @@ class Guess_Tree:
             # Partition candidates by feedback
             # T_filtered = T_filtered[T_filtered != word_guess]
             feedbacks = self.F[T_filtered, word_guess]
-            unique_feedbacks, inverse_indices = cp.unique(feedbacks, return_inverse=True)
+            unique_feedbacks, inverse_indices = self.xp.unique(feedbacks, return_inverse=True)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
@@ -101,8 +103,6 @@ class Guess_Tree:
                     break
 
                 f = self.F[target, guess].item()
-                if f not in node['successors']:
-                    raise RuntimeError(f"Feedback path missing for target {target} at depth {depth}")
                 node_id = node['successors'][f]
                 depth += 1
 

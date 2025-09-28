@@ -3,7 +3,6 @@ from classes.guess_tree import *
 
 
 flags = {
-    'GPU': True,
     'print_diagnosis': True,
     'evaluate': True,
     'save_tree': False,
@@ -12,14 +11,14 @@ flags = {
 
 configs = {
     'GPU': True,
-    'composite_score': True
+    'composite_score': False
 }
 
 
 def main():
     instance = get_instance(configs)
 
-    gt = Guess_Tree(instance, flags)
+    gt = Guess_Tree(instance, flags, configs)
     gt.start_diagnosis()
     gt.create()
     gt.stop_diagnosis()

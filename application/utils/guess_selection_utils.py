@@ -1,3 +1,4 @@
+import numpy as np
 import cupy as cp
 
 
@@ -14,13 +15,28 @@ def best_guess_function(configs):
     return mapping[(configs['GPU'], configs['composite_score'])]
 
 
-def _get_best_guess_CPU(T, F):
+def _get_best_guess_CPU(T, G, F):
     """
+    Finds the best guess by maximizing the number of feedback patterns (CPU)
     """
-    pass
+    if len(T) == 1:
+        return T[0]
+    
+    scores = np.zeros(len(G), dtype=int)
+
+    for i, g in enumerate(G):
+        P_g = np.unique(F[T, g])
+        
+        # Cardinality of distinct values
+        scores[i] = len(P_g)
+
+    # Get best guess
+    g_star = np.argmax(scores)
+
+    return g_star
 
 
-def _get_best_guess_GPU(T, F):
+def _get_best_guess_GPU(T, G, F):
     """
     Finds the best guess by maximizing the number of feedback patterns (GPU parallelization and prunning)
     """
@@ -40,21 +56,41 @@ def _get_best_guess_GPU(T, F):
     if mask.any():
         return int(T[cp.argmax(mask)].item())
 
-    # Pick best guess
-    best_w = int(cp.argmax(scores).item())
+    # Get best guess
+    g_star = int(cp.argmax(scores).item())
 
-    return best_w
+    return g_star
 
 
-def _get_best_guess_composite_CPU(T, F, _lambda=2):
+def _get_best_guess_composite_CPU(T, G, F, _lambda=1):
     """
+    Finds the best guess using a composite score (CPU)
     """
-    pass
+    if len(T) == 1:
+        return T[0]
+    
+    scores = np.zeros(len(G), dtype=float)
+
+    for i, g in enumerate(G):
+        col_values = F[T, g]
+        P_g = np.unique(col_values)
+        S_g = [len(T[col_values == p]) for p in P_g]
+
+        # std of partition sizes
+        sigma_g = np.std(S_g)
+        
+        # Composite score
+        scores[i] = len(P_g) - _lambda * sigma_g
+
+    # Get best guess
+    g_star = np.argmax(scores)
+
+    return g_star
 
 
-def _get_best_guess_composite_GPU(T, F, _lambda=2):
+def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
     """
-    Finds the best guess using a composite score
+    Finds the best guess using a composite score (GPU parallelization and prunning)
     """
     n = len(T)
     if n <= 2:
@@ -81,7 +117,7 @@ def _get_best_guess_composite_GPU(T, F, _lambda=2):
     if mask.any():
         return int(T[cp.argmax(mask)].item())
 
-    # Pick best guess
-    best_w = int(cp.argmax(scores).item())
+    # Get best guess
+    g_star = int(cp.argmax(scores).item())
 
-    return best_w
+    return g_star

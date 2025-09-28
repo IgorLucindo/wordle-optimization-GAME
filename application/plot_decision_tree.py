@@ -5,7 +5,7 @@ import networkx as nx
 
 def main():
     # Load graph
-    tree = get_decision_tree()
+    tree = get_guess_tree()
 
     # Create graph
     G = nx.Graph()
