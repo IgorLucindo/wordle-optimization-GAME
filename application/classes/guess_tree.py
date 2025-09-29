@@ -30,7 +30,6 @@ class Guess_Tree:
             'edges': []
         }
         self.node_count = 0
-        self.previous_time = -1
         self.build_runtime = -1
 
         self.path = "application/results/"
