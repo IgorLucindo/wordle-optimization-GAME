@@ -1,3 +1,4 @@
+from collections import Counter
 import numpy as np
 import cupy as cp
 
@@ -74,7 +75,10 @@ def _get_best_guess_composite_CPU(T, G, F, _lambda=1):
     for i, g in enumerate(G):
         col_values = F[T, g]
         P_g = np.unique(col_values)
-        S_g = [len(T[col_values == p]) for p in P_g]
+        C = Counter(col_values)
+
+        # Multiset of partition sizes
+        S_g = [C[p] for p in P_g]
 
         # std of partition sizes
         sigma_g = np.std(S_g)

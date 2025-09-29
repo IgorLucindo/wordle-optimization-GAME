@@ -10,8 +10,8 @@ flags = {
 }
 
 configs = {
-    'GPU': True,
-    'composite_score': False
+    'GPU': False,
+    'composite_score': True
 }
 
 
