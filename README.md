@@ -11,6 +11,10 @@ The solver applies optimization techniques to minimize the number of guesses whi
 * Aims to solve in **the minimum number of guesses possible**.
 * Includes a playable version of the game hosted online.
 
+## 💾 Dataset
+
+The word lists used for the possible Wordle answers and valid guesses are located in the **`dataset/` folder** of this project.
+
 ## 🚀 Execution
 
 * Play the game directly: [Wordle Optimization Game](https://igorlucindo.github.io/wordle-optimization-GAME)
