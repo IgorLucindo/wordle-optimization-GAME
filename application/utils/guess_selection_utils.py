@@ -32,7 +32,7 @@ def _get_best_guess_CPU(T, G, F):
         scores[i] = len(P_g)
 
     # Get best guess
-    g_star = np.argmax(scores)
+    g_star = G[np.argmax(scores)]
 
     return g_star
 
@@ -45,7 +45,7 @@ def _get_best_guess_GPU(T, G, F):
     if n <= 2:
         return T[0]
 
-    feedbacks_sub = F[T, :]
+    feedbacks_sub = F[T[:, None], G]
     pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
     unique_pairs = cp.unique(pairs)
     cols = unique_pairs // 243
@@ -55,10 +55,10 @@ def _get_best_guess_GPU(T, G, F):
     candidate_scores = scores[T]
     mask = candidate_scores == n
     if mask.any():
-        return int(T[cp.argmax(mask)].item())
+        return T[cp.argmax(mask)]
 
     # Get best guess
-    g_star = int(cp.argmax(scores).item())
+    g_star = G[cp.argmax(scores)]
 
     return g_star
 
@@ -87,12 +87,12 @@ def _get_best_guess_composite_CPU(T, G, F, _lambda=1):
         scores[i] = len(P_g) - _lambda * sigma_g
 
     # Get best guess
-    g_star = np.argmax(scores)
+    g_star = G[np.argmax(scores)]
 
     return g_star
 
 
-def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
+def _get_best_guess_composite_GPU(T, G, F, _lambda=1):
     """
     Finds the best guess using a composite score (GPU parallelization and prunning)
     """
@@ -100,12 +100,13 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
     if n <= 2:
         return T[0]
 
-    feedbacks_sub = F[T, :]
+    feedbacks_sub = F[T[:, None], G]
     pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
     pairs_flat = pairs.ravel()
     uniq_pairs, counts = cp.unique(pairs_flat, return_counts=True)
     guess_idx = uniq_pairs // 243
     num_feedbacks = cp.bincount(guess_idx, minlength=feedbacks_sub.shape[1])
+
     sum_counts = cp.bincount(guess_idx, weights=counts, minlength=feedbacks_sub.shape[1])
     sum_counts_sq = cp.bincount(guess_idx, weights=counts**2, minlength=feedbacks_sub.shape[1])
     mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
@@ -119,9 +120,9 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
     candidate_scores = scores[T]
     mask = candidate_scores == n
     if mask.any():
-        return int(T[cp.argmax(mask)].item())
+        return T[cp.argmax(mask)]
 
     # Get best guess
-    g_star = int(cp.argmax(scores).item())
+    g_star = G[cp.argmax(scores)]
 
     return g_star

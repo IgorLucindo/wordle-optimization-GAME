@@ -10,7 +10,7 @@ def get_instance(configs):
     """
     T = _get_words("dataset/solutions.txt") # Target words
     G = T + _get_words("dataset/non_solutions.txt") # Guesses
-    F = _get_feedback_matrix(T, G, configs['GPU'])
+    F = _get_feedback_matrix(T, G, configs)
     get_best_guess = best_guess_function(configs)
 
     return G, T, F, get_best_guess
@@ -38,14 +38,14 @@ def _get_words(filepath):
     return words
 
 
-def _get_feedback_matrix(T, G, gpu_flag):
+def _get_feedback_matrix(T, G, configs):
     """
     Returns the feedback matrix based on the GPU flag
     """
-    if gpu_flag:
-        return get_feedback_matrix_GPU(T, G)
-    else:
-        return get_feedback_matrix_CPU(T, G)
+    feedback_func = get_feedback_matrix_GPU if configs['GPU'] else get_feedback_matrix_CPU
+    second_arg = T if configs['hard_mode'] else G
+    
+    return feedback_func(T, second_arg)
 
 
 def get_feedback_matrix_CPU(key_words_str, all_words_str):

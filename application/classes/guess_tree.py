@@ -21,6 +21,7 @@ class Guess_Tree:
         self.F = F                              # Feedback matrix
         self.get_best_guess = get_best_guess    # Best guess function
         self.flags = flags
+        self.configs = configs
         
         self._stop_diagnosis = False
         self._diagnosis_thread = None
@@ -49,7 +50,8 @@ class Guess_Tree:
             self.node_count += 1
             node_id = self.node_count
             
-            word_guess = self.get_best_guess(T_filtered, self.G, self.F)
+            second_arg = T_filtered if self.configs['hard_mode'] else self.G
+            word_guess = self.get_best_guess(T_filtered, second_arg, self.F)
             self.append2Tree(word_guess, node_id, parent_id, feedback)
 
             # Stop condition
