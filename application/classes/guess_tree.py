@@ -1,4 +1,5 @@
 from utils.instance_utils import *
+from collections import deque
 import numpy as np
 import cupy as cp
 import threading
@@ -26,9 +27,10 @@ class Guess_Tree:
         self._stop_diagnosis = False
         self._diagnosis_thread = None
         self.tree = {
-            'root': None,
+            'root': 1,
             'nodes': {},
-            'edges': []
+            'edges': [],
+            'successors': {}
         }
         self.node_count = 0
         self.build_runtime = -1
@@ -37,15 +39,15 @@ class Guess_Tree:
         os.makedirs(self.path, exist_ok=True)
 
 
-    def create(self):
+    def build(self):
         """
-        Iterative build using explicit stack (DFS)
+        Iterative build using explicit queue (BFS)
         """
         start_time = time.time()
-        stack = [(self.T, None, None)]
+        queue = deque([(self.T, None, None)])
 
-        while stack:
-            T_filtered, parent_id, feedback = stack.pop()
+        while queue:
+            T_filtered, parent_id, feedback = queue.popleft() 
 
             self.node_count += 1
             node_id = self.node_count
@@ -59,28 +61,25 @@ class Guess_Tree:
                 continue
             
             # Partition candidates by feedback
-            # T_filtered = T_filtered[T_filtered != word_guess]
+            T_filtered = T_filtered[T_filtered != word_guess]
             feedbacks = self.F[T_filtered, word_guess]
             unique_feedbacks, inverse_indices = self.xp.unique(feedbacks, return_inverse=True)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
                 T_new_filtered = T_filtered[inverse_indices == i]
-                stack.append((T_new_filtered, node_id, int(f_new.item())))
+                queue.append((T_new_filtered, node_id, f_new.item()))
 
         self.build_runtime = time.time() - start_time
     
 
-    def append2Tree(self, word_guess, node_id, previous_node_id, previous_feedback):
+    def append2Tree(self, word_guess, node_id, parent_id, feedback):
         """
         Append node and edge to tree
         """
-        self.tree['nodes'][node_id] = {'word': word_guess, 'successors': {}}
-        if node_id == 1:
-            self.tree['root'] = node_id
-        else:
-            self.tree['edges'].append([previous_node_id, node_id])
-            self.tree['nodes'][previous_node_id]['successors'][previous_feedback] = node_id
+        self.tree['nodes'][node_id] = {'guess': word_guess}
+        self.tree['edges'].append([parent_id, node_id])
+        self.tree['successors'][(parent_id, feedback)] = node_id
 
 
     def evaluate(self):
@@ -93,18 +92,17 @@ class Guess_Tree:
         depths = []
         
         for target in self.T:
-            node_id = self.tree['root']
+            node_id = 1
             depth = 1
             while True:
-                node = self.tree['nodes'][node_id]
-                guess = node['word']
+                guess = self.tree['nodes'][node_id]['guess']
 
                 if guess == target:
                     depths.append(depth)
                     break
 
                 f = self.F[target, guess].item()
-                node_id = node['successors'][f]
+                node_id = self.tree['successors'][(node_id, f)]
                 depth += 1
 
         depths = np.array(depths)
