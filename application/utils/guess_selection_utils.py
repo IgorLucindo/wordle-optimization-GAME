@@ -1,6 +1,9 @@
 from collections import Counter
+from numba import cuda, int32, uint8
 import numpy as np
 import cupy as cp
+import time
+import sys
 
 
 def best_guess_function(configs):
@@ -9,7 +12,7 @@ def best_guess_function(configs):
     """
     mapping = {
         (False, False): _get_best_guess_CPU,
-        (True,  False): _get_best_guess_2steps_GPU,
+        (True,  False): _get_best_guess_2steps_GPU2_numba,
         (False, True):  _get_best_guess_composite_CPU,
         (True,  True):  _get_best_guess_composite_GPU,
     }
@@ -128,64 +131,7 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=1):
     return g_star
 
 
-def _get_best_guess_2steps_GPU1(T, G, F):
-    """
-    Finds the best guess by looking 2 steps ahead using GPU parallelization.
-
-    Step 1: For each guess g in G, partition T by feedbacks.
-    Step 2: For each resulting subset, compute the number of unique feedback patterns
-            that *each possible next guess* could produce.
-    The best guess maximizes the expected number of feedback patterns across 2 steps.
-    """
-    n = len(T)
-    if n <= 2:
-        return T[0]
-
-    feedbacks_sub = F[T[:, None], G]  # (|T|, |G|)
-    pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
-    unique_pairs = cp.unique(pairs)
-    cols = unique_pairs // 243
-    scores_1step = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
-
-    # --- 1-step pruning ---
-    candidate_scores = scores_1step[T]
-    mask = candidate_scores == n
-    if mask.any():
-        return T[cp.argmax(mask)]
-
-    # --- 2-step lookahead ---
-    # For each guess g, partition T by feedback
-    best_scores = cp.zeros(len(G), dtype=cp.float32)
-
-    for i, g in enumerate(G):
-        # Feedbacks for this guess over T
-        feedbacks_g = feedbacks_sub[:, i]
-        unique_feedbacks, inverse_idx = cp.unique(feedbacks_g, return_inverse=True)
-        m = len(unique_feedbacks)
-
-        # For each partition (subset of T with same feedback)
-        total = 0
-        for j in range(m):
-            T_j = T[inverse_idx == j]
-            if len(T_j) <= 1:
-                continue
-
-            # Compute how well we can partition T_j using next guesses (parallel)
-            feedbacks_j = F[T_j[:, None], G]
-            pairs_j = feedbacks_j + cp.arange(feedbacks_j.shape[1]) * 243
-            unique_pairs_j = cp.unique(pairs_j)
-            cols_j = unique_pairs_j // 243
-            score_j = cp.bincount(cols_j, minlength=feedbacks_j.shape[1])
-
-            total += score_j.max()
-
-        best_scores[i] = total / m if m > 0 else 0
-
-    g_star = G[cp.argmax(best_scores)]
-    return g_star
-
-
-def _get_best_guess_2steps_GPU(T, G, F):
+def _get_best_guess_2steps_GPU2(T, G, F):
     n = len(T)
     if n <= 2:
         return T[0]
@@ -196,40 +142,196 @@ def _get_best_guess_2steps_GPU(T, G, F):
     cols = unique_pairs // 243
     scores_1step = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
 
-    # Pruning
     candidate_scores = scores_1step[T]
     mask = candidate_scores == n
     if mask.any():
         return T[cp.argmax(mask)]
 
-    # 2-step lookahead
-    streams = [cp.cuda.Stream(non_blocking=True) for _ in range(len(G))]
     best_scores = cp.zeros(len(G), dtype=cp.float32)
 
-    def eval_guess(i):
-        with streams[i]:
-            feedbacks_g = feedbacks_sub[:, i]
-            unique_fb, inv_idx = cp.unique(feedbacks_g, return_inverse=True)
-            total = 0
-            for j, f_new in enumerate(unique_fb):
-                T_j = T[inv_idx == j]
-                if len(T_j) <= 1:
-                    continue
-                feedbacks_j = F[T_j[:, None], G]
-                pairs_j = feedbacks_j + cp.arange(feedbacks_j.shape[1]) * 243
-                unique_pairs_j = cp.unique(pairs_j)
-                cols_j = unique_pairs_j // 243
-                score_j = cp.bincount(cols_j, minlength=feedbacks_j.shape[1])
-                total += score_j.max()
-            best_scores[i] = total / len(unique_fb)
+    for i, g in enumerate(G):
+        sys.stdout.write(f"\rpercentage: {i / len(G) * 100:.2f}%")
+        sys.stdout.flush()
 
-    # Launch all in parallel streams
-    for i in range(len(G)):
-        eval_guess(i)
+        feedbacks_g = feedbacks_sub[:, i]
+        unique_fb, inv_idx = cp.unique(feedbacks_g, return_inverse=True)
+        m = len(unique_fb)
 
-    # Synchronize all
-    for s in streams:
-        s.synchronize()
+        # Sort targets so that partitions are contiguous
+        order = cp.argsort(inv_idx)
+        T_sorted = T[order]
+        inv_sorted = inv_idx[order]
+
+        # Compute feedbacks for all targets at once
+        feedbacks_all = F[T_sorted[:, None], G]
+        pairs_all = feedbacks_all + cp.arange(feedbacks_all.shape[1]) * 243
+
+        # Compute unique counts per partition in batch
+        total = 0
+        start = 0
+        for j in range(m):
+            # Slice contiguous region (much faster than boolean mask)
+            end = cp.searchsorted(inv_sorted, cp.array([j + 1]), side='left')[0]
+            subset = pairs_all[start:end]
+            if subset.shape[0] <= 1:
+                start = end
+                continue
+            
+            unique_pairs_j = cp.unique(subset)
+            cols_j = unique_pairs_j // 243
+            score_j = cp.bincount(cols_j, minlength=pairs_all.shape[1])
+            total += score_j.max()
+            start = end
+
+        best_scores[i] = total / m if m > 0 else 0
+
+    g_star = G[cp.argmax(best_scores)]
+    return g_star
+
+
+@cuda.jit
+def partition_guess_unique_counts_kernel(feedbacks_all, boundaries, counts):
+    # Linear thread index over (partition * num_guesses + guess)
+    idx = cuda.grid(1)
+    m = boundaries.shape[0] - 1
+    num_guesses = feedbacks_all.shape[1]
+    total_threads = m * num_guesses
+    if idx >= total_threads:
+        return
+
+    part = idx // num_guesses
+    g = idx % num_guesses
+
+    start = boundaries[part]
+    end = boundaries[part + 1]
+
+    # Quick bail if tiny partition
+    if end - start <= 0:
+        counts[part, g] = 0
+        return
+    if end - start == 1:
+        # single target -> only one feedback value
+        v = feedbacks_all[start, g]
+        counts[part, g] = 1 if v >= 0 else 0
+        return
+
+    # Local seen map for 243 possible feedbacks
+    # NOTE: Numba requires compile-time constant size for local arrays
+    seen = cuda.local.array(243, uint8)
+    # initialize seen to zero
+    for k in range(243):
+        seen[k] = 0
+
+    # mark seen feedbacks
+    for r in range(start, end):
+        val = feedbacks_all[r, g]  # uint8 in [0..242]
+        # guard if val could be padding marker (we will make padding use 255)
+        if val == 255:
+            continue
+        seen[int(val)] = 1
+
+    # count seen
+    c = 0
+    for k in range(243):
+        c += int(seen[k])
+    counts[part, g] = c
+
+
+def _get_best_guess_2steps_GPU2_numba(T, G, F, threads_per_block=256):
+    """
+    Numba-CUDA accelerated 2-step lookahead.
+
+    T : cupy array of target indices (1D)
+    G : cupy array of guess indices (1D)
+    F : cupy feedback matrix shape (num_targets, num_guesses) dtype=uint8
+    """
+    n = int(len(T))
+    if n <= 2:
+        return T[0]
+
+    xp = cp
+    # 1-step as before (do on GPU using CuPy)
+    feedbacks_sub = F[T[:, None], G]  # shape (|T|, |G|), cupy array uint8
+    pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
+    unique_pairs = cp.unique(pairs)
+    cols = unique_pairs // 243
+    scores_1step = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
+
+    # pruning
+    candidate_scores = scores_1step[T]
+    mask = candidate_scores == n
+    if mask.any():
+        return T[cp.argmax(mask)]
+
+    # We'll evaluate each candidate guess g1, but heavy inner work is offloaded to the kernel.
+    best_scores = cp.zeros(len(G), dtype=cp.float32)
+
+    # Convert some things to host/numba-friendly arrays when needed
+    # We'll still iterate over G (first-step guesses), but the expensive per-partition unique counts are on GPU via Numba.
+    num_guesses = int(len(G))
+
+    # Precompute full arange of second-guess indices as numpy for passing; but we will generate feedbacks_all per g1
+    G_np_all = cp.asnumpy(G).astype(np.int32)
+
+    for i in range(num_guesses):
+        # For the i-th first guess, compute partitions of T by its feedbacks
+        feedbacks_g = feedbacks_sub[:, i]  # cupy array (|T|,)
+        unique_fb, inv_idx = cp.unique(feedbacks_g, return_inverse=True)
+        m = int(len(unique_fb))
+        if m == 0:
+            best_scores[i] = 0.0
+            continue
+
+        # Sort inv_idx to get contiguous blocks
+        order = cp.argsort(inv_idx)
+        T_sorted = T[order]
+        inv_sorted = inv_idx[order]
+
+        # Build boundaries (m+1) using vectorized searchsorted: search values [1..m]
+        # Convert inv_sorted to numpy for searchsorted with numpy (or use cp.searchsorted with cp.array)
+        inv_sorted_np = cp.asnumpy(inv_sorted)
+        search_vals = np.arange(1, m + 1, dtype=inv_sorted_np.dtype)
+        ends = np.searchsorted(inv_sorted_np, search_vals, side='left').astype(np.int32)
+        boundaries_host = np.empty(m + 1, dtype=np.int32)
+        boundaries_host[0] = 0
+        boundaries_host[1:] = ends  # boundaries_host[k] .. boundaries_host[k+1]-1 rows for partition k
+
+        # Build feedbacks_all = F[T_sorted[:, None], G] but we need it as numpy then device
+        # For performance we fetch feedbacks_all as cupy then convert once to numpy, then to numba device.
+        # feedbacks_all shape (num_rows, num_guesses)
+        feedbacks_all_cp = F[T_sorted[:, None], G]   # cupy
+        # But we need dtype uint8 and padding marker for invalid rows; safe assumption F dtype is uint8
+        feedbacks_all_np = cp.asnumpy(feedbacks_all_cp)  # numpy uint8, shape (num_rows, num_guesses)
+
+        num_rows = feedbacks_all_np.shape[0]
+        # Create device arrays for kernel
+        d_feedbacks_all = cuda.to_device(feedbacks_all_np)           # device uint8 array (num_rows, num_guesses)
+        d_boundaries = cuda.to_device(boundaries_host)              # device int32 array (m+1,)
+        # counts: (m, num_guesses) int32
+        counts_host = np.zeros((m, num_guesses), dtype=np.int32)
+        d_counts = cuda.to_device(counts_host)
+
+        # Launch kernel: total threads = m * num_guesses
+        total_threads = m * num_guesses
+        blocks = (total_threads + threads_per_block - 1) // threads_per_block
+
+        partition_guess_unique_counts_kernel[blocks, threads_per_block](d_feedbacks_all, d_boundaries, d_counts)
+        # sync
+        cuda.synchronize()
+
+        # Copy counts back to host (numpy) and reduce
+        counts_host = d_counts.copy_to_host()  # shape (m, num_guesses)
+        # For each partition choose maximum across guesses (axis=1? careful: counts are per (partition, second-guess))
+        max_per_partition = counts_host.max(axis=1)  # shape (m,)
+        # We sum maxima across partitions and divide by m to get score
+        total = float(max_per_partition.sum())
+        best_scores[i] = total / float(m)
+
+        # free device arrays explicitly (help memory)
+        d_feedbacks_all = None
+        d_boundaries = None
+        d_counts = None
+        cp.get_default_memory_pool().free_all_blocks()
 
     g_star = G[cp.argmax(best_scores)]
     return g_star
