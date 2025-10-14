@@ -189,7 +189,7 @@ def _get_best_guess_2steps_GPU2(T, G, F):
     return g_star
 
 
-@cuda.jit
+@cuda.jit(cache=True)
 def partition_guess_unique_counts_kernel(feedbacks_all, boundaries, counts):
     # Linear thread index over (partition * num_guesses + guess)
     idx = cuda.grid(1)
