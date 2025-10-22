@@ -237,7 +237,7 @@ def partition_guess_unique_counts_kernel(feedbacks_all, boundaries, counts):
     counts[part, g] = c
 
 
-def _get_best_guess_2steps_GPU2_numba(T, G, F, threads_per_block=256):
+def _get_best_guess_2steps_GPU2_numba(T, G, F, threads_per_block=64):
     """
     Numba-CUDA accelerated 2-step lookahead.
 
