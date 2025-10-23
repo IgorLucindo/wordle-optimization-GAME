@@ -1,9 +1,8 @@
 from collections import Counter
-from numba import cuda, int32, uint8
+from numba import cuda, uint8
+from cupyx import scatter_add
 import numpy as np
 import cupy as cp
-import time
-import sys
 
 
 def best_guess_function(configs):
@@ -12,7 +11,9 @@ def best_guess_function(configs):
     """
     mapping = {
         (False, False): _get_best_guess_CPU,
-        (True,  False): _get_best_guess_2steps_GPU2_numba,
+        # (True,  False): _get_best_guess_GPU,
+        (True,  False): _get_best_guess_2steps_GPU,
+        # (True,  False): _get_best_guess_2steps_GPU_numba,
         (False, True):  _get_best_guess_composite_CPU,
         (True,  True):  _get_best_guess_composite_GPU,
     }
@@ -48,21 +49,31 @@ def _get_best_guess_GPU(T, G, F):
     if n <= 2:
         return T[0]
 
-    feedbacks_sub = F[T[:, None], G]
-    pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
-    unique_pairs = cp.unique(pairs)
-    cols = unique_pairs // 243
-    scores = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
+    nG = len(G)
+    base = 243
 
-    # Prunning: if a candidate in T achieves exactly len(T) feedback patterns, return that candidate
+    # Extract feedback submatrix
+    feedbacks_sub = F[T[:, None], G]  # shape: (len(T), len(G))
+
+    # Flatten in column-major order to align with guesses
+    flat_fb = feedbacks_sub.ravel(order='F')
+    flat_col = cp.repeat(cp.arange(nG), n)
+
+    # Scatter pattern occurrences
+    pattern_seen = cp.zeros((nG, base), dtype=cp.int32)
+    scatter_add(pattern_seen, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
+
+    # Count unique feedbacks per guess
+    scores = (pattern_seen > 0).sum(axis=1)
+
+    # --- Pruning ---
     candidate_scores = scores[T]
     mask = candidate_scores == n
-    if mask.any():
+    if cp.any(mask):
         return T[cp.argmax(mask)]
 
-    # Get best guess
+    # --- Best guess ---
     g_star = G[cp.argmax(scores)]
-
     return g_star
 
 
@@ -103,89 +114,108 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=1):
     if n <= 2:
         return T[0]
 
-    feedbacks_sub = F[T[:, None], G]
-    pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
-    pairs_flat = pairs.ravel()
-    uniq_pairs, counts = cp.unique(pairs_flat, return_counts=True)
-    guess_idx = uniq_pairs // 243
-    num_feedbacks = cp.bincount(guess_idx, minlength=feedbacks_sub.shape[1])
+    nG = len(G)
+    base = 243  # number of possible feedback patterns
 
-    sum_counts = cp.bincount(guess_idx, weights=counts, minlength=feedbacks_sub.shape[1])
-    sum_counts_sq = cp.bincount(guess_idx, weights=counts**2, minlength=feedbacks_sub.shape[1])
+    # Extract feedback submatrix for feasible targets vs all guesses
+    feedbacks_sub = F[T[:, None], G]  # shape (|T|, |G|)
+
+    # Flatten in column-major order to align correctly with guesses
+    flat_fb = feedbacks_sub.ravel(order='F')
+    flat_col = cp.repeat(cp.arange(nG), n)
+
+    # --- 1️⃣ Build histogram table [guess × feedback] ---
+    hist = cp.zeros((nG, base), dtype=cp.int32)
+    scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
+
+    # --- 2️⃣ Compute per-guess statistics ---
+    # how many distinct feedbacks each guess produces
+    num_feedbacks = (hist > 0).sum(axis=1)
+
+    # counts of each feedback pattern per guess
+    sum_counts = hist.sum(axis=1)
+    sum_counts_sq = (hist ** 2).sum(axis=1)
+
     mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
     mean_counts_sq = sum_counts_sq / cp.maximum(num_feedbacks, 1)
     std_partition = cp.sqrt(cp.maximum(mean_counts_sq - mean_counts**2, 0))
 
-    # Composite score 
-    scores = num_feedbacks - _lambda*std_partition
-    
-    # Prunning: if a candidate in T achieves exactly len(T) feedback patterns, return that candidate
+    # --- 3️⃣ Composite score ---
+    scores = num_feedbacks - _lambda * std_partition
+
+    # --- 4️⃣ Pruning ---
     candidate_scores = scores[T]
     mask = candidate_scores == n
-    if mask.any():
+    if cp.any(mask):
         return T[cp.argmax(mask)]
 
-    # Get best guess
+    # --- 5️⃣ Best guess ---
     g_star = G[cp.argmax(scores)]
-
     return g_star
 
 
-def _get_best_guess_2steps_GPU2(T, G, F):
+def _get_best_guess_2steps_GPU(T, G, F):
+    """
+    Two-step lookahead Wordle guess selection (GPU version)
+    Minimizes expected feasible set size after up to two guesses.
+    """
     n = len(T)
     if n <= 2:
         return T[0]
 
-    feedbacks_sub = F[T[:, None], G]
-    pairs = feedbacks_sub + cp.arange(feedbacks_sub.shape[1]) * 243
-    unique_pairs = cp.unique(pairs)
-    cols = unique_pairs // 243
-    scores_1step = cp.bincount(cols, minlength=feedbacks_sub.shape[1])
+    nG = len(G)
+    base = 243  # total feedback patterns
 
-    candidate_scores = scores_1step[T]
-    mask = candidate_scores == n
-    if mask.any():
-        return T[cp.argmax(mask)]
+    # --- Precompute feedback submatrix for T × G ---
+    feedbacks_sub = F[T[:, None], G]  # shape (|T|, |G|)
+    best_scores = cp.zeros(nG, dtype=cp.float32)
+    num_feedbacks = cp.zeros(nG, dtype=cp.float32)
 
-    best_scores = cp.zeros(len(G), dtype=cp.float32)
+    for i, g1 in enumerate(G):
+        fb_g1 = feedbacks_sub[:, i]
+        unique_fb, inverse = cp.unique(fb_g1, return_inverse=True)
+        num_feedbacks[i] = len(unique_fb)
 
-    for i, g in enumerate(G):
-        sys.stdout.write(f"\rpercentage: {i / len(G) * 100:.2f}%")
-        sys.stdout.flush()
+        total_expectation = 0.0
 
-        feedbacks_g = feedbacks_sub[:, i]
-        unique_fb, inv_idx = cp.unique(feedbacks_g, return_inverse=True)
-        m = len(unique_fb)
-
-        # Sort targets so that partitions are contiguous
-        order = cp.argsort(inv_idx)
-        T_sorted = T[order]
-        inv_sorted = inv_idx[order]
-
-        # Compute feedbacks for all targets at once
-        feedbacks_all = F[T_sorted[:, None], G]
-        pairs_all = feedbacks_all + cp.arange(feedbacks_all.shape[1]) * 243
-
-        # Compute unique counts per partition in batch
-        total = 0
-        start = 0
-        for j in range(m):
-            # Slice contiguous region (much faster than boolean mask)
-            end = cp.searchsorted(inv_sorted, cp.array([j + 1]), side='left')[0]
-            subset = pairs_all[start:end]
-            if subset.shape[0] <= 1:
-                start = end
+        for j, fb in enumerate(unique_fb):
+            # Case: solved on first guess
+            if fb == 242:
                 continue
-            
-            unique_pairs_j = cp.unique(subset)
-            cols_j = unique_pairs_j // 243
-            score_j = cp.bincount(cols_j, minlength=pairs_all.shape[1])
-            total += score_j.max()
-            start = end
 
-        best_scores[i] = total / m if m > 0 else 0
+            # Feasible subset after feedback j
+            T_i_idx = cp.nonzero(inverse == j)[0]
+            m = len(T_i_idx)
+            if m == 1:
+                total_expectation += 1.0 * (m / n)
+                continue
 
-    g_star = G[cp.argmax(best_scores)]
+            # --- Step 2: lookahead for best g₂ ---
+            fb_sub = feedbacks_sub[T_i_idx[:, None], G]
+            pairs = fb_sub + cp.arange(nG) * base
+            uniq_pairs = cp.unique(pairs)
+            guess_idx = uniq_pairs // base
+            feedback_count = cp.bincount(guess_idx, minlength=nG)
+
+            # Distinct feedbacks per guess (diversity)
+            num_fb_g2 = (feedback_count > 0).sum()
+            mask_g2 = cp.isin(G, T_i_idx).astype(cp.float32)
+
+            # Expected feasible size for g₂
+            exp_size_g2 = (m - mask_g2) / (num_fb_g2 - mask_g2 + 1e-12)
+            scores_g2 = exp_size_g2 + 1e-3 * (num_fb_g2 - mask_g2)
+            best_g2_score = scores_g2.min()  # best g₂ for this feedback
+
+            total_expectation += best_g2_score * (m / n)
+
+        best_scores[i] = total_expectation
+
+    # --- g₁ scoring using your heuristic ---
+    mask_g1 = cp.isin(G, T).astype(cp.float32)
+    exp_size_g1 = (n - mask_g1) / (num_feedbacks - mask_g1 + 1e-12)
+    scores_g1 = best_scores + exp_size_g1 + 1e-3 * (num_feedbacks - mask_g1)
+
+    g_star = G[cp.argmin(scores_g1)]
     return g_star
 
 
@@ -237,7 +267,7 @@ def partition_guess_unique_counts_kernel(feedbacks_all, boundaries, counts):
     counts[part, g] = c
 
 
-def _get_best_guess_2steps_GPU2_numba(T, G, F, threads_per_block=64):
+def _get_best_guess_2steps_GPU_numba(T, G, F, threads_per_block=64):
     """
     Numba-CUDA accelerated 2-step lookahead.
 

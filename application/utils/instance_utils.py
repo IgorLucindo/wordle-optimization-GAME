@@ -8,8 +8,8 @@ def get_instance(configs):
     """
     Return word lists from dataset of words, feedback matrix and best guess function
     """
-    T = _get_words("dataset/solutions.txt") # Target words
-    G = T + _get_words("dataset/non_solutions.txt") # Guesses
+    T = _get_words("dataset/solutions.txt")[:200] # Target words
+    G = T + _get_words("dataset/non_solutions.txt")[:200] # Guesses
     F = _get_feedback_matrix(T, G, configs)
     get_best_guess = best_guess_function(configs)
 

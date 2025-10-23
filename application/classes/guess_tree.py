@@ -61,7 +61,7 @@ class Guess_Tree:
                 continue
             
             # Partition candidates by feedback
-            T_filtered = T_filtered[T_filtered != word_guess]
+            # T_filtered = T_filtered[T_filtered != word_guess]
             feedbacks = self.F[T_filtered, word_guess]
             unique_feedbacks, inverse_indices = self.xp.unique(feedbacks, return_inverse=True)
 
