@@ -1,4 +1,5 @@
 from utils.guess_selection_utils import *
+import numpy as np
 import cupy as cp
 import json
 import ast
@@ -8,12 +9,14 @@ def get_instance(configs):
     """
     Return word lists from dataset of words, feedback matrix and best guess function
     """
-    T = _get_words("dataset/solutions.txt")[:200] # Target words
-    G = T + _get_words("dataset/non_solutions.txt")[:200] # Guesses
+    T = _get_words("dataset/solutions.txt") # Target words
+    G = T + _get_words("dataset/non_solutions.txt") # Guesses
     F = _get_feedback_matrix(T, G, configs)
+    GGF = _get_feedback_matrix_GPU_batched(G, configs)
     get_best_guess = best_guess_function(configs)
+    feedback_compat = _get_feedback_compat_table(configs)
 
-    return G, T, F, get_best_guess
+    return G, T, F, GGF, get_best_guess, feedback_compat
 
 
 def get_guess_tree():
@@ -43,9 +46,8 @@ def _get_feedback_matrix(T, G, configs):
     Returns the feedback matrix based on the GPU flag
     """
     feedback_func = get_feedback_matrix_GPU if configs['GPU'] else get_feedback_matrix_CPU
-    second_arg = T if configs['hard_mode'] else G
     
-    return feedback_func(T, second_arg)
+    return feedback_func(T, G)
 
 
 def get_feedback_matrix_CPU(key_words_str, all_words_str):
@@ -112,3 +114,46 @@ def get_feedback_matrix_GPU(key_words_str, all_words_str):
 
 def _encode_word(word):
     return cp.array([ord(c) - 97 for c in word], dtype=cp.int8)
+
+
+def _get_feedback_matrix_GPU_batched(G, configs, batch_size=1000):
+    """
+    Return feedback matrix of shape (G, G) with dtype=cp.uint8, where matrix[i, j] is the
+    base-3 encoded feedback code for G[i] as target and G[j] as guess.
+    This version processes the target words in batches to manage memory on the GPU.
+    """
+    if not configs['hard_mode']:
+        return None
+    
+    xp = cp
+    n = len(G)
+    F = xp.empty((n, n), dtype=xp.uint16)
+    for i in range(0, n, batch_size):
+        end = min(i + batch_size, n)
+        F[i:end] = get_feedback_matrix_GPU(G[i:end], G)
+        cp._default_memory_pool.free_all_blocks()
+    return F
+
+
+def _get_feedback_compat_table(configs):
+    """
+    Return a compatibility table for feedback codes in hard mode.
+    A feedback code `fb1` is compatible with `fb2` if `fb1` could be generated
+    from the same target word as `fb2`, given that `fb2` was the actual feedback.
+    This means that for each position, the feedback for `fb1` must be "at least as good"
+    as the feedback for `fb2`.
+    """
+    if not configs['hard_mode']:
+        return None
+    
+    xp = cp if configs['GPU'] else np
+    L = 5
+    n = 243
+    codes = xp.arange(n, dtype=xp.int32)
+    digits = ((codes[:, None] // (3 ** xp.arange(L-1, -1, -1))) % 3).astype(xp.int8)
+
+    # Compare all pairs (i,j): we want j >= i elementwise
+    # Expand dims to (243, 1, 5) and (1, 243, 5)
+    feedback_compat = xp.all(digits[None, :, :] >= digits[:, None, :], axis=2)
+
+    return feedback_compat
