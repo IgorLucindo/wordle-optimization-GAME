@@ -135,7 +135,7 @@ def _get_feedback_matrix_GPU_batched(G, configs, batch_size=1000):
     return F
 
 
-def _get_feedback_compat_table(configs):
+def _get_feedback_compat_table(configs, L=5):
     """
     Return a compatibility table for feedback codes in hard mode.
     A feedback code `fb1` is compatible with `fb2` if `fb1` could be generated
@@ -147,7 +147,6 @@ def _get_feedback_compat_table(configs):
         return None
     
     xp = cp if configs['GPU'] else np
-    L = 5
     n = 243
     codes = xp.arange(n, dtype=xp.int32)
     digits = ((codes[:, None] // (3 ** xp.arange(L-1, -1, -1))) % 3).astype(xp.int8)
