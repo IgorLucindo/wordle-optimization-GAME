@@ -54,13 +54,11 @@ class Guess_Tree:
 
         while queue:
             T_filtered, G_hard, parent_id, feedback = queue.popleft()
-
             self.node_count += 1
-            node_id = self.node_count
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
             word_guess = self.get_best_guess(T_filtered, G_arg, self.F)
-            self.append2Tree(word_guess, node_id, parent_id, feedback)
+            self.append2Tree(word_guess, self.node_count, parent_id, feedback)
 
             # Stop condition
             if len(T_filtered) == 1:
@@ -75,7 +73,7 @@ class Guess_Tree:
             for i, f_new in enumerate(unique_feedbacks):
                 T_filtered_new = T_filtered[inverse_indices == i]
                 G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, word_guess)
-                queue.append((T_filtered_new, G_hard_new, node_id, f_new.item()))
+                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item()))
 
         self.build_runtime = time.time() - start_time
     
