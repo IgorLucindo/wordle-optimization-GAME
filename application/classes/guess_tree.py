@@ -115,12 +115,20 @@ class Guess_Tree:
             return
 
         depths = []
+        hard_mode_valid = True
         
         for target in self.T:
             node_id = 1
             depth = 1
+            prev_guesses = []
+            prev_feedbacks = []
+
             while True:
                 guess = self.tree['nodes'][node_id]['guess']
+
+                if self.configs['hard_mode']:
+                    if not self.is_valid_hardmode_guess(guess, prev_guesses, prev_feedbacks):
+                        hard_mode_valid = False
 
                 if guess == target:
                     depths.append(depth)
@@ -141,6 +149,40 @@ class Guess_Tree:
             f"Build Runtime: {self.build_runtime:.2f}s\n"
             f"Nodes: {self.node_count}\n"
         )
+        if self.configs['hard_mode']:
+            print(f"Hard mode valid: {hard_mode_valid}\n")
+
+
+    def is_valid_hardmode_guess(self, guess_word, prev_guesses, prev_feedbacks):
+        """
+        Check if a guess satisfies Wordle hard mode rules based on previous feedbacks.
+        Works on CPU (NumPy) since it’s lightweight.
+        """
+        # Convert encoded words to CPU numpy for simplicity
+        xp = self.xp
+        guess_word = xp.asnumpy(self.encoded_words[guess_word])
+        
+        for g_idx, fb in zip(prev_guesses, prev_feedbacks):
+            prev_word = xp.asnumpy(self.encoded_words[g_idx])
+            fb = int(fb)
+            fb_pattern = np.base_repr(fb, base=3).zfill(len(guess_word))[-len(guess_word):]
+            fb_pattern = np.array(list(fb_pattern), dtype=int)
+
+            for pos, val in enumerate(fb_pattern):
+                if val == 2:  # green
+                    if guess_word[pos] != prev_word[pos]:
+                        return False
+                elif val == 1:  # yellow
+                    # must contain the letter somewhere else, not same position
+                    if prev_word[pos] not in guess_word or guess_word[pos] == prev_word[pos]:
+                        return False
+                elif val == 0:  # gray
+                    # cannot contain this letter unless it's already confirmed yellow/green elsewhere
+                    letter = prev_word[pos]
+                    greens_yellows = prev_word[(fb_pattern == 1) | (fb_pattern == 2)]
+                    if letter not in greens_yellows and letter in guess_word:
+                        return False
+        return True
 
 
     def start_diagnosis(self):

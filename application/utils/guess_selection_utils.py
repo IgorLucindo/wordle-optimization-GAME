@@ -76,7 +76,7 @@ def _get_best_guess_GPU(T, G, F):
     return g_star
 
 
-def _get_best_guess_composite_CPU(T, G, F, _lambda=1):
+def _get_best_guess_composite_CPU(T, G, F, _lambda=2):
     """
     Finds the best guess using a composite score (CPU)
     """
@@ -105,7 +105,7 @@ def _get_best_guess_composite_CPU(T, G, F, _lambda=1):
     return g_star
 
 
-def _get_best_guess_composite_GPU(T, G, F, _lambda=1):
+def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
     """
     Finds the best guess using a composite score (GPU parallelization and prunning)
     """
@@ -149,73 +149,5 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=1):
         return T[cp.argmax(mask)]
 
     # # --- 5️⃣ Best guess ---
-    g_star = cp.argmax(scores)
-    return g_star
-
-
-def _get_best_guess_2steps_GPU(T, G, F):
-    """
-    Two-step lookahead Wordle guess selection (GPU version)
-    Minimizes expected feasible set size after up to two guesses.
-    """
-    n = len(T)
-    if n <= 2:
-        return T[0]
-
-    nG = len(G)
-    base = 243  # total feedback patterns
-
-    # --- Precompute feedback submatrix for T × G ---
-    feedbacks_sub = F[T[:, None], G]  # shape (|T|, |G|)
-    best_scores = cp.zeros(nG, dtype=cp.float32)
-    num_feedbacks = cp.zeros(nG, dtype=cp.float32)
-
-    # --- Preallocate for scatter_add path ---
-    pattern_seen = cp.zeros((nG, base), dtype=cp.int32)
-
-    for i, g1 in enumerate(G):
-        fb_g1 = feedbacks_sub[:, i]
-        unique_fb, inverse = cp.unique(fb_g1, return_inverse=True)
-        num_feedbacks[i] = len(unique_fb)
-
-        total_expectation = 0.0
-
-        for j, fb in enumerate(unique_fb):
-            # Case: solved on first guess
-            if fb == 242:
-                continue
-
-            # Feasible subset after feedback j
-            T_i_idx = cp.nonzero(inverse == j)[0]
-            m = len(T_i_idx)
-            if m == 1:
-                total_expectation += 1.0 * (m / n)
-                continue
-
-            # --- Step 2: lookahead for best g₂ ---
-            fb_sub = feedbacks_sub[T_i_idx[:, None], G]  # shape: (m, nG)
-            flat_fb = fb_sub.ravel(order="F")
-            flat_col = cp.repeat(cp.arange(nG), m)
-            pattern_seen.fill(0)
-            scatter_add(pattern_seen, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
-
-            # Distinct feedbacks per guess (diversity)
-            num_fb_g2 = (pattern_seen > 0).sum(axis=1).astype(cp.float32)
-            mask_g2 = cp.isin(G, T_i_idx).astype(cp.float32)
-
-            # Expected feasible size for g₂
-            exp_size_g2 = (m - mask_g2) / (num_fb_g2 - mask_g2 + 1e-12)
-            scores_g2 = exp_size_g2 + 1e-3 * (num_fb_g2 - mask_g2)
-            best_g2_score = scores_g2.min()  # best g₂ for this feedback
-
-            total_expectation += best_g2_score * (m / n)
-
-        best_scores[i] = total_expectation
-
-    # --- g₁ scoring using your heuristic ---
-    mask_g1 = cp.isin(G, T).astype(cp.float32)
-    exp_size_g1 = (n - mask_g1) / (num_feedbacks - mask_g1 + 1e-12)
-    scores_g1 = best_scores + exp_size_g1 + 1e-3 * (num_feedbacks - mask_g1)
-
-    g_star = G[cp.argmin(scores_g1)]
+    g_star = G[cp.argmax(scores)]
     return g_star
