@@ -1,5 +1,6 @@
 #keyboard {
     width: 30%;
+    user-select: none;
 }
 
 .keyboard-row {

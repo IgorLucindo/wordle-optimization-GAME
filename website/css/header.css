@@ -21,41 +21,54 @@ header > h1 {
     gap: 5%;
     width: 50%;
     margin-left: auto;
+    user-select: none;
 }
 
-.header-buttons svg {
+.header-buttons div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     fill: var(--text-color);
-    transition: fill 0.3s ease;
-}
-
-.header-buttons svg:hover {
-    fill: var(--hover-color);
-}
-
-#hint-btn, #info-btn {
+    color: var(--text-color);
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: fill 0.3s ease color 0.3s ease;
 }
 
-#hint-btn:active, #info-btn:active {
+.header-buttons div:hover {
+    fill: var(--hover-color);
+    color: var(--hover-color);
+}
+
+.header-buttons div:active {
     transform: scale(1.15);
+}
+
+.header-buttons a {
+    position: absolute;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transform: translateY(100%);
+}
+
+#diff-btn {
+    transform: translateY(-20%);
+}
+
+#diff-btn:active {
+    transform: translateY(-20%) scale(1.15);
+}
+
+#diff-btn svg {
+    transform: scaleX(-1);
 }
 
 #info-btn {
     display: none;
 }
 
-.theme-btn {
-    background: none;
-    border: none;
+#theme-btn {
     font-size: 1.2rem;
-    cursor: pointer;
-    color: var(--text-color);
-    transition: color 0.3s ease;
-}
-
-.theme-btn:hover {
-  color: var(--hover-color);
 }
 
 /* in mobile */

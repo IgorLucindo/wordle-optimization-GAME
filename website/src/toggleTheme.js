@@ -1,5 +1,6 @@
 const body = document.body;
-const toggleBtn = document.getElementById("theme-toggle");
+const toggleBtn = document.getElementById("theme-btn");
+
 
 // Function to update icon
 function updateIcon() {
@@ -7,6 +8,7 @@ function updateIcon() {
     ? '<i class="fas fa-sun"></i>'
     : '<i class="fas fa-moon"></i>';
 }
+
 
 // --- INITIAL THEME CHECK (Your existing code) ---
 const savedTheme = localStorage.getItem("theme");
