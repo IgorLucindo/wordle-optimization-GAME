@@ -1,3 +1,6 @@
+import { showTooltip } from '../utils/document_utils.js';
+
+
 export class Game {
     constructor() {
         this.resetButton = document.getElementById('reset-button');
@@ -36,9 +39,6 @@ export class Game {
 
 
     createEvents() {
-        const diffA = this.diffButton.querySelector('a');
-        const diffSVG = this.diffButton.querySelector('svg');
-
         // Reset button click event
         this.resetButton.addEventListener('click', () => {
             this.board.create();
@@ -52,16 +52,7 @@ export class Game {
 
         // Difficulty button click event
         this.diffButton.addEventListener('click', () => {
-            this.hardmode = !this.hardmode;
-
-            if (this.hardmode) {
-                diffA.innerHTML = `Hard`;
-                diffSVG.style.transform = 'scaleX(1)';
-            }
-            else {
-                diffA.innerHTML = `Regular`;
-                diffSVG.style.transform = 'scaleX(-1)';
-            }
+            this.changeMode();
         });
     }
 
@@ -108,6 +99,30 @@ export class Game {
     handlePhysicalKeyPress(e) {
         const key = e.key.toUpperCase();
         this.handleKeyPress(key);
+    }
+
+
+    // Changes game mode
+    changeMode() {
+        const diffA = this.diffButton.querySelector('a');
+        const diffSVG = this.diffButton.querySelector('svg');
+        const svgPathInnerArc = this.diffButton.querySelector('#inner-arc');
+        
+
+        this.hardmode = !this.hardmode;
+
+        if (this.hardmode) {
+            diffA.innerHTML = `Hard`;
+            diffSVG.style.transform = 'scaleX(1)';
+            svgPathInnerArc.style.fill = 'var(--red)'
+            showTooltip(this.diffButton, "Any revealed hints must be used in subsequent guesses.")
+        }
+        else {
+            diffA.innerHTML = `Regular`;
+            diffSVG.style.transform = 'scaleX(-1)';
+            svgPathInnerArc.style.fill = 'var(--green)'
+            showTooltip(this.diffButton, "Hints are optional and can be ignored for any subsequent guess.")
+        }
     }
 
 

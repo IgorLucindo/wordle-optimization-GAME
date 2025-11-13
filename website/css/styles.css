@@ -79,6 +79,41 @@ main {
     opacity: 0.3;
 }
 
+.tooltip {
+    position: absolute;
+    min-width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+    visibility: hidden;
+    opacity: 0;
+    color: white;
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent; 
+}
+
+.tooltip.visible {
+    pointer-events: auto;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* in mobile */
 @media screen and (max-width: 768px) {
     .container {
