@@ -92,19 +92,16 @@ class Guess_Tree:
         Vectorized hard-mode filtering using precomputed LUT and GGF matrix
         Returns subset of allowed guess indices
         """
-        if len(T) <= 2:
+        if not self.configs['hard_mode'] or len(T) <= 2:
             return None
+        
+        # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
+        possible_feedbacks = self.GGF[G_hard, word_guess]
 
-        if self.configs['hard_mode']:
-            # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
-            possible_feedbacks = self.GGF[G_hard, word_guess]
+        # Mask of which feedbacks are compatible
+        valid_mask = self.feedback_compat[possible_feedbacks, feedback]
 
-            # Mask of which feedbacks are compatible
-            valid_mask = self.feedback_compat[possible_feedbacks, feedback]
-
-            return G_hard[valid_mask]
-        else:
-            return None
+        return G_hard[valid_mask]
 
 
     def evaluate(self):
