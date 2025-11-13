@@ -28,6 +28,7 @@ export class Game {
 
 
     getVariables(variables) {
+        this.cfg = variables.cfg;
         this.dataset = variables.dataset;
         this.board = variables.board;
         this.keyboard = variables.keyboard;
@@ -39,8 +40,10 @@ export class Game {
 
 
     createEvents() {
+        const eventType = this.cfg.touch ? 'touchend' : 'click';
+
         // Reset button click event
-        this.resetButton.addEventListener('click', () => {
+        this.resetButton.addEventListener(eventType, () => {
             this.board.create();
             this.start();
         });
@@ -51,7 +54,7 @@ export class Game {
         });
 
         // Difficulty button click event
-        this.diffButton.addEventListener('click', () => {
+        this.diffButton.addEventListener(eventType, () => {
             this.changeMode();
         });
     }

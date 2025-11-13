@@ -22,18 +22,15 @@ export class Hint {
 
 
     createEvents() {
+        const eventType = this.cfg.touch ? 'touchend' : 'click';
+
         // Click info button event
         const clickHintBtn = () => {
             this.message.show(`Word hint: <span class="msg-highlight">${this.guess}</span>`);
         };
 
         // Create events
-        if (this.cfg.touch) {
-            this.el.addEventListener('touchend', clickHintBtn);
-        }
-        else {
-            this.el.addEventListener('click', clickHintBtn);
-        }
+        this.el.addEventListener(eventType, clickHintBtn);
     }
 
 

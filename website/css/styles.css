@@ -38,12 +38,12 @@ main {
 #message {
     margin: 0;
     font-size: 1.2em;
-    color: #e0e0e0;
+    color: var(--text-color);
 }
 
 .msg-highlight {
     font-style: italic;
-    color: #bbb;
+    color: var(--hover-color);
 }
 
 #reset-button {
@@ -81,7 +81,7 @@ main {
 
 .tooltip {
     position: absolute;
-    min-width: 200px;
+    max-width: 90vw;
     padding: 10px;
     border-radius: 6px;
     text-align: center;
@@ -100,7 +100,7 @@ main {
     content: "";
     position: absolute;
     bottom: 100%; 
-    left: 50%;
+    left: var(--arrow-left-position, 50%);
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;

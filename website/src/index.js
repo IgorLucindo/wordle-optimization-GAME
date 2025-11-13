@@ -8,7 +8,7 @@ import { Header } from './classes/header.js';
 
 
 const cfg = {
-  touch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+  touch: 'ontouchstart' in window || navigator.maxTouchPoints > 0
 }
 const dataset = new Dataset();
 const board = new Board();
