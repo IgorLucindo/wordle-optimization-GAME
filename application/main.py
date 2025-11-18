@@ -20,11 +20,17 @@ def main():
     instance = get_instance(configs)
 
     gt = Guess_Tree(instance, flags, configs)
+
+    # gt.start_diagnosis()
+    # gt.build()
+    # gt.stop_diagnosis()
+    # gt.evaluate()
+    # gt.print_results()
+    # gt.save()
+
     gt.start_diagnosis()
-    gt.build()
+    gt.build_for_all_words()
     gt.stop_diagnosis()
-    gt.evaluate()
-    gt.save()
     
 
 if __name__ == "__main__":

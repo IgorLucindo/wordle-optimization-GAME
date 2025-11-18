@@ -175,6 +175,7 @@ def _get_best_guess_composite2_GPU(T, G, F, _lambda=2):
     # --- 1️⃣ Build histogram table [guess × feedback] ---
     hist = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
+    hist[:, 242] = 0
 
     # --- 2️⃣ Compute per-guess statistics ---
     num_feedbacks = (hist > 0).sum(axis=1)
@@ -188,10 +189,15 @@ def _get_best_guess_composite2_GPU(T, G, F, _lambda=2):
     tie_breaker_bonus = cp.zeros(nG, dtype=cp.float32)
     tie_breaker_bonus[T] = 1
 
+    p_fail = cp.ones(nG, dtype=cp.float32)
+    p_fail[T] = (n - 1) / n
+
     # --- 3️⃣ Composite score ---
     # scores = mean_counts + 0.02*max_group_sizes + 0.01*std_partition - 0.1*tie_breaker_bonus # (minimize)
-    scores = num_feedbacks - 0.1*max_group_sizes - 0.1*std_partition + 0.5*tie_breaker_bonus # (maximize)
+    # scores = num_feedbacks - 0.1*max_group_sizes - 0.1*std_partition + 0.5*tie_breaker_bonus # (maximize)
+    scores = p_fail*mean_counts + 0.0*max_group_sizes + 0.0*std_partition # (minimize)
 
     # # --- 5️⃣ Best guess ---
-    g_star = G[cp.argmax(scores)]
+    g_star = G[cp.argmin(scores)]
+    # g_star = G[cp.argmax(scores)]
     return g_star

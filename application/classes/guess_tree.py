@@ -36,14 +36,16 @@ class Guess_Tree:
             'edges': [],
             'successors': {}
         }
+        self.results = {}
         self.node_count = 0
+        self.tree_count = 0
         self.build_runtime = -1
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self):
+    def build(self, starting_word=None):
         """
         Iterative build using explicit queue (BFS)
         """
@@ -51,13 +53,18 @@ class Guess_Tree:
         start_time = time.time()
         G_hard = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_hard, None, None)])
+        self.reset_tree()
+        self.node_count = 0
 
         while queue:
             T_filtered, G_hard, parent_id, feedback = queue.popleft()
             self.node_count += 1
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
-            word_guess = self.get_best_guess(T_filtered, G_arg, self.F)
+            if self.node_count == 1 and starting_word:
+                word_guess = starting_word
+            else:
+                word_guess = self.get_best_guess(T_filtered, G_arg, self.F)
             self.append2Tree(word_guess, self.node_count, parent_id, feedback)
 
             # Stop condition
@@ -77,6 +84,31 @@ class Guess_Tree:
 
         self.build_runtime = time.time() - start_time
     
+
+    def build_for_all_words(self):
+        """
+        Builds a decision tree for each possible starting word and evaluates it
+        """
+        results_pairs = []
+
+        for g in self.G:
+            self.build(g)
+            self.tree_count += 1
+            self.evaluate()
+            
+            # Store the average guesses along with the word 'g'
+            avg = self.results['avg_guesses']
+            first_guess = self.words_map[g.item()]
+            results_pairs.append((avg, first_guess))
+
+        # Final result processing
+        results_pairs.sort()
+        
+        # Print results
+        print("\n\nScores:")
+        for pair in results_pairs:
+            print(f"{pair[1]}: {pair[0]:.3f}")
+
 
     def append2Tree(self, word_guess, node_id, parent_id, feedback):
         """
@@ -102,6 +134,18 @@ class Guess_Tree:
         valid_mask = self.feedback_compat[possible_feedbacks, feedback]
 
         return G_hard[valid_mask]
+    
+
+    def reset_tree(self):
+        """
+        Resets the tree structure to its initial empty state
+        """
+        self.tree = {
+            'root': 1,
+            'nodes': {},
+            'edges': [],
+            'successors': {}
+        }
 
 
     def evaluate(self):
@@ -112,20 +156,13 @@ class Guess_Tree:
             return
 
         depths = []
-        hard_mode_valid = True
         
         for target in self.T:
             node_id = 1
             depth = 1
-            prev_guesses = []
-            prev_feedbacks = []
 
             while True:
                 guess = self.tree['nodes'][node_id]['guess']
-
-                if self.configs['hard_mode']:
-                    if not self.is_valid_hardmode_guess(guess, prev_guesses, prev_feedbacks):
-                        hard_mode_valid = False
 
                 if guess == target:
                     depths.append(depth)
@@ -138,48 +175,31 @@ class Guess_Tree:
         depths = np.array(depths)
         distribution = {int(d): int((depths == d).sum()) for d in np.unique(depths)}
 
-        print(
-            f"\n\nAverage guesses: {depths.mean():.3f}\n"
-            f"Std guesses: {depths.std():.3f}\n"
-            f"Max guesses: {depths.max()}\n"
-            f"Distribution: {distribution}\n"
-            f"Build Runtime: {self.build_runtime:.2f}s\n"
-            f"Nodes: {self.node_count}\n"
-        )
-        if self.configs['hard_mode']:
-            print(f"Hard mode valid: {hard_mode_valid}\n")
+        self.results = {
+            'avg_guesses': depths.mean(),
+            'std_guesses': depths.std(),
+            'max_guesses': depths.max(),
+            'distribution': distribution,
+            'build_runtime': self.build_runtime,
+            'nodes': self.node_count
+        }
+    
 
-
-    def is_valid_hardmode_guess(self, guess_word, prev_guesses, prev_feedbacks):
+    def print_results(self):
         """
-        Check if a guess satisfies Wordle hard mode rules based on previous feedbacks.
-        Works on CPU (NumPy) since it’s lightweight.
+        Prints the evaluation results to the console.
         """
-        # Convert encoded words to CPU numpy for simplicity
-        xp = self.xp
-        guess_word = xp.asnumpy(self.encoded_words[guess_word])
+        if not self.flags['evaluate']:
+            return
         
-        for g_idx, fb in zip(prev_guesses, prev_feedbacks):
-            prev_word = xp.asnumpy(self.encoded_words[g_idx])
-            fb = int(fb)
-            fb_pattern = np.base_repr(fb, base=3).zfill(len(guess_word))[-len(guess_word):]
-            fb_pattern = np.array(list(fb_pattern), dtype=int)
-
-            for pos, val in enumerate(fb_pattern):
-                if val == 2:  # green
-                    if guess_word[pos] != prev_word[pos]:
-                        return False
-                elif val == 1:  # yellow
-                    # must contain the letter somewhere else, not same position
-                    if prev_word[pos] not in guess_word or guess_word[pos] == prev_word[pos]:
-                        return False
-                elif val == 0:  # gray
-                    # cannot contain this letter unless it's already confirmed yellow/green elsewhere
-                    letter = prev_word[pos]
-                    greens_yellows = prev_word[(fb_pattern == 1) | (fb_pattern == 2)]
-                    if letter not in greens_yellows and letter in guess_word:
-                        return False
-        return True
+        print(
+            f"\n\nAverage guesses: {self.results['avg_guesses']:.3f}\n"
+            f"Std guesses: {self.results['std_guesses']:.3f}\n"
+            f"Max guesses: {self.results['max_guesses']}\n"
+            f"Distribution: {self.results['distribution']}\n"
+            f"Build Runtime: {self.results['build_runtime']:.2f}s\n"
+            f"Nodes: {self.results['nodes']}\n"
+        )
 
 
     def start_diagnosis(self):
@@ -195,7 +215,7 @@ class Guess_Tree:
             while not self._stop_diagnosis:
                 elapsed = int(time.time() - start_time)
                 sys.stdout.write(
-                    f"\rNode count: {self.node_count} | Time: {elapsed}s   "
+                    f"\rTree count: {self.tree_count} | Node count: {self.node_count} | Time: {elapsed}s   "
                 )
                 sys.stdout.flush()
                 time.sleep(1)
