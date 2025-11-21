@@ -154,7 +154,7 @@ def _get_best_guess_composite_GPU(T, G, F, _lambda=2):
     return g_star
 
 
-def _get_best_guess_composite2_GPU(T, G, F, _lambda=2):
+def _get_best_guess_composite2_GPU(T, G, F, depth, _lambda=2):
     """
     Finds the best guess using a composite score (GPU parallelization and prunning)
     """
@@ -187,7 +187,7 @@ def _get_best_guess_composite2_GPU(T, G, F, _lambda=2):
     max_group_sizes = hist.max(axis=1)
 
     tie_breaker_bonus = cp.zeros(nG, dtype=cp.float32)
-    tie_breaker_bonus[T] = 1
+    tie_breaker_bonus[T] = depth / n / (depth + 1)
 
     p_fail = cp.ones(nG, dtype=cp.float32)
     p_fail[T] = (n - 1) / n
@@ -195,7 +195,7 @@ def _get_best_guess_composite2_GPU(T, G, F, _lambda=2):
     # --- 3️⃣ Composite score ---
     # scores = mean_counts + 0.02*max_group_sizes + 0.01*std_partition - 0.1*tie_breaker_bonus # (minimize)
     # scores = num_feedbacks - 0.1*max_group_sizes - 0.1*std_partition + 0.5*tie_breaker_bonus # (maximize)
-    scores = p_fail*mean_counts + 0.0*max_group_sizes + 0.0*std_partition # (minimize)
+    scores = p_fail*mean_counts + tie_breaker_bonus + 0.03*max_group_sizes + 0.01*std_partition # (minimize)
 
     # # --- 5️⃣ Best guess ---
     g_star = G[cp.argmin(scores)]

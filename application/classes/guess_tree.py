@@ -12,9 +12,9 @@ import os
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, GGF, get_best_guess, feedback_compat = instance
-        self.xp = cp if configs['GPU'] else np
-        xp = self.xp
+        G, T, F, C, get_best_guess, best_first_guesses = instance
+        xp = cp if configs['GPU'] else np
+        self.xp = xp
 
         # Words as an int not strings
         self.words_map = G
@@ -22,9 +22,9 @@ class Guess_Tree:
         self.G = xp.arange(len(G))              # Guess words
         self.T = xp.arange(len(T))              # Target words
         self.F = F                              # Feedback matrix
-        self.GGF = GGF                          # Feedback matrix
+        self.C = C                              # Feedback compatibility matrix
         self.get_best_guess = get_best_guess    # Best guess function
-        self.feedback_compat = feedback_compat
+        self.best_first_guesses = xp.array([self.words_map.index(w) for w in best_first_guesses])
         self.flags = flags
         self.configs = configs
         
@@ -52,19 +52,21 @@ class Guess_Tree:
         xp = self.xp
         start_time = time.time()
         G_hard = self.G if self.configs['hard_mode'] else None
-        queue = deque([(self.T, G_hard, None, None)])
+        depth = 0
+        queue = deque([(self.T, G_hard, None, None, depth)])
         self.reset_tree()
         self.node_count = 0
 
         while queue:
-            T_filtered, G_hard, parent_id, feedback = queue.popleft()
+            T_filtered, G_hard, parent_id, feedback, depth = queue.popleft()
             self.node_count += 1
+            depth += 1
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
             if self.node_count == 1 and starting_word:
                 word_guess = starting_word
             else:
-                word_guess = self.get_best_guess(T_filtered, G_arg, self.F)
+                word_guess = self.get_best_guess(T_filtered, G_arg, self.F, depth)
             self.append2Tree(word_guess, self.node_count, parent_id, feedback)
 
             # Stop condition
@@ -80,7 +82,7 @@ class Guess_Tree:
             for i, f_new in enumerate(unique_feedbacks):
                 T_filtered_new = T_filtered[inverse_indices == i]
                 G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, word_guess)
-                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item()))
+                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item(), depth+1))
 
         self.build_runtime = time.time() - start_time
     
@@ -91,23 +93,24 @@ class Guess_Tree:
         """
         results_pairs = []
 
-        for g in self.G:
-            self.build(g)
+        for g in self.best_first_guesses:
             self.tree_count += 1
+            self.build(g)
             self.evaluate()
             
             # Store the average guesses along with the word 'g'
-            avg = self.results['avg_guesses']
+            _avg = self.results['avg_guesses']
+            _max = self.results['max_guesses']
             first_guess = self.words_map[g.item()]
-            results_pairs.append((avg, first_guess))
+            results_pairs.append((_avg, _max, first_guess))
 
         # Final result processing
         results_pairs.sort()
         
         # Print results
         print("\n\nScores:")
-        for pair in results_pairs:
-            print(f"{pair[1]}: {pair[0]:.3f}")
+        for pair in results_pairs[:100]:
+            print(f"{pair[2]}: avg. guesses: {pair[0]:.3f} | max. guesses: {pair[1]}")
 
 
     def append2Tree(self, word_guess, node_id, parent_id, feedback):
@@ -121,17 +124,17 @@ class Guess_Tree:
 
     def get_next_guesses_hardmode(self, T, G_hard, feedback, word_guess):
         """
-        Vectorized hard-mode filtering using precomputed LUT and GGF matrix
+        Vectorized hard-mode filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
         """
         if not self.configs['hard_mode'] or len(T) <= 2:
             return None
         
         # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
-        possible_feedbacks = self.GGF[G_hard, word_guess]
+        possible_feedbacks = self.F[G_hard, word_guess]
 
         # Mask of which feedbacks are compatible
-        valid_mask = self.feedback_compat[possible_feedbacks, feedback]
+        valid_mask = self.C[possible_feedbacks, feedback]
 
         return G_hard[valid_mask]
     
