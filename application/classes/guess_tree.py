@@ -1,4 +1,3 @@
-from utils.instance_utils import *
 from collections import deque
 import numpy as np
 import cupy as cp
@@ -12,22 +11,22 @@ import os
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, C, get_best_guess, best_first_guesses = instance
+        G, T, F, C, best_first_guesses, get_best_guess = instance
         xp = cp if configs['GPU'] else np
         self.xp = xp
 
         # Words as an int not strings
         self.words_map = G
-        self.encoded_words = xp.array([[ord(c) - ord('a') for c in w] for w in self.words_map], dtype=xp.int8)
-        self.G = xp.arange(len(G))              # Guess words
-        self.T = xp.arange(len(T))              # Target words
-        self.F = F                              # Feedback matrix
-        self.C = C                              # Feedback compatibility matrix
-        self.get_best_guess = get_best_guess    # Best guess function
-        self.best_first_guesses = xp.array([self.words_map.index(w) for w in best_first_guesses])
+        self.G = xp.arange(len(G))                    # Guess words
+        self.T = xp.arange(len(T))                    # Target words
+        self.F = F                                    # Feedback matrix
+        self.C = C                                    # Feedback compatibility matrix
+        self.best_first_guesses = best_first_guesses  # Encoded best first guesses
+        self._get_best_guess = get_best_guess         # Best guess function
         self.flags = flags
         self.configs = configs
         
+        self.starting_word = None
         self._stop_diagnosis = False
         self._diagnosis_thread = None
         self.tree = {
@@ -36,55 +35,63 @@ class Guess_Tree:
             'edges': [],
             'successors': {}
         }
-        self.results = {}
+        self.results = {
+            'avg_guesses': 0,
+            'std_guesses': 0,
+            'max_guesses': 0,
+            'distribution': None,
+            'build_runtime': 0,
+            'nodes': 0
+        }
         self.node_count = 0
         self.tree_count = 0
-        self.build_runtime = -1
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self, starting_word=None):
+    def build(self):
         """
         Iterative build using explicit queue (BFS)
         """
         xp = self.xp
         start_time = time.time()
         G_hard = self.G if self.configs['hard_mode'] else None
-        depth = 0
-        queue = deque([(self.T, G_hard, None, None, depth)])
+        queue = deque([(self.T, G_hard, None, None, 1)])
         self.reset_tree()
         self.node_count = 0
+        total_guesses = 0
 
         while queue:
             T_filtered, G_hard, parent_id, feedback, depth = queue.popleft()
             self.node_count += 1
-            depth += 1
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
-            if self.node_count == 1 and starting_word:
-                word_guess = starting_word
-            else:
-                word_guess = self.get_best_guess(T_filtered, G_arg, self.F, depth)
-            self.append2Tree(word_guess, self.node_count, parent_id, feedback)
+            g_star = self.get_best_guess(T_filtered, G_arg, self.F)
+            self.append2Tree(g_star, self.node_count, parent_id, feedback)
 
             # Stop condition
             if len(T_filtered) == 1:
+                total_guesses += depth
                 continue
             
             # Partition candidates by feedback
-            T_filtered = T_filtered[T_filtered != word_guess]
-            feedbacks = self.F[T_filtered, word_guess]
+            prev_len = len(T_filtered)
+            T_filtered = T_filtered[T_filtered != g_star]
+            if len(T_filtered) != prev_len:
+                total_guesses += depth
+            feedbacks = self.F[T_filtered, g_star]
             unique_feedbacks, inverse_indices = xp.unique(feedbacks, return_inverse=True)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
                 T_filtered_new = T_filtered[inverse_indices == i]
-                G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, word_guess)
-                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item(), depth+1))
+                G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, g_star)
+                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item(), depth + 1))
 
-        self.build_runtime = time.time() - start_time
+        self.results['avg_guesses'] = total_guesses / len(self.T)
+        self.results['build_runtime'] = time.time() - start_time
+        self.results['nodes'] = self.node_count
     
 
     def build_for_all_words(self):
@@ -95,7 +102,8 @@ class Guess_Tree:
 
         for g in self.best_first_guesses:
             self.tree_count += 1
-            self.build(g)
+            self.starting_word = g
+            self.build()
             self.evaluate()
             
             # Store the average guesses along with the word 'g'
@@ -109,8 +117,22 @@ class Guess_Tree:
         
         # Print results
         print("\n\nScores:")
-        for pair in results_pairs[:100]:
+        for pair in results_pairs:
             print(f"{pair[2]}: avg. guesses: {pair[0]:.3f} | max. guesses: {pair[1]}")
+        print("\n")
+
+
+    def get_best_guess(self, T, G, F):
+        """
+        Get best guess considering a fixed starting word
+        """
+        if self.starting_word:
+            g_star = self.starting_word
+            self.starting_word = None
+        else:
+            g_star = self._get_best_guess(T, G, F)
+        
+        return g_star
 
 
     def append2Tree(self, word_guess, node_id, parent_id, feedback):
@@ -153,11 +175,8 @@ class Guess_Tree:
 
     def evaluate(self):
         """
-        Evaluates the decision tree by simulating all possible games
+        Evaluates the tree by simulating all possible games
         """
-        if not self.flags['evaluate']:
-            return
-
         depths = []
         
         for target in self.T:
@@ -178,14 +197,10 @@ class Guess_Tree:
         depths = np.array(depths)
         distribution = {int(d): int((depths == d).sum()) for d in np.unique(depths)}
 
-        self.results = {
-            'avg_guesses': depths.mean(),
-            'std_guesses': depths.std(),
-            'max_guesses': depths.max(),
-            'distribution': distribution,
-            'build_runtime': self.build_runtime,
-            'nodes': self.node_count
-        }
+        self.results['avg_guesses'] = depths.mean()
+        self.results['std_guesses'] = depths.std()
+        self.results['max_guesses'] = depths.max()
+        self.results['distribution'] = distribution
     
 
     def print_results(self):

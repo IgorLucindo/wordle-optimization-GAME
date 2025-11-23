@@ -5,7 +5,7 @@ import json
 import ast
 
 
-def get_instance(configs):
+def get_instance(flags, configs):
     """
     Return word lists from dataset of words, feedback matrix and best guess function
     """
@@ -13,10 +13,15 @@ def get_instance(configs):
     G = T + _get_words("dataset/non_solutions.txt") # Guesses
     F = _get_feedback_matrix(T, G, configs)
     C = _get_feedback_compatibility_matrix(configs)
+    best_first_guesses = _get_best_first_guesses_encoded(G, configs)
     get_best_guess = best_guess_function(configs)
-    best_first_guesses = _get_best_first_guesses(configs)
+    
+    # Get best guess function if subtree metric is choosen
+    instance_data = (G, T, F, C, best_first_guesses)
+    if configs['subtree_score']:
+        get_best_guess = best_guess_function_subtree(instance_data + (get_best_guess,), flags, configs)
 
-    return G, T, F, C, get_best_guess, best_first_guesses
+    return instance_data + (get_best_guess,)
 
 
 def get_guess_tree():
@@ -158,10 +163,12 @@ def _get_feedback_compatibility_matrix(configs, l=5):
     return feedback_compat
 
 
-def _get_best_first_guesses(configs):
+def _get_best_first_guesses_encoded(G, configs):
     """
     Return n best first guesses
     """
+    xp = cp if configs['GPU'] else np
+
     n = configs['#trees']
     best_first_guesses = ['salet', 'crane', 'reast', 'crate', 'aback', 'trace', 'slate', 'carle', 'slane', 'slant', 'trice', 'torse', 'carte', 'least', 'rance', 'trine', 'stale', 'train', 'prate', 'slart', 'roast', 'taser', 'caret', 'clast', 'earst', 'lance', 'trone', 'carse', 'stare', 'leant', 'react', 'toile', 'peart', 'roist', 'trade', 'drant', 'stane', 'saint', 'scale', 'crine', 'crone', 'trape', 'crise', 'clart', 'plate', 'roset', 'sorel', 'canst', 'dealt', 'loast', 'crost', 'raine', 'truce', 'parse', 'reist', 'resat', 'snirt', 'corse', 'close', 'riant', 'slice', 'alist', 'sault', 'prase', 'soare', 'store', 'caner', 'orant', 'liane', 'plane', 'tripe', 'tares', 'trail', 'tried', 'raise', 'stole', 'trans', 'roate', 'saner', 'snare', 'spalt', 'arose', 'cruet', 'palet', 'snore', 'antre', 'strae', 'artel', 'cline', 'clint', 'liart', 'orate', 'tears', 'cater', 'plast', 'scant', 'spart', 'stile', 'thale', 'aline']
-    return best_first_guesses[:n]
+    return xp.array([G.index(w) for w in best_first_guesses[:n]])
