@@ -231,7 +231,7 @@ def _get_best_guess_subtree(T, G, F, subtree, candidates):
 
     for g in candidates:
         subtree.starting_word = g
-        subtree.build()
+        subtree.build(build_flag=False)
 
         score = subtree.results['avg_guesses']
         if score < min_score:

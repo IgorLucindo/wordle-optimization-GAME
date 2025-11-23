@@ -44,13 +44,12 @@ class Guess_Tree:
             'nodes': 0
         }
         self.node_count = 0
-        self.tree_count = 0
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self):
+    def build(self, build_flag=True):
         """
         Iterative build using explicit queue (BFS)
         """
@@ -68,7 +67,7 @@ class Guess_Tree:
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
             g_star = self.get_best_guess(T_filtered, G_arg, self.F)
-            self.append2Tree(g_star, self.node_count, parent_id, feedback)
+            self.append2Tree(g_star, self.node_count, parent_id, feedback, build_flag)
 
             # Stop condition
             if len(T_filtered) == 1:
@@ -92,34 +91,6 @@ class Guess_Tree:
         self.results['avg_guesses'] = total_guesses / len(self.T)
         self.results['build_runtime'] = time.time() - start_time
         self.results['nodes'] = self.node_count
-    
-
-    def build_for_all_words(self):
-        """
-        Builds a decision tree for each possible starting word and evaluates it
-        """
-        results_pairs = []
-
-        for g in self.best_first_guesses:
-            self.tree_count += 1
-            self.starting_word = g
-            self.build()
-            self.evaluate()
-            
-            # Store the average guesses along with the word 'g'
-            _avg = self.results['avg_guesses']
-            _max = self.results['max_guesses']
-            first_guess = self.words_map[g.item()]
-            results_pairs.append((_avg, _max, first_guess))
-
-        # Final result processing
-        results_pairs.sort()
-        
-        # Print results
-        print("\n\nScores:")
-        for pair in results_pairs:
-            print(f"{pair[2]}: avg. guesses: {pair[0]:.3f} | max. guesses: {pair[1]}")
-        print("\n")
 
 
     def get_best_guess(self, T, G, F):
@@ -135,10 +106,13 @@ class Guess_Tree:
         return g_star
 
 
-    def append2Tree(self, word_guess, node_id, parent_id, feedback):
+    def append2Tree(self, word_guess, node_id, parent_id, feedback, build_flag):
         """
         Append node and edge to tree
         """
+        if not build_flag:
+            return
+        
         self.tree['nodes'][node_id] = {'guess': word_guess}
         self.tree['edges'].append([parent_id, node_id])
         self.tree['successors'][(parent_id, feedback)] = node_id
@@ -233,7 +207,7 @@ class Guess_Tree:
             while not self._stop_diagnosis:
                 elapsed = int(time.time() - start_time)
                 sys.stdout.write(
-                    f"\rTree count: {self.tree_count} | Node count: {self.node_count} | Time: {elapsed}s   "
+                    f"\rNode count: {self.node_count} | Time: {elapsed}s   "
                 )
                 sys.stdout.flush()
                 time.sleep(1)
