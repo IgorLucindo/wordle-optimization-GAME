@@ -169,6 +169,6 @@ def _get_best_first_guesses_encoded(G, configs):
     """
     xp = cp if configs['GPU'] else np
 
-    n = configs['#trees']
+    n = 10
     best_first_guesses = ['salet', 'crane', 'reast', 'crate', 'aback', 'trace', 'slate', 'carle', 'slane', 'slant', 'trice', 'torse', 'carte', 'least', 'rance', 'trine', 'stale', 'train', 'prate', 'slart', 'roast', 'taser', 'caret', 'clast', 'earst', 'lance', 'trone', 'carse', 'stare', 'leant', 'react', 'toile', 'peart', 'roist', 'trade', 'drant', 'stane', 'saint', 'scale', 'crine', 'crone', 'trape', 'crise', 'clart', 'plate', 'roset', 'sorel', 'canst', 'dealt', 'loast', 'crost', 'raine', 'truce', 'parse', 'reist', 'resat', 'snirt', 'corse', 'close', 'riant', 'slice', 'alist', 'sault', 'prase', 'soare', 'store', 'caner', 'orant', 'liane', 'plane', 'tripe', 'tares', 'trail', 'tried', 'raise', 'stole', 'trans', 'roate', 'saner', 'snare', 'spalt', 'arose', 'cruet', 'palet', 'snore', 'antre', 'strae', 'artel', 'cline', 'clint', 'liart', 'orate', 'tears', 'cater', 'plast', 'scant', 'spart', 'stile', 'thale', 'aline']
     return xp.array([G.index(w) for w in best_first_guesses[:n]])
