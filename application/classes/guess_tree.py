@@ -11,7 +11,7 @@ import os
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, C, best_first_guesses, get_best_guess = instance
+        G, T, F, C, get_best_guess = instance
         xp = cp if configs['GPU'] else np
         self.xp = xp
 
@@ -21,7 +21,6 @@ class Guess_Tree:
         self.T = xp.arange(len(T))                    # Target words
         self.F = F                                    # Feedback matrix
         self.C = C                                    # Feedback compatibility matrix
-        self.best_first_guesses = best_first_guesses  # Encoded best first guesses
         self._get_best_guess = get_best_guess         # Best guess function
         self.flags = flags
         self.configs = configs
@@ -97,7 +96,7 @@ class Guess_Tree:
         """
         Get best guess considering a fixed starting word
         """
-        if self.starting_word:
+        if self.starting_word is not None:
             g_star = self.starting_word
             self.starting_word = None
         else:
