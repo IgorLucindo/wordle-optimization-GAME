@@ -13,12 +13,8 @@ def get_instance(flags, configs):
     G = T + _get_words("dataset/non_solutions.txt") # Guesses
     F = _get_feedback_matrix(T, G, configs)
     C = _get_feedback_compatibility_matrix(configs)
-    get_best_guess = best_guess_function(configs)
-    
-    # Get best guess function if subtree metric is choosen
     instance_data = (G, T, F, C)
-    if configs['subtree_score']:
-        get_best_guess = best_guess_function_subtree(instance_data + (get_best_guess,), flags, configs)
+    get_best_guess = best_guess_function(instance_data, flags, configs)
 
     return instance_data + (get_best_guess,)
 

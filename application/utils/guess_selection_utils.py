@@ -1,30 +1,25 @@
 from classes.guess_tree import *
-from collections import Counter
 from cupyx import scatter_add
 import numpy as np
 import cupy as cp
 
 
-def best_guess_function(configs):
+def best_guess_function(instance_data, flags, configs):
     """
     Selects the appropriate best guess function based on flags
     """
-    if configs['GPU']:
-        return _get_best_guess_GPU
-    else:
-        return _get_best_guess_CPU
-
-
-def best_guess_function_subtree(instance, flags, configs):
-    """
-    Selects the best guess function based on subtree metric
-    """
-    subtree = Guess_Tree(instance, flags, configs)
-
-    def _get_best_guess_subtree_func(T, G, F):
-        return _get_best_guess_subtree(T, G, F, subtree)
+    get_best_guess = _get_best_guess_GPU if configs['GPU'] else _get_best_guess_CPU
+    instance_for_subtree = instance_data + (get_best_guess,)
     
-    return _get_best_guess_subtree_func
+    # Get best guess function if subtree metric is choosen
+    if configs['subtree_score']:
+        subtree = Guess_Tree(instance_for_subtree, flags, configs)
+        
+        def get_best_guess_subtree(T, G, F):
+            return _get_best_guess_subtree(T, G, F, subtree)
+        get_best_guess = get_best_guess_subtree
+
+    return get_best_guess
 
 
 def _get_best_guess_CPU(T, G, F):
@@ -85,7 +80,7 @@ def _get_best_guess_GPU(T, G, F):
     p_fail[T] = (n - 1) / n
 
     # --- Score ---
-    scores = p_fail*mean_counts
+    scores = p_fail * mean_counts
 
     # Best guess
     g_star = G[cp.argmin(scores)]
@@ -123,7 +118,7 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     p_fail[T] = (n - 1) / n
 
     # --- score ---
-    scores = p_fail*mean_counts
+    scores = p_fail * mean_counts
 
     # Get best guesses
     sorted_indices = cp.argsort(scores)
