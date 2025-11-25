@@ -67,19 +67,19 @@ def _get_best_guess_GPU(T, G, F):
     pattern_seen = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(pattern_seen, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
 
-    # --- Build histogram table [guess × feedback] ---
+    # Build histogram table [guess × feedback]
     hist = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
     hist[:, 242] = 0
 
-    # --- Compute per-guess statistics ---
+    # Compute per-guess statistics
     num_feedbacks = (hist > 0).sum(axis=1)
     sum_counts = hist.sum(axis=1)
     mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
     p_fail = cp.ones(nG, dtype=cp.float32)
     p_fail[T] = (n - 1) / n
 
-    # --- Score ---
+    # Score
     scores = p_fail * mean_counts
 
     # Best guess
@@ -105,26 +105,24 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     flat_fb = feedbacks_sub.ravel(order='F')
     flat_col = cp.repeat(cp.arange(nG), n)
 
-    # --- Build histogram table [guess × feedback] ---
+    # Build histogram table [guess × feedback]
     hist = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
     hist[:, 242] = 0
 
-    # --- Compute per-guess statistics ---
+    # Compute per-guess statistics
     num_feedbacks = (hist > 0).sum(axis=1)
     sum_counts = hist.sum(axis=1)
     mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
     p_fail = cp.ones(nG, dtype=cp.float32)
     p_fail[T] = (n - 1) / n
 
-    # --- score ---
+    # Score
     scores = p_fail * mean_counts
 
-    # Get best guesses
+    # Best guesses
     sorted_indices = cp.argsort(scores)
     g_star_idxs = sorted_indices[:num_of_guesses]
-
-    # --- Best guesses ---
     return G[g_star_idxs]
 
 
