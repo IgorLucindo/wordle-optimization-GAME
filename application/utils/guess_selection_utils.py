@@ -75,7 +75,7 @@ def _get_best_guess_GPU(T, G, F):
     # Compute per-guess statistics
     num_feedbacks = (hist > 0).sum(axis=1)
     sum_counts = hist.sum(axis=1)
-    mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
+    mean_counts = sum_counts / num_feedbacks
     p_fail = cp.ones(nG, dtype=cp.float32)
     p_fail[T] = (n - 1) / n
 
@@ -113,7 +113,7 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     # Compute per-guess statistics
     num_feedbacks = (hist > 0).sum(axis=1)
     sum_counts = hist.sum(axis=1)
-    mean_counts = sum_counts / cp.maximum(num_feedbacks, 1)
+    mean_counts = sum_counts / num_feedbacks
     p_fail = cp.ones(nG, dtype=cp.float32)
     p_fail[T] = (n - 1) / n
 
