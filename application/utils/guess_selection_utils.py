@@ -37,9 +37,8 @@ def _get_best_guess_CPU(T, G, F):
         P_g = np.unique(F[T, g])
         scores[g] = ((n - 1) if g in T_set else n) / len(P_g)
 
-    # Get best guess
+    # Best guess
     g_star = G[np.argmin(scores)]
-
     return g_star
 
 
@@ -67,12 +66,8 @@ def _get_best_guess_GPU(T, G, F):
     num_feedbacks = (hist > 0).sum(axis=1)
     hist[:, 242] = 0
 
-    # Compute per-guess statistics
-    sum_counts = hist.sum(axis=1)
-    mean_counts = sum_counts / num_feedbacks
-
     # Score
-    scores = mean_counts
+    scores = hist.sum(axis=1) / num_feedbacks
 
     # Best guess
     g_star = G[cp.argmin(scores)]
@@ -103,12 +98,8 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     num_feedbacks = (hist > 0).sum(axis=1)
     hist[:, 242] = 0
 
-    # Compute per-guess statistics
-    sum_counts = hist.sum(axis=1)
-    mean_counts = sum_counts / num_feedbacks
-
     # Score
-    scores = mean_counts
+    scores = hist.sum(axis=1) / num_feedbacks
 
     # Best guesses
     sorted_indices = cp.argsort(scores)
