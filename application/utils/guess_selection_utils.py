@@ -106,8 +106,6 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     # Compute per-guess statistics
     sum_counts = hist.sum(axis=1)
     mean_counts = sum_counts / num_feedbacks
-    p_fail = cp.ones(nG, dtype=cp.float32)
-    p_fail[T] = (n - 1) / n
 
     # Score
     scores = mean_counts

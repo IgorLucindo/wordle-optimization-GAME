@@ -120,6 +120,13 @@ def _encode_word(word):
     return cp.array([ord(c) - 97 for c in word], dtype=cp.int8)
 
 
+def decode_feedback(f):
+    base = 3
+    L = 5
+    exps = cp.power(base, cp.arange(L - 1, -1, -1))
+    return (f // exps) % base
+
+
 def _get_feedback_matrix_GPU_batched(T, G, batch_size=1000):
     """
     Return feedback matrix of shape (G, G) with dtype=cp.uint8, where matrix[i, j] is the
