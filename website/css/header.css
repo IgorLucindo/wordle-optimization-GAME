@@ -1,8 +1,10 @@
 header {
-    display: flex;
+    display: grid;
+    grid-template-areas: "left center right";
+    grid-template-columns: 15% 30% 15%;
     justify-content: center;
-    align-items: center;
     position: sticky;
+    gap: 10px;
     top: 0;
     width: 100%;
     padding: 0.5% 0;
@@ -10,16 +12,20 @@ header {
     border-bottom: 1px solid var(--border-color);
 }
 
+.box-1 { grid-area: left; }
+.box-2 { grid-area: center; }
+.box-3 { grid-area: right; }
+
 header > h1 {
-    margin: 0 20px;
+    margin: 0;
+    text-align: center;
 }
 
 .header-buttons {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5%;
-    width: 50%;
+    gap: 25px;
     user-select: none;
 }
 
@@ -74,10 +80,19 @@ header > h1 {
 @media screen and (max-width: 768px) {
     header {
         padding: 2% 0;
+        grid-template-areas: 
+            "center center"
+            "left right";
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    header > h1 {
+        font-size: 1.7rem;
     }
     
     .header-buttons {
-        gap: 18%;
+        gap: 32%;
     }
 
     #info-btn {
