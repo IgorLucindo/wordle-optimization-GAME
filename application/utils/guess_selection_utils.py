@@ -118,17 +118,15 @@ def _get_best_guess_subtree(T, G, F, subtree):
     # Get guess candidates based on chosen metric
     g_candidates = _get_best_guesses_GPU(T, G, F)
     
-    min_score = float('inf')
+    scores = cp.zeros(len(g_candidates))
     subtree.T = T
     subtree.G = G
 
-    for g in g_candidates:
+    for i, g in enumerate(g_candidates):
         subtree.starting_word = g
         subtree.build(build_flag=False)
+        scores[i] = subtree.results['avg_guesses']
 
-        score = subtree.results['avg_guesses']
-        if score < min_score:
-            min_score = score
-            g_star = g
-
+    # Best guess
+    g_star = g_candidates[cp.argmin(scores)]
     return g_star
