@@ -9,7 +9,8 @@ def best_guess_function(instance_data, flags, configs):
     Selects the appropriate best guess function based on flags
     """
     get_best_guess = _get_best_guess_GPU if configs['GPU'] else _get_best_guess_CPU
-    instance_for_subtree = instance_data + (get_best_guess,)
+    get_best_guesses = best_guesses_function(configs)
+    instance_for_subtree = instance_data + (get_best_guess, get_best_guesses,)
     
     # Get best guess function if subtree metric is choosen
     if configs['subtree_score']:
@@ -20,6 +21,10 @@ def best_guess_function(instance_data, flags, configs):
         get_best_guess = get_best_guess_subtree
 
     return get_best_guess
+
+
+def best_guesses_function(configs):
+    return _get_best_guesses_GPU if configs['GPU'] else _get_best_guesses_CPU
 
 
 def _get_best_guess_CPU(T, G, F):
@@ -33,9 +38,9 @@ def _get_best_guess_CPU(T, G, F):
     scores = np.zeros(len(G))
     T_set = set(T.tolist())
 
-    for g in G:
+    for i, g in enumerate(G):
         P_g = np.unique(F[T, g])
-        scores[g] = ((n - 1) if g in T_set else n) / len(P_g)
+        scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
 
     # Best guess
     g_star = G[np.argmin(scores)]
@@ -72,6 +77,27 @@ def _get_best_guess_GPU(T, G, F):
     # Best guess
     g_star = G[cp.argmin(scores)]
     return g_star
+
+
+def _get_best_guesses_CPU(T, G, F, num_of_guesses=10):
+    """
+    Finds the best guesses by minimizing the expected size of remaining set (CPU)
+    """
+    n = len(T)
+    if n <= 2:
+        return T[0]
+    
+    scores = np.zeros(len(G))
+    T_set = set(T.tolist())
+
+    for i, g in enumerate(G):
+        P_g = np.unique(F[T, g])
+        scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
+
+    # Best guesses
+    sorted_indices = np.argsort(scores)
+    g_star_idxs = sorted_indices[:num_of_guesses]
+    return G[g_star_idxs]
 
 
 def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
@@ -115,10 +141,13 @@ def _get_best_guess_subtree(T, G, F, subtree):
     if n <= 2:
         return T[0]
     
-    # Get guess candidates based on chosen metric
-    g_candidates = _get_best_guesses_GPU(T, G, F)
+    xp = subtree.xp
     
-    scores = cp.zeros(len(g_candidates))
+    # Get guess candidates based on chosen metric
+    # g_candidates = subtree.get_best_guesses(T, G, F)
+    g_candidates = G
+    
+    scores = xp.zeros(len(g_candidates))
     subtree.T = T
     subtree.G = G
 
@@ -128,5 +157,5 @@ def _get_best_guess_subtree(T, G, F, subtree):
         scores[i] = subtree.results['avg_guesses']
 
     # Best guess
-    g_star = g_candidates[cp.argmin(scores)]
+    g_star = g_candidates[xp.argmin(scores)]
     return g_star

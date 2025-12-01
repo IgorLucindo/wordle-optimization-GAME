@@ -10,7 +10,7 @@ flags = {
 }
 
 configs = {
-    'GPU': True,
+    'GPU': False,
     'hard_mode': False,
     'subtree_score': True
 }

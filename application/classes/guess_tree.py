@@ -11,7 +11,7 @@ import os
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, C, get_best_guess = instance
+        G, T, F, C, get_best_guess, get_best_guesses = instance
         xp = cp if configs['GPU'] else np
         self.xp = xp
 
@@ -22,6 +22,7 @@ class Guess_Tree:
         self.F = F                                    # Feedback matrix
         self.C = C                                    # Feedback compatibility matrix
         self._get_best_guess = get_best_guess         # Best guess function
+        self.get_best_guesses = get_best_guesses      # Best guesses function
         self.flags = flags
         self.configs = configs
         
@@ -188,7 +189,7 @@ class Guess_Tree:
             f"Std guesses: {self.results['std_guesses']:.3f}\n"
             f"Max guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"
-            f"Build Runtime: {self.results['build_runtime']:.2f}s\n"
+            f"Build Runtime: {self.results['build_runtime']:.3f}s\n"
             f"Nodes: {self.results['nodes']}\n"
         )
 
