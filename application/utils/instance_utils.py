@@ -151,9 +151,8 @@ def _get_feedback_compatibility_matrix(configs, l=5):
     codes = xp.arange(n, dtype=xp.int32)
     digits = ((codes[:, None] // (3 ** xp.arange(l-1, -1, -1))) % 3).astype(xp.int8)
 
-    # Compare all pairs (i,j): we want j >= i elementwise
-    # Expand dims to (243, 1, 5) and (1, 243, 5)
-    C = xp.all(digits[None, :, :] >= digits[:, None, :], axis=2)
+    # Compare all pairs (i, j): we want i >= j elementwise
+    C = xp.all(digits[:, None, :] >= digits[None, :, :], axis=2)
 
     return C
 

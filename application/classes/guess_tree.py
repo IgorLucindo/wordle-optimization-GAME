@@ -106,19 +106,19 @@ class Guess_Tree:
         return g_star
 
 
-    def append2Tree(self, word_guess, node_id, parent_id, feedback, build_flag):
+    def append2Tree(self, g_star, node_id, parent_id, feedback, build_flag):
         """
         Append node and edge to tree
         """
         if not build_flag:
             return
         
-        self.tree['nodes'][node_id] = {'guess': word_guess}
+        self.tree['nodes'][node_id] = {'guess': g_star}
         self.tree['edges'].append([parent_id, node_id])
         self.tree['successors'][(parent_id, feedback)] = node_id
 
 
-    def get_next_guesses_hardmode(self, T, G_hard, feedback, word_guess):
+    def get_next_guesses_hardmode(self, T, G_hard, feedback, g_star):
         """
         Vectorized hard-mode filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
@@ -127,7 +127,7 @@ class Guess_Tree:
             return None
         
         # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
-        possible_feedbacks = self.F[G_hard, word_guess]
+        possible_feedbacks = self.F[G_hard, g_star]
 
         # Mask of which feedbacks are compatible
         valid_mask = self.C[possible_feedbacks, feedback]
