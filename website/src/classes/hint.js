@@ -1,3 +1,6 @@
+import { showTooltip } from '../utils/document_utils.js';
+
+
 export class Hint {
     constructor() {
         this.el = document.querySelector('#hint-btn');
@@ -15,7 +18,6 @@ export class Hint {
 
     getVariables(variables) {
         this.cfg = variables.cfg;
-        this.message = variables.message;
 
         this.tree = variables.dataset.guessTree;
     }
@@ -26,7 +28,7 @@ export class Hint {
 
         // Click info button event
         const clickHintBtn = () => {
-            this.message.show(`Word hint: <span class="msg-highlight">${this.guess}</span>`);
+            showTooltip(this.el, `Guess: ${this.guess}`);
         };
 
         // Create events
