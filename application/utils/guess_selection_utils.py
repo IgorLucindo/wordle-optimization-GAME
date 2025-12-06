@@ -69,10 +69,12 @@ def _get_best_guess_GPU(T, G, F):
     hist = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
     num_feedbacks = (hist > 0).sum(axis=1)
-    hist[:, 242] = 0
+    global_mask = cp.zeros(F.shape[0], dtype=cp.bool_)
+    global_mask[T] = True
+    in_T = global_mask[G]
 
     # Score
-    scores = hist.sum(axis=1) / num_feedbacks
+    scores = (n - in_T) / num_feedbacks
 
     # Best guess
     g_star = G[cp.argmin(scores)]
@@ -84,9 +86,6 @@ def _get_best_guesses_CPU(T, G, F, num_of_guesses=10):
     Finds the best guesses by minimizing the expected size of remaining set (CPU)
     """
     n = len(T)
-    if n <= 2:
-        return T[0]
-    
     scores = np.zeros(len(G))
     T_set = set(T.tolist())
 
@@ -105,9 +104,6 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     Finds the best guesses by minimizing the expected size of remaining set (GPU)
     """
     n = len(T)
-    if n <= 2:
-        return T[0]
-
     nG = len(G)
     base = 243  # Number of possible feedback patterns
 
@@ -122,10 +118,12 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     hist = cp.zeros((nG, base), dtype=cp.int32)
     scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
     num_feedbacks = (hist > 0).sum(axis=1)
-    hist[:, 242] = 0
+    global_mask = cp.zeros(F.shape[0], dtype=cp.bool_)
+    global_mask[T] = True
+    in_T = global_mask[G]
 
     # Score
-    scores = hist.sum(axis=1) / num_feedbacks
+    scores = (n - in_T) / num_feedbacks
 
     # Best guesses
     sorted_indices = cp.argsort(scores)
@@ -144,8 +142,8 @@ def _get_best_guess_subtree(T, G, F, subtree):
     xp = subtree.xp
     
     # Get guess candidates based on chosen metric
-    # g_candidates = subtree.get_best_guesses(T, G, F)
-    g_candidates = G
+    g_candidates = subtree.get_best_guesses(T, G, F)
+    # g_candidates = G
     
     scores = xp.zeros(len(g_candidates))
     subtree.T = T
