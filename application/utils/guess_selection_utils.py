@@ -59,7 +59,7 @@ def _get_best_guess_GPU(T, G, F):
     base = 243  # Number of possible feedback patterns
 
     # Extract feedback submatrix
-    feedbacks_sub = F[T[:, None], G]  # shape: (len(T), len(G))
+    feedbacks_sub = F[T[:, None], G]
 
     # Flatten in column-major order to align with guesses
     flat_fb = feedbacks_sub.ravel(order='F')
