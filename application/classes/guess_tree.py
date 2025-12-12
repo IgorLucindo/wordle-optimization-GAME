@@ -32,7 +32,6 @@ class Guess_Tree:
         self.tree = {
             'root': 1,
             'nodes': {},
-            'edges': [],
             'successors': {}
         }
         self.results = {
@@ -185,12 +184,13 @@ class Guess_Tree:
             return
         
         print(
-            f"\n\nAverage guesses: {self.results['avg_guesses']:.3f}\n"
+            f"\n\nAverage guesses: {self.results['avg_guesses']:.5f}\n"
             f"Std guesses: {self.results['std_guesses']:.3f}\n"
             f"Max guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"
             f"Build Runtime: {self.results['build_runtime']:.3f}s\n"
             f"Nodes: {self.results['nodes']}\n"
+            f"Best first word: {self.words_map[self.tree['nodes'][1]['guess'].item()]}\n"
         )
 
 
