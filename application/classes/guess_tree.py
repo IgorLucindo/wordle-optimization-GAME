@@ -35,7 +35,7 @@ class Guess_Tree:
             'successors': {}
         }
         self.results = {
-            'avg_guesses': 0,
+            'exp_guesses': 0,
             'std_guesses': 0,
             'max_guesses': 0,
             'distribution': None,
@@ -43,6 +43,7 @@ class Guess_Tree:
             'nodes': 0
         }
         self.node_count = 0
+        self.depths = np.zeros(len(self.T))
 
         self.path = "application/results/"
         os.makedirs(self.path, exist_ok=True)
@@ -58,7 +59,7 @@ class Guess_Tree:
         queue = deque([(self.T, G_hard, None, None, 1)])
         self.reset_tree()
         self.node_count = 0
-        total_guesses = 0
+        depths = []
 
         while queue:
             T_filtered, G_hard, parent_id, feedback, depth = queue.popleft()
@@ -70,16 +71,17 @@ class Guess_Tree:
 
             # Stop condition
             if len(T_filtered) == 1:
-                total_guesses += depth
+                depths.append(depth)
                 continue
             
             # Partition candidates by feedback
             prev_len = len(T_filtered)
             T_filtered = T_filtered[T_filtered != g_star]
-            if len(T_filtered) != prev_len:
-                total_guesses += depth
             feedbacks = self.F[T_filtered, g_star]
             unique_feedbacks, inverse_indices = xp.unique(feedbacks, return_inverse=True)
+
+            if len(T_filtered) != prev_len:
+                depths.append(depth)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
@@ -87,7 +89,7 @@ class Guess_Tree:
                 G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, g_star)
                 queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item(), depth + 1))
 
-        self.results['avg_guesses'] = total_guesses / len(self.T)
+        self.depths = np.array(depths)
         self.results['build_runtime'] = time.time() - start_time
         self.results['nodes'] = self.node_count
 
@@ -113,7 +115,6 @@ class Guess_Tree:
             return
         
         self.tree['nodes'][node_id] = {'guess': g_star}
-        self.tree['edges'].append([parent_id, node_id])
         self.tree['successors'][(parent_id, feedback)] = node_id
 
 
@@ -141,9 +142,17 @@ class Guess_Tree:
         self.tree = {
             'root': 1,
             'nodes': {},
-            'edges': [],
             'successors': {}
         }
+
+
+    def evaluate_quick(self):
+        """
+        Evaluates the tree by deriving data from its depths
+        """
+        self.results['exp_guesses'] = self.depths.mean()
+        self.results['std_guesses'] = self.depths.std()
+        self.results['max_guesses'] = self.depths.max()
 
 
     def evaluate(self):
@@ -170,7 +179,7 @@ class Guess_Tree:
         depths = np.array(depths)
         distribution = {int(d): int((depths == d).sum()) for d in np.unique(depths)}
 
-        self.results['avg_guesses'] = depths.mean()
+        self.results['exp_guesses'] = depths.mean()
         self.results['std_guesses'] = depths.std()
         self.results['max_guesses'] = depths.max()
         self.results['distribution'] = distribution
@@ -184,7 +193,7 @@ class Guess_Tree:
             return
         
         print(
-            f"\n\nAverage guesses: {self.results['avg_guesses']:.5f}\n"
+            f"\n\nAverage guesses: {self.results['exp_guesses']:.5f}\n"
             f"Std guesses: {self.results['std_guesses']:.3f}\n"
             f"Max guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"

@@ -94,7 +94,7 @@ def _get_best_guesses_CPU(T, G, F, num_of_guesses=10):
         scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
 
     # Best guesses
-    sorted_indices = np.argsort(scores)
+    sorted_indices = np.argsort(scores, kind='stable')
     g_star_idxs = sorted_indices[:num_of_guesses]
     return G[g_star_idxs]
 
@@ -152,7 +152,8 @@ def _get_best_guess_subtree(T, G, F, subtree):
     for i, g in enumerate(g_candidates):
         subtree.starting_word = g
         subtree.build(build_flag=False)
-        scores[i] = subtree.results['avg_guesses']
+        subtree.evaluate_quick()
+        scores[i] = subtree.results['exp_guesses'] + 0.001 * subtree.results['max_guesses']
 
     # Best guess
     g_star = g_candidates[xp.argmin(scores)]
