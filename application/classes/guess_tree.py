@@ -193,7 +193,7 @@ class Guess_Tree:
         
         print(
             f"\n\n"
-            f"Exp. guesses: {self.results['exp_guesses']:.5f}\n"
+            f"Exp. guesses: {self.results['exp_guesses']:.3f}\n"
             f"Std. guesses: {self.results['std_guesses']:.3f}\n"
             f"Max. guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"
