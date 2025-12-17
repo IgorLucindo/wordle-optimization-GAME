@@ -1,8 +1,6 @@
 from utils.guess_selection_utils import *
 import numpy as np
 import cupy as cp
-import json
-import ast
 
 
 def get_instance(flags, configs):
@@ -18,17 +16,6 @@ def get_instance(flags, configs):
     get_best_guesses = best_guesses_function(configs)
 
     return instance_data + (get_best_guess, get_best_guesses,)
-
-
-def get_guess_tree():
-    """
-    Loads the decision tree from a JSON file
-    """
-    with open('dataset/guess_tree.json', 'r') as f:
-        tree = json.load(f)
-        tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
-
-    return tree
 
 
 def _get_words(filepath):

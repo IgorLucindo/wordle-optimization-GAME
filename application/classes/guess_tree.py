@@ -4,6 +4,7 @@ import cupy as cp
 import threading
 import json
 import time
+import ast
 import sys
 import os
 
@@ -21,7 +22,7 @@ class Guess_Tree:
         self.T = xp.arange(len(T))                    # Target words
         self.F = F                                    # Feedback matrix
         self.C = C                                    # Feedback compatibility matrix
-        self._get_best_guess = get_best_guess         # Best guess function
+        self.get_best_guess = get_best_guess          # Best guess function
         self.get_best_guesses = get_best_guesses      # Best guesses function
         self.flags = flags
         self.configs = configs
@@ -34,6 +35,7 @@ class Guess_Tree:
             'nodes': {},
             'successors': {}
         }
+        self.decoded_tree = {}
         self.results = {
             'exp_guesses': 0,
             'std_guesses': 0,
@@ -67,7 +69,7 @@ class Guess_Tree:
             self.node_count += 1
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
-            g_star, g_star_in_T = self.get_best_guess(T_filtered, G_arg, self.F)
+            g_star, g_star_in_T = self.get_best_guess_starting_word(T_filtered, G_arg, self.F)
             self.append2Tree(g_star, self.node_count, parent_id, feedback, build_flag)
             if g_star_in_T:
                 depths.append(depth)
@@ -92,7 +94,7 @@ class Guess_Tree:
         self.results['nodes'] = self.node_count
 
 
-    def get_best_guess(self, T, G, F):
+    def get_best_guess_starting_word(self, T, G, F):
         """
         Get best guess considering a fixed starting word
         """
@@ -101,7 +103,7 @@ class Guess_Tree:
             g_star_in_T = self.start_data[1]
             self.start_data = None
         else:
-            g_star, g_star_in_T = self._get_best_guess(T, G, F)
+            g_star, g_star_in_T = self.get_best_guess(T, G, F)
         
         return g_star, g_star_in_T
 
@@ -145,6 +147,24 @@ class Guess_Tree:
         }
 
 
+    def decode_tree(self):
+        """
+        Decode tree
+        """
+        if not self.decoded_tree:
+            return
+
+
+    def load_tree(self, filepath='dataset/guess_tree.json'):
+        """
+        Loads the decision tree from a JSON file
+        """
+        with open(filepath, 'r') as f:
+            tree = json.load(f)
+            tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
+            self.decoded_tree = tree
+
+
     def evaluate_quick(self):
         """
         Evaluates the tree by deriving data from its depths
@@ -182,6 +202,12 @@ class Guess_Tree:
         self.results['std_guesses'] = depths.std()
         self.results['max_guesses'] = depths.max()
         self.results['distribution'] = distribution
+
+
+    def evaluate_decoded(self):
+        """
+        Evaluates the decoded tree by simulating all possible games
+        """
     
 
     def print_results(self):
@@ -236,10 +262,12 @@ class Guess_Tree:
 
     def save(self):
         """
-        Saves the tree to a JSON file
+        Saves the decoded tree to a JSON file
         """
         if not self.flags['save_tree']:
             return
+        
+        self.decode_tree()
 
         with open(self.path + "decision_tree.json", "w") as f:
-            json.dump(self.tree, f)
+            json.dump(self.decoded_tree, f)

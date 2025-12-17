@@ -3,7 +3,7 @@ from classes.guess_tree import *
 
 
 flags = {
-    'print_diagnosis': True,
+    'print_diagnosis': False,
     'evaluate': True,
     'save_tree': False,
     'save_results': False
@@ -11,8 +11,8 @@ flags = {
 
 configs = {
     'GPU': False,
-    'hard_mode': True,
-    'subtree_score': True
+    'hard_mode': False,
+    'subtree_score': False
 }
 
 
@@ -20,12 +20,9 @@ def main():
     instance = get_instance(flags, configs)
 
     gt = Guess_Tree(instance, flags, configs)
-    gt.start_diagnosis()
-    gt.build()
-    gt.stop_diagnosis()
-    gt.evaluate()
+    gt.load_tree('dataset/guess_tree.json')
+    gt.evaluate_decoded()
     gt.print_results()
-    gt.save()
     
 
 if __name__ == "__main__":

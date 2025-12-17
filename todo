@@ -1,0 +1,10 @@
+finish guess tree methods:
+    - decode_tree
+    - load_tree
+    - evaluate_decoded
+
+test eval_tree.py
+
+finish requirements.txt
+
+complete readme (like hamid's fifa readme)
