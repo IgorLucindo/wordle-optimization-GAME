@@ -26,7 +26,7 @@ class Guess_Tree:
         self.flags = flags
         self.configs = configs
         
-        self.starting_word = None
+        self.start_data = None
         self._stop_diagnosis = False
         self._diagnosis_thread = None
         self.tree = {
@@ -49,12 +49,13 @@ class Guess_Tree:
         os.makedirs(self.path, exist_ok=True)
 
 
-    def build(self, build_flag=True):
+    def build(self, start_data=None, build_flag=True):
         """
         Iterative build using explicit queue (BFS)
         """
         xp = self.xp
         start_time = time.time()
+        self.start_data = start_data
         G_hard = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_hard, None, None, 1)])
         self.reset_tree()
@@ -66,22 +67,19 @@ class Guess_Tree:
             self.node_count += 1
 
             G_arg = G_hard if self.configs['hard_mode'] else self.G
-            g_star = self.get_best_guess(T_filtered, G_arg, self.F)
+            g_star, g_star_in_T = self.get_best_guess(T_filtered, G_arg, self.F)
             self.append2Tree(g_star, self.node_count, parent_id, feedback, build_flag)
+            if g_star_in_T:
+                depths.append(depth)
 
             # Stop condition
             if len(T_filtered) == 1:
-                depths.append(depth)
                 continue
             
             # Partition candidates by feedback
-            prev_len = len(T_filtered)
             T_filtered = T_filtered[T_filtered != g_star]
             feedbacks = self.F[T_filtered, g_star]
             unique_feedbacks, inverse_indices = xp.unique(feedbacks, return_inverse=True)
-
-            if len(T_filtered) != prev_len:
-                depths.append(depth)
 
             # Expand children
             for i, f_new in enumerate(unique_feedbacks):
@@ -98,13 +96,14 @@ class Guess_Tree:
         """
         Get best guess considering a fixed starting word
         """
-        if self.starting_word is not None:
-            g_star = self.starting_word
-            self.starting_word = None
+        if self.start_data is not None:
+            g_star = self.start_data[0]
+            g_star_in_T = self.start_data[1]
+            self.start_data = None
         else:
-            g_star = self._get_best_guess(T, G, F)
+            g_star, g_star_in_T = self._get_best_guess(T, G, F)
         
-        return g_star
+        return g_star, g_star_in_T
 
 
     def append2Tree(self, g_star, node_id, parent_id, feedback, build_flag):
@@ -193,9 +192,10 @@ class Guess_Tree:
             return
         
         print(
-            f"\n\nAverage guesses: {self.results['exp_guesses']:.5f}\n"
-            f"Std guesses: {self.results['std_guesses']:.3f}\n"
-            f"Max guesses: {self.results['max_guesses']}\n"
+            f"\n\n"
+            f"Exp. guesses: {self.results['exp_guesses']:.5f}\n"
+            f"Std. guesses: {self.results['std_guesses']:.3f}\n"
+            f"Max. guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"
             f"Build Runtime: {self.results['build_runtime']:.3f}s\n"
             f"Nodes: {self.results['nodes']}\n"
