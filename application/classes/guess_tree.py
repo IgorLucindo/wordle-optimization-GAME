@@ -6,7 +6,6 @@ import json
 import time
 import ast
 import sys
-import os
 
 
 class Guess_Tree:
@@ -43,9 +42,6 @@ class Guess_Tree:
         }
         self.node_count = 0
         self.depths = np.zeros(len(self.T))
-
-        self.path = "application/results/"
-        os.makedirs(self.path, exist_ok=True)
 
 
     def build(self, start_data=None, build_flag=True):
@@ -325,9 +321,10 @@ class Guess_Tree:
             return
         
         self.decode_tree()
+        path = "application/results/"
         filename = "decision_tree_hard.json" if self.configs['hard_mode'] else "decision_tree.json" 
 
-        with open(self.path + filename, "w") as f:
+        with open(path + filename, "w") as f:
             json.dump(self.decoded_tree, f)
 
-        print(f"Tree saved in \"{self.path + filename}\"\n")
+        print(f"Tree saved in \"{path + filename}\"\n")
