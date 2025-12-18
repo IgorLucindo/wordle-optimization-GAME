@@ -6,6 +6,8 @@ export class Hint {
         this.el = document.querySelector('#hint-btn');
 
         this.tree = {};
+        this.tree_hard = {};
+        this.currentNode = null;
         this.guess = null;
     }
 
@@ -18,8 +20,10 @@ export class Hint {
 
     getVariables(variables) {
         this.cfg = variables.cfg;
+        this.game = variables.game;
 
-        this.tree = variables.dataset.guessTree;
+        this.tree = variables.dataset.tree;
+        this.tree_hard = variables.dataset.tree_hard;
     }
 
 
@@ -37,21 +41,18 @@ export class Hint {
 
 
     solve(feedback=null) {
-        let currentNode = null;
-        let successors = null;
-        let nextNode = null;
+        const activeTree = this.game.hardmode ? this.tree_hard : this.tree;
 
-        // Solve get tree node depending on feedback
-        if (!feedback) nextNode = this.tree.root;
-        else {
-            currentNode = this.tree.currentNode;
-            successors = this.tree.nodes[currentNode].successors;
-            nextNode = successors[feedback];
+        // Update current node
+        if (!feedback) {
+            this.currentNode = activeTree.root;
+        } else {
+            const feedbackTuple = `(${feedback.join(', ')})`;
+            const key = `(${this.currentNode}, ${feedbackTuple})`;
+            this.currentNode = activeTree.successors[key];
         }
 
-        // Get word of node
-        this.guess = this.tree.nodes[nextNode].word;
-
-        this.tree.currentNode = nextNode;
+        // Get guess of node
+        this.guess = activeTree.nodes[this.currentNode].guess.toUpperCase();
     }
 }

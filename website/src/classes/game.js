@@ -136,28 +136,29 @@ export class Game {
         const wordLetters = this.keyWord.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
 
-        // Reject invalid word
+        // 1. Validation: Word exists
         if (!this.words.includes(guessString.toLowerCase())) {
             this.board.shakeRow();
+            this.message.show('Not in word list');
             return;
         }
 
-        // Hard mode validation
+        // 2. Validation: Hard Mode
         if (this.hardmode && !this.validateHardMode(guessLetters)) {
             this.board.shakeRow();
             return;
         }
 
-        // Letter counts to handle duplicates
+        // 3. Prepare for Feedback Calculation
         const letterCounts = {};
         for (const char of wordLetters) {
             letterCounts[char] = (letterCounts[char] || 0) + 1;
         }
 
         const status = Array(this.wordSize).fill('');
-        let feedback = '';
+        const feedback = [];
 
-        // First pass: mark correct letters
+        // First Pass: Identify Greens (Correct)
         for (let i = 0; i < this.wordSize; i++) {
             if (guessLetters[i] === wordLetters[i]) {
                 status[i] = 'correct';
@@ -165,54 +166,66 @@ export class Game {
             }
         }
 
-        // Second pass: mark present or incorrect
+        // Second Pass: Identify Yellows/Greys and Update UI
         for (let i = 0; i < this.wordSize; i++) {
-            const cell = currentRowElement.children[i];
             const char = guessLetters[i];
+            const cell = currentRowElement.children[i];
+            let feedbackValue = 0;
 
             if (status[i] === 'correct') {
+                feedbackValue = 2; // Green
                 cell.classList.add('correct');
                 this.keyboard.updateKeyColor(char, 'correct');
-                feedback += 'G';
-            }
+            } 
             else if (letterCounts[char] > 0) {
+                feedbackValue = 1; // Yellow
                 status[i] = 'present';
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(char, 'present');
                 letterCounts[char]--;
-                feedback += 'Y';
-            }
+            } 
             else {
+                feedbackValue = 0; // Grey
+                status[i] = 'incorrect';
                 cell.classList.add('incorrect');
                 this.keyboard.updateKeyColor(char, 'incorrect');
-                feedback += 'B';
+            }
+
+            // Push integer to feedback tuple
+            feedback.push(feedbackValue);
+        }
+
+        // 4. Update Hard Mode Constraints for next turn
+        for (let i = 0; i < this.wordSize; i++) {
+            if (status[i] === 'correct') {
+                this.hardConstraints.greens[i] = guessLetters[i];
+            } else if (status[i] === 'present') {
+                this.hardConstraints.yellows.add(guessLetters[i]);
             }
         }
 
-        // Update hard mode constraints for next turn
-        for (let i = 0; i < this.wordSize; i++) {
-            if (status[i] === 'correct') this.hardConstraints.greens[i] = guessLetters[i];
-            else if (status[i] === 'present') {this.hardConstraints.yellows.add(guessLetters[i]);}
-        }
-
-        // Handle game end
+        // 5. Check Game End Conditions
         if (guessString === this.keyWord) {
             this.message.show('You guessed it! 🎉');
             this.gameEnded = true;
-        }
+        } 
         else if (this.currentRow === this.numOfGuesses - 1) {
             this.message.show(`Game Over! The word was "${this.keyWord}"`);
             this.gameEnded = true;
-        }
+        } 
         else {
             this.currentRow++;
             this.currentGuess = [];
         }
 
-        // Show reset button if game ended
-        // else send feedback to hint system
-        if (this.gameEnded) this.resetButton.style.display = 'block';
-        else this.hint.solve(feedback);
+        // 6. Pass Feedback Tuple to Hint System
+        if (this.gameEnded) {
+            this.resetButton.style.display = 'block';
+        } 
+        // Only advance the tree if the user played the suggested word
+        else if (this.hint && guessString === this.hint.guess) {
+            this.hint.solve(feedback);
+        }
     }
 
 

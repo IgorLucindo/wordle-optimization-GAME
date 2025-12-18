@@ -2,17 +2,18 @@ export class Dataset {
     constructor() {
         this.allWords = [];
         this.keyWords = [];
-        this.guessTree = {};
+        this.tree = {};
+        this.tree_hard = {};
     }
 
 
     async init() {
-        await this.getWords();
-        await this.getGuessTree();
+        await this.loadWords();
+        await this.loadTree();
     }
 
 
-    async getWords() {
+    async loadWords() {
         const [res1, res2] = await Promise.all([
             fetch('./dataset/solutions.txt'),
             fetch('./dataset/non_solutions.txt')
@@ -27,8 +28,11 @@ export class Dataset {
     }
 
 
-    async getGuessTree() {
-        const response = await fetch('./dataset/guess_tree.json');
-        this.guessTree = await response.json();
+    async loadTree() {
+        const tree_response = await fetch('./dataset/decision_tree.json');
+        const tree_hard_response = await fetch('./dataset/decision_tree_hard.json');
+
+        this.tree = await tree_response.json();
+        this.tree_hard = await tree_hard_response.json();
     }
 }
