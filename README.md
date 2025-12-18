@@ -15,17 +15,29 @@ The solver applies optimization techniques to minimize the number of guesses whi
 
 The word lists used for the possible Wordle answers and valid guesses are located in the **`dataset/` folder** of this project.
 
+## ⚙️ Setup
+
+1. **Install standard dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Install CuPy (for GPU acceleration):**
+   To enable GPU acceleration, you must install the `cupy` package that specifically matches your installed CUDA driver version.
+
+   Please follow the instructions in the [Official CuPy Installation Guide](https://docs.cupy.dev/en/stable/install.html).
+
 ## 🚀 Execution
 
 * Play the game directly: [Wordle Optimization Game](https://igorlucindo.github.io/wordle-optimization-GAME)
-* Create and evaluate decision tree (NEED TO BE UPDATED):
+* Build and evaluate decision tree:
 
 ```bash
-python application/main.py
+python application/build_tree.py
 ```
 
-## 📝 How it works
+* Evaluate our decision tree:
 
-* Uses **entropy-based scoring** to pick guesses that maximize expected information gain.
-* Breaks ties using **minimax partition size** and lexicographical order.
-* Runs in **polynomial time per guess**, making it fast enough to simulate thousands of games.
+```bash
+python application/eval_tree.py
+```
