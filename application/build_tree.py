@@ -5,13 +5,12 @@ from classes.guess_tree import *
 flags = {
     'print_diagnosis': True,
     'evaluate': True,
-    'save_tree': False,
-    'save_results': False
+    'save_tree': False
 }
 
 configs = {
-    'GPU': False,
-    'hard_mode': True,
+    'GPU': True,
+    'hard_mode': False,
     'subtree_score': True
 }
 
@@ -26,7 +25,7 @@ def main():
     gt.evaluate()
     gt.print_results()
     gt.save()
-    
+
 
 if __name__ == "__main__":
     main()

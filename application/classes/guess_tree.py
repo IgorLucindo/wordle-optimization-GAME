@@ -12,7 +12,7 @@ import os
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, C, get_best_guess, get_best_guesses = instance
+        G, T, F, C, decode_feedback, get_best_guess, get_best_guesses = instance
         xp = cp if configs['GPU'] else np
         self.xp = xp
 
@@ -22,6 +22,7 @@ class Guess_Tree:
         self.T = xp.arange(len(T))                    # Target words
         self.F = F                                    # Feedback matrix
         self.C = C                                    # Feedback compatibility matrix
+        self.decode_feedback = decode_feedback        # Feedback decoding function
         self.get_best_guess = get_best_guess          # Best guess function
         self.get_best_guesses = get_best_guesses      # Best guesses function
         self.flags = flags
@@ -30,11 +31,7 @@ class Guess_Tree:
         self.start_data = None
         self._stop_diagnosis = False
         self._diagnosis_thread = None
-        self.tree = {
-            'root': 1,
-            'nodes': {},
-            'successors': {}
-        }
+        self.tree = {'root': 1, 'nodes': {}, 'successors': {}}
         self.decoded_tree = {}
         self.results = {
             'exp_guesses': 0,
@@ -140,22 +137,49 @@ class Guess_Tree:
         """
         Resets the tree structure to its initial empty state
         """
-        self.tree = {
-            'root': 1,
-            'nodes': {},
-            'successors': {}
-        }
+        self.tree = {'root': 1, 'nodes': {}, 'successors': {}}
 
 
     def decode_tree(self):
         """
-        Decode tree
+        Decode tree: Converts internal IDs and codes to readable strings and tuples.
         """
-        if not self.decoded_tree:
+        if self.decoded_tree or not self.tree['nodes']:
             return
+        
+        self.decoded_tree = {'root': 1, 'nodes': {}, 'successors': {}}
+
+        # 1. Decode Nodes
+        for node_id, data in self.tree['nodes'].items():
+            guess_idx = data['guess']
+            if hasattr(guess_idx, 'item'):
+                guess_idx = guess_idx.item()
+            
+            # Ensure safe string conversion
+            self.decoded_tree['nodes'][str(node_id)] = {
+                'guess': self.words_map[guess_idx]
+            }
+
+        # Decode Successors
+        for (parent_id, feedback_code), child_id in self.tree['successors'].items():
+            if feedback_code is None:
+                continue
+
+            if hasattr(feedback_code, 'item'):
+                feedback_code = feedback_code.item()
+            
+            # Decode feedback
+            feedback_array = self.decode_feedback(feedback_code)
+            feedback_tuple = tuple(feedback_array.tolist())
+            key = str((parent_id, feedback_tuple))
+            
+            if hasattr(child_id, 'item'):
+                child_id = child_id.item()
+
+            self.decoded_tree['successors'][key] = child_id
 
 
-    def load_tree(self, filepath='dataset/guess_tree.json'):
+    def load_tree(self, filepath):
         """
         Loads the decision tree from a JSON file
         """
@@ -186,11 +210,9 @@ class Guess_Tree:
 
             while True:
                 guess = self.tree['nodes'][node_id]['guess']
-
                 if guess == target:
                     depths.append(depth)
                     break
-
                 f = self.F[target, guess].item()
                 node_id = self.tree['successors'][(node_id, f)]
                 depth += 1
@@ -208,6 +230,35 @@ class Guess_Tree:
         """
         Evaluates the decoded tree by simulating all possible games
         """
+        depths = []
+        word_to_idx = {w: i for i, w in enumerate(self.words_map)}
+
+        for target in self.T:
+            node_id = 1
+            depth = 1
+
+            while True:
+                guess_str = self.decoded_tree['nodes'][node_id]['guess']
+                guess_idx = word_to_idx[guess_str]
+                if guess_idx == target:
+                    depths.append(depth)
+                    break
+                f_code = self.F[target, guess_idx].item()
+                f_array = self.decode_feedback(f_code)
+                f_tuple = tuple(f_array.tolist())
+                key = str((node_id, f_tuple))
+                node_id = self.decoded_tree['successors'][key]
+                if hasattr(node_id, 'item'):
+                    node_id = node_id.item()
+                depth += 1
+
+        depths = np.array(depths)
+        distribution = {int(d): int((depths == d).sum()) for d in np.unique(depths)}
+
+        self.results['exp_guesses'] = depths.mean()
+        self.results['std_guesses'] = depths.std()
+        self.results['max_guesses'] = depths.max()
+        self.results['distribution'] = distribution
     
 
     def print_results(self):
@@ -217,6 +268,12 @@ class Guess_Tree:
         if not self.flags['evaluate']:
             return
         
+        first_guess = (
+            self.words_map[self.tree['nodes'][1]['guess'].item()] 
+            if self.tree['nodes']
+            else self.decoded_tree['nodes'][1]['guess']
+        )
+        
         print(
             f"\n\n"
             f"Exp. guesses: {self.results['exp_guesses']:.3f}\n"
@@ -225,7 +282,7 @@ class Guess_Tree:
             f"Distribution: {self.results['distribution']}\n"
             f"Build Runtime: {self.results['build_runtime']:.3f}s\n"
             f"Nodes: {self.results['nodes']}\n"
-            f"Best first word: {self.words_map[self.tree['nodes'][1]['guess'].item()]}\n"
+            f"Best first guess: {first_guess}\n"
         )
 
 
@@ -268,6 +325,9 @@ class Guess_Tree:
             return
         
         self.decode_tree()
+        filename = "decision_tree_hard.json" if self.configs['hard_mode'] else "decision_tree.json" 
 
-        with open(self.path + "decision_tree.json", "w") as f:
+        with open(self.path + filename, "w") as f:
             json.dump(self.decoded_tree, f)
+
+        print(f"Tree saved in \"{self.path + filename}\"\n")
