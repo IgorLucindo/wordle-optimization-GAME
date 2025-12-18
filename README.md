@@ -1,8 +1,69 @@
 # 🔠 Wordle Optimization
 
-A Python project that optimizes solving the game **Wordle** by using a **polynomial-time strategy** to guess the hidden word in as few attempts as possible.
+[![Play Game](https://img.shields.io/badge/PLAY-Wordle_Optimization_Game-2ea44f?style=for-the-badge)](https://igorlucindo.github.io/wordle-optimization-GAME)
 
-The solver applies optimization techniques to minimize the number of guesses while still ensuring correctness.
+This repository contains the data, code, and computational outputs for the paper:
+
+**A Polytime and Interpretable Approach for Solving Wordle**
+Igor Lucindo, Gabriel Teodoro, Hamidreza Validi
+
+We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **Regular** and **Hard** modes, quantifying the trade-offs between strict constraint satisfaction (Hard mode) and the freedom to choose information-maximizing probes (Regular mode).
+
+---
+
+## 📊 Key Results
+
+We evaluated our "Subtree Look-ahead" strategy against the official Wordle dataset (2,315 possible target words). All experiments were conducted on an Intel Core i7-9800X CPU and NVIDIA RTX A2000 GPU.
+
+The word lists used for the target words and valid guesses are located in the `dataset/` folder.
+
+### 1) Optimal Starting Words
+
+The choice of the first word significantly impacts the game's trajectory. Our solver identified the following openers as mathematically optimal for minimizing expected guesses:
+
+| Rank | Regular Mode | Exp. Guesses | Hard Mode | Exp. Guesses |
+| :---: | :--- | :---: | :--- | :---: |
+| **1** | `SALET` | **3.421** | `SALET` | **3.506** |
+| **2** | `REAST` | 3.423 | `SLATE` | 3.510 |
+| **3** | `SLATE` | 3.425 | `TRACE` | 3.512 |
+| **4** | `TRACE` | 3.426 | `REAST` | 3.514 |
+
+> **Note:** Our result of **3.421** guesses for Regular Mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
+
+### 2) Performance by Metric
+
+We compared a baseline greedy strategy ("Avg. Size") against our optimized look-ahead strategies. The **Subtree (Top 10)** approach yields results virtually identical to an exhaustive search (**Subtree All**) but with drastically lower computational cost.
+
+| Strategy | Mode | Exp. Guesses | Std. Guesses | Max. Guesses | Build Time (s) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Avg. Size** | Regular | 3.435 | 0.627 | 6 | 14.790 |
+| | Hard | 3.531 | 0.790 | 8 | 1.337 |
+| **Subtree** (Top 10) | Regular | **3.421** | 0.588 | **5** | 256.700 |
+| | Hard | 3.507 | 0.716 | 7 | 14.194 |
+| **Subtree** (All) | Regular | **3.421** | 0.588 | **5** | $4.335 \times 10^5$ |
+| | Hard | **3.506** | 0.720 | **7** | $1.522 \times 10^4$ |
+
+### 3) Guess Distribution
+
+We analyzed the stability of our heuristic by plotting the distribution of guesses required to solve all 2,315 words.
+* **Consistency:** In Regular Mode, **100%** of games are solved within 5 guesses. Hard Mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
+* **Reliability:** Over **98%** of games are solved within 4 guesses in Regular Mode, while Hard Mode solves over **93%** within the same window.
+
+<p align="center">
+  <img src="results/dist_pdf.png" width="45%" />
+  <img src="results/dist_cdf.png" width="45%" /> 
+</p>
+
+> **Left:** Probability Density Function (PDF) showing the percentage of games solved in $k$ guesses.  
+> **Right:** Cumulative Distribution Function (CDF) showing the total percentage solved within $k$ guesses.
+
+### 4) GPU Acceleration
+
+To address the computational cost of look-ahead search (Regular Mode), we implemented a parallelized GPU solver.
+
+* **Exhaustive Search (Subtree All):** Reduced build time from **~120 hours** (CPU) to **8.3 hours** (GPU), a **93.1% reduction**.
+* **Optimized Search (Subtree Top 10):** Reduced build time from **~4.3 minutes** (CPU) to just **20.6 seconds** (GPU), enabling near real-time decision tree construction.
+---
 
 ## ✨ Features
 
@@ -10,10 +71,6 @@ The solver applies optimization techniques to minimize the number of guesses whi
 * Builds a **decision tree** for solving the game efficiently.
 * Aims to solve in **the minimum number of guesses possible**.
 * Includes a playable version of the game hosted online.
-
-## 💾 Dataset
-
-The word lists used for the possible Wordle answers and valid guesses are located in the **`dataset/` folder** of this project.
 
 ## ⚙️ Setup
 
@@ -27,9 +84,10 @@ The word lists used for the possible Wordle answers and valid guesses are locate
 
    Please follow the instructions in the [Official CuPy Installation Guide](https://docs.cupy.dev/en/stable/install.html).
 
+---
+
 ## 🚀 Execution
 
-* Play the game directly: [Wordle Optimization Game](https://igorlucindo.github.io/wordle-optimization-GAME)
 * Build and evaluate decision tree:
 
 ```bash
@@ -41,3 +99,13 @@ python application/build_tree.py
 ```bash
 python application/eval_tree.py
 ```
+
+---
+
+## 🎮 Interactive Game
+
+To make the solver accessible to non-technical audiences, we provide a web-based implementation of our model. This interactive app allows users to play the game while receiving real-time hints generated by our optimization engine.
+
+[![Play Game](https://img.shields.io/badge/PLAY-Wordle_Optimization_Game-2ea44f?style=for-the-badge)](https://igorlucindo.github.io/wordle-optimization-GAME)
+
+Users can use this tool to compare human intuition against the mathematically optimal strategies evaluated in this project.
