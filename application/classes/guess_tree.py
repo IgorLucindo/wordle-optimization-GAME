@@ -321,10 +321,13 @@ class Guess_Tree:
             return
         
         self.decode_tree()
-        path = "application/results/"
-        filename = "decision_tree_hard.json" if self.configs['hard_mode'] else "decision_tree.json" 
+        filepath = (
+            "results/decision_tree_hard.json"
+            if self.configs['hard_mode']
+            else "results/decision_tree.json"
+        )
 
-        with open(path + filename, "w") as f:
+        with open(filepath, "w") as f:
             json.dump(self.decoded_tree, f)
 
-        print(f"Tree saved in \"{path + filename}\"\n")
+        print(f"Tree saved in \"{filepath}\"\n")
