@@ -4,12 +4,10 @@
 
 This repository contains the data, code, and computational outputs for the paper:
 
-**A Polytime and Interpretable Approach for Solving Wordle**
+**A Polytime and Interpretable Approach for Solving Wordle**   
 Igor Lucindo, Gabriel Teodoro, Hamidreza Validi
 
 We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **Regular** and **Hard** modes, quantifying the trade-offs between strict constraint satisfaction (Hard mode) and the freedom to choose information-maximizing probes (Regular mode).
-
----
 
 ## 📊 Key Results
 
