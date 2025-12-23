@@ -11,7 +11,7 @@ export function hideOverlay() {
 
 
 let tooltipTimeout;
-export function showTooltip(btn, msg) {
+export function showTooltip(btn, msg, duration=3) {
     const tooltip = document.getElementById('tooltipText');
 
     // Clear timeout
@@ -48,5 +48,5 @@ export function showTooltip(btn, msg) {
     tooltipTimeout = setTimeout(() => {
         tooltip.classList.remove('visible');
         tooltipTimeout = null;
-    }, 3000);
+    }, duration * 1000);
 }

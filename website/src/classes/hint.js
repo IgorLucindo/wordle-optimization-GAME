@@ -15,6 +15,7 @@ export class Hint {
     init(variables) {
         this.getVariables(variables);
         this.createEvents();
+        showTooltip(this.el, "Click here to see our calculated best guess.", 6);
     }
 
 
