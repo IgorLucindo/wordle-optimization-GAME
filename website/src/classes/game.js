@@ -17,7 +17,6 @@ export class Game {
         this.gameEnded = false;
         this.hardmode = false;
         
-        // New flag to prevent input during animations
         this.isAnimating = false;
     }
 
@@ -35,6 +34,7 @@ export class Game {
         this.board = variables.board;
         this.keyboard = variables.keyboard;
         this.message = variables.message;
+        this.hint = variables.hint;
 
         this.words = variables.dataset.allWords;
     }
@@ -67,6 +67,7 @@ export class Game {
         this.gameEnded = false;
         this.isAnimating = false;
         this.resetButton.style.display = 'none';
+        this.hint.reset();
         this.keyWord = this.selectRandomWord().toUpperCase();
         console.log("Word of the day:", this.keyWord);
 
@@ -82,7 +83,7 @@ export class Game {
 
 
     handleKeyPress(key) {
-        if (this.gameEnded || this.isAnimating) return; // Block input during animation
+        if (this.gameEnded || this.isAnimating) return;
 
         if (key === 'BACKSPACE') {
             this.currentGuess.pop();
@@ -145,7 +146,6 @@ export class Game {
             return;
         }
 
-        // Lock input
         this.isAnimating = true;
 
         // 2. Calculation
@@ -155,7 +155,6 @@ export class Game {
         const status = Array(this.wordSize).fill('');
         const feedback = [];
 
-        // Pass 1: Greens
         for (let i = 0; i < this.wordSize; i++) {
             if (guessLetters[i] === wordLetters[i]) {
                 status[i] = 'correct';
@@ -163,7 +162,6 @@ export class Game {
             }
         }
 
-        // Pass 2: Yellows/Greys (Logic only)
         for (let i = 0; i < this.wordSize; i++) {
             if (status[i] === 'correct') {
                 feedback.push(2);
@@ -179,8 +177,8 @@ export class Game {
             }
         }
 
-        // 3. Animation & UI Update
-        const animDuration = 500; // matches CSS .animate-flip duration
+        // 3. Animation
+        const animDuration = 500; 
         const delayBetween = 250; 
 
         for (let i = 0; i < this.wordSize; i++) {
@@ -188,10 +186,8 @@ export class Game {
                 const cell = currentRowElement.children[i];
                 const char = guessLetters[i];
 
-                // Trigger Flip
                 cell.classList.add('animate-flip');
 
-                // Change Color Halfway (when card is flat/invisible)
                 setTimeout(() => {
                     if (status[i] === 'correct') {
                         cell.classList.add('correct');
@@ -208,19 +204,16 @@ export class Game {
             }, i * delayBetween);
         }
 
-        // 4. Game End Check (After all animations)
         const totalDelay = (this.wordSize - 1) * delayBetween + animDuration;
 
         setTimeout(() => {
-            this.isAnimating = false; // Unlock input
+            this.isAnimating = false;
 
-            // Hard Mode Updates
             for (let i = 0; i < this.wordSize; i++) {
                 if (status[i] === 'correct') this.hardConstraints.greens[i] = guessLetters[i];
                 else if (status[i] === 'present') this.hardConstraints.yellows.add(guessLetters[i]);
             }
 
-            // Win/Loss
             if (guessString === this.keyWord) {
                 this.message.show('You guessed it! 🎉');
                 this.gameEnded = true;

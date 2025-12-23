@@ -46,12 +46,22 @@ export class Hint {
         if (this.isComparing) {
             this.hideComparison();
             this.el.classList.remove('active');
+            this.game.message.show("Hint Mode: OFF");
             this.isComparing = false;
         } else {
             this.showComparison();
             this.el.classList.add('active');
+            this.game.message.show("Hint Mode: ON");
             this.isComparing = true;
         }
+    }
+
+
+    // Resets hint state (called when Game restarts)
+    reset() {
+        this.isComparing = false;
+        this.savedBoardState = null;
+        this.el.classList.remove('active');
     }
 
 
@@ -133,47 +143,52 @@ export class Hint {
     renderPath(path) {
         this.board.el.innerHTML = '';
         const wordSize = this.game.wordSize;
-        const animationDuration = 250; // .fast duration
+        const animationDuration = 250; // duration of the flip (.fast)
+        const rowDelay = 600; // Time between rows (flip + reading time)
 
+        // 1. Create the grid structure (empty initially)
+        const rows = [];
         for (let i = 0; i < this.game.numOfGuesses; i++) {
             const rowDiv = document.createElement('div');
             rowDiv.classList.add('row');
+            
+            const cells = [];
+            for (let j = 0; j < wordSize; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                rowDiv.appendChild(cell);
+                cells.push(cell);
+            }
+            this.board.el.appendChild(rowDiv);
+            rows.push({ div: rowDiv, cells: cells });
+        }
 
-            if (i < path.length) {
-                const step = path[i];
+        // 2. Animate step-by-step
+        path.forEach((step, i) => {
+            setTimeout(() => {
+                const row = rows[i];
+                
+                // Fill text and trigger animation for this row
                 for (let j = 0; j < wordSize; j++) {
-                    const cell = document.createElement('div');
-                    cell.classList.add('cell');
+                    const cell = row.cells[j];
                     cell.textContent = step.guess[j];
-                    
-                    // Add special border style for comparison mode
                     cell.style.borderColor = "var(--text-color)";
 
-                    // Animate flip quickly
-                    // We stagger the animations slightly for a "wave" effect
-                    const delay = (i * wordSize + j) * 50; // 50ms per cell
-
+                    // Stagger flip slightly for visual effect within the row
                     setTimeout(() => {
                         cell.classList.add('animate-flip', 'fast');
-                        
-                        // Reveal color halfway through flip
+
+                        // Reveal color halfway
                         setTimeout(() => {
                             if (step.feedback[j] === 2) cell.classList.add('correct');
                             else if (step.feedback[j] === 1) cell.classList.add('present');
                             else cell.classList.add('incorrect');
                         }, animationDuration / 2);
-                    }, delay);
-                    
-                    rowDiv.appendChild(cell);
+
+                    }, j * 50); // Small wave inside the row
                 }
-            } else {
-                for (let j = 0; j < wordSize; j++) {
-                    const cell = document.createElement('div');
-                    cell.classList.add('cell');
-                    rowDiv.appendChild(cell);
-                }
-            }
-            this.board.el.appendChild(rowDiv);
-        }
+
+            }, i * rowDelay); // Wait for previous rows to finish
+        });
     }
 }
