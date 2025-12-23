@@ -20,7 +20,7 @@ export class Hint {
         this.createEvents();
 
         setTimeout(() => {
-            showTooltip(this.el, "Click to our calculated best guesses. Try beating it!", 5);
+            showTooltip(this.el, "Click to reveal our calculated best guesses. Try beating it!", 5);
         }, 1000);
     }
 
