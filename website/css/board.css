@@ -23,8 +23,9 @@
     font-weight: bold;
     text-transform: uppercase;
     box-sizing: border-box;
+    touch-action: manipulation;
     color: var(--text-color);
-    background-color: transparent; /* Default */
+    background-color: transparent;
 }
 
 /* Flip Animation */
