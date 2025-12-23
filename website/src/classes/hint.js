@@ -20,7 +20,7 @@ export class Hint {
         this.createEvents();
 
         setTimeout(() => {
-            showTooltip(this.el, "Click to toggle comparison with the calculated best strategy.");
+            showTooltip(this.el, "Click to our calculated best guesses. Try beating it!", 5);
         }, 1000);
     }
 
@@ -69,6 +69,11 @@ export class Hint {
         this.savedBoardState = this.board.el.innerHTML;
         const path = this.getOptimalPath();
         this.renderPath(path);
+
+        if (!this.game.gameEnded) {
+            this.game.victoryMessage.textContent = "Press Play Again to restart.";
+            this.game.victoryContainer.style.display = 'flex';
+        }
     }
 
 
@@ -76,6 +81,10 @@ export class Hint {
         if (!this.savedBoardState) return;
         this.board.el.innerHTML = this.savedBoardState;
         this.savedBoardState = null;
+
+        if (!this.game.gameEnded) {
+            this.game.victoryContainer.style.display = 'none';
+        }
     }
 
 

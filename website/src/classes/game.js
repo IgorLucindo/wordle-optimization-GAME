@@ -4,6 +4,7 @@ import { showTooltip } from '../utils/document_utils.js';
 export class Game {
     constructor() {
         this.resetButton = document.getElementById('reset-button');
+        this.hintButtonEnd = document.getElementById('hint-button-end');
         this.victoryContainer = document.getElementById('victory-container');
         this.victoryMessage = document.getElementById('victory-message');
         this.diffButton = document.getElementById('diff-btn');
@@ -51,6 +52,13 @@ export class Game {
             this.start();
         });
 
+        // Hint button end click event
+        this.hintButtonEnd.addEventListener(eventType, () => {
+            if (!this.hint.isComparing) {
+                this.hint.toggleComparison();
+            }
+        });
+
         // Press key event
         document.addEventListener('keydown', (e) => {
             this.handlePhysicalKeyPress(e);
@@ -69,6 +77,7 @@ export class Game {
         this.gameEnded = false;
         this.isAnimating = false;
         this.victoryContainer.style.display = 'none';
+        this.hintButtonEnd.style.display = 'none';
         this.hint.reset();
         this.keyWord = this.selectRandomWord().toUpperCase();
         console.log("Word of the day:", this.keyWord);
@@ -217,15 +226,15 @@ export class Game {
             }
 
             if (guessString === this.keyWord) {
-                // [UPDATED] Show success message in container
                 this.victoryMessage.textContent = 'You guessed it! 🎉';
                 this.victoryContainer.style.display = 'flex';
+                this.hintButtonEnd.style.display = 'block'; 
                 this.gameEnded = true;
             } 
             else if (this.currentRow === this.numOfGuesses - 1) {
-                // [UPDATED] Show game over message in container
                 this.victoryMessage.textContent = `Game Over! Word: "${this.keyWord}"`;
                 this.victoryContainer.style.display = 'flex';
+                this.hintButtonEnd.style.display = 'block';
                 this.gameEnded = true;
             } 
             else {

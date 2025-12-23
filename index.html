@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="website/css/header.css">
     <link rel="stylesheet" href="website/css/board.css">
     <link rel="stylesheet" href="website/css/keyboard.css">
+    <link rel="stylesheet" href="website/css/victory_container.css">
     <link rel="stylesheet" href="website/css/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -55,11 +56,15 @@
     <main>
         <div class="container">
             <div id="game-board"></div>
+
             <div id="keyboard"></div>
             
             <div id="victory-container" style="display: none;">
                 <p id="victory-message"></p>
-                <button id="reset-button">Play Again</button>
+                <div class="victory-buttons">
+                    <button id="reset-button">Play Again</button>
+                    <button id="hint-button-end" style="display: none;">Show Our Guesses</button>
+                </div>
             </div>
         </div>
         
