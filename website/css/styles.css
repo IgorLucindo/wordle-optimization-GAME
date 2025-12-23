@@ -8,6 +8,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    touch-action: manipulation;
     font-family: 'Inter', sans-serif;
     color: var(--text-color);
     background-color: var(--bg-color);
