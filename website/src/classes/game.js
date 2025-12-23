@@ -66,7 +66,6 @@ export class Game {
         this.gameEnded = false;
         this.resetButton.style.display = 'none';
         this.keyWord = this.selectRandomWord().toUpperCase();
-        console.log("Word of the day:", this.keyWord); // For debugging
 
         this.keyboard.resetKeyColors();
         this.hardConstraints = { greens: Array(this.wordSize).fill(null), yellows: new Set() };
@@ -170,29 +169,22 @@ export class Game {
         for (let i = 0; i < this.wordSize; i++) {
             const char = guessLetters[i];
             const cell = currentRowElement.children[i];
-            let feedbackValue = 0;
 
             if (status[i] === 'correct') {
-                feedbackValue = 2; // Green
                 cell.classList.add('correct');
                 this.keyboard.updateKeyColor(char, 'correct');
             } 
             else if (letterCounts[char] > 0) {
-                feedbackValue = 1; // Yellow
                 status[i] = 'present';
                 cell.classList.add('present');
                 this.keyboard.updateKeyColor(char, 'present');
                 letterCounts[char]--;
             } 
             else {
-                feedbackValue = 0; // Grey
                 status[i] = 'incorrect';
                 cell.classList.add('incorrect');
                 this.keyboard.updateKeyColor(char, 'incorrect');
             }
-
-            // Push integer to feedback tuple
-            feedback.push(feedbackValue);
         }
 
         // 4. Update Hard Mode Constraints for next turn
@@ -221,10 +213,6 @@ export class Game {
         // 6. Pass Feedback Tuple to Hint System
         if (this.gameEnded) {
             this.resetButton.style.display = 'block';
-        } 
-        // Only advance the tree if the user played the suggested word
-        else if (this.hint && guessString === this.hint.guess) {
-            this.hint.solve(feedback);
         }
     }
 
@@ -232,12 +220,10 @@ export class Game {
     // Validates the current guess against hard mode rules
     validateHardMode(guessLetters) {
         const { greens, yellows } = this.hardConstraints;
-        console.log(greens, yellows)
 
         // Check greens (must match position)
         for (let i = 0; i < greens.length; i++) {
             if (greens[i] && guessLetters[i] !== greens[i]) {
-                console.log("green violated")
                 this.message.show(`Hard mode: must keep "${greens[i]}" at position ${i + 1}.`);
                 this.board.shakeRow();
                 return false;
@@ -247,7 +233,6 @@ export class Game {
         // Check yellows (must be included somewhere)
         for (const letter of yellows) {
             if (!guessLetters.includes(letter)) {
-                console.log("yellow violated")
                 this.message.show(`Hard mode: must include letter "${letter}".`);
                 this.board.shakeRow();
                 return false;
