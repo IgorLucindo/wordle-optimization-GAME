@@ -34,23 +34,26 @@ footer {
 /* in mobile */
 @media screen and (max-width: 768px) {
     footer {
-        position: absolute;
+        position: fixed; /* CHANGE from absolute to fixed */
         bottom: 0;
         height: 0;
         padding: 0;
         overflow: hidden;
         visibility: hidden;
         transition: height 0.6s ease, padding 0.6s ease, visibility 0.6s ease;
+        width: 100%; /* Ensure full width */
     }
 
     footer.visible {
         height: 25vh;
-        padding: 3vh 0;
+        /* UPDATE padding to include safe-area-inset-bottom */
+        padding: 3vh 0; 
+        padding-bottom: calc(3vh + env(safe-area-inset-bottom)); 
         visibility: visible;
     }
 
     .footer-content {
-        max-width: 90vw; /* Adjust for smaller screens */
+        max-width: 90vw;
         padding: 0 10px;
     }
 }

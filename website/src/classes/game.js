@@ -4,6 +4,8 @@ import { showTooltip } from '../utils/document_utils.js';
 export class Game {
     constructor() {
         this.resetButton = document.getElementById('reset-button');
+        this.victoryContainer = document.getElementById('victory-container');
+        this.victoryMessage = document.getElementById('victory-message');
         this.diffButton = document.getElementById('diff-btn');
 
         this.wordSize = 5;
@@ -66,7 +68,7 @@ export class Game {
         this.currentGuess = [];
         this.gameEnded = false;
         this.isAnimating = false;
-        this.resetButton.style.display = 'none';
+        this.victoryContainer.style.display = 'none';
         this.hint.reset();
         this.keyWord = this.selectRandomWord().toUpperCase();
         console.log("Word of the day:", this.keyWord);
@@ -215,14 +217,16 @@ export class Game {
             }
 
             if (guessString === this.keyWord) {
-                this.message.show('You guessed it! 🎉');
+                // [UPDATED] Show success message in container
+                this.victoryMessage.textContent = 'You guessed it! 🎉';
+                this.victoryContainer.style.display = 'flex';
                 this.gameEnded = true;
-                this.resetButton.style.display = 'block';
             } 
             else if (this.currentRow === this.numOfGuesses - 1) {
-                this.message.show(`Game Over! The word was "${this.keyWord}"`);
+                // [UPDATED] Show game over message in container
+                this.victoryMessage.textContent = `Game Over! Word: "${this.keyWord}"`;
+                this.victoryContainer.style.display = 'flex';
                 this.gameEnded = true;
-                this.resetButton.style.display = 'block';
             } 
             else {
                 this.currentRow++;

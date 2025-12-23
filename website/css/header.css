@@ -40,12 +40,16 @@ header > h1 {
     transition: fill 0.3s ease color 0.3s ease;
 }
 
-.header-buttons div:hover {
-    fill: var(--hover-color);
-    color: var(--hover-color);
+@media (hover: hover) {
+    .header-buttons div:hover {
+        fill: var(--hover-color);
+        color: var(--hover-color);
+    }
 }
 
 .header-buttons div:active {
+    fill: var(--hover-color);
+    color: var(--hover-color);
     transform: scale(1.15);
 }
 

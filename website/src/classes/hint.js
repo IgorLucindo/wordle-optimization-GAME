@@ -20,7 +20,7 @@ export class Hint {
         this.createEvents();
 
         setTimeout(() => {
-            showTooltip(this.el, "Click to toggle comparison with the optimal strategy.");
+            showTooltip(this.el, "Click to toggle comparison with the calculated best strategy.");
         }, 1000);
     }
 

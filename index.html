@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wordle Best Guesses</title>
-    <link rel="icon" href="website/assets/images/hint.svg">
+    <link rel="icon" href="website/assets/images/hint.svg" type="image/svg">
     <link rel="stylesheet" href="website/css/vars.css">
     <link rel="stylesheet" href="website/css/styles.css">
     <link rel="stylesheet" href="website/css/header.css">
@@ -53,14 +53,16 @@
 
     <!-- Main -->
     <main>
-        <!-- Game container -->
         <div class="container">
             <div id="game-board"></div>
             <div id="keyboard"></div>
-            <button id="reset-button" style="display: none;">Play Again</button>
+            
+            <div id="victory-container" style="display: none;">
+                <p id="victory-message"></p>
+                <button id="reset-button">Play Again</button>
+            </div>
         </div>
         
-        <!-- Message Container -->
         <div id="message-container">
             <p id="message"></p>
         </div>
