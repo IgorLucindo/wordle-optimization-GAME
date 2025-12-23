@@ -83,7 +83,7 @@ export class Game {
 
 
     handleKeyPress(key) {
-        if (this.gameEnded || this.isAnimating) return;
+        if (this.gameEnded || this.isAnimating || this.hint.isComparing) return;
 
         if (key === 'BACKSPACE') {
             this.currentGuess.pop();

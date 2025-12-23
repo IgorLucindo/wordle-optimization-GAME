@@ -46,12 +46,12 @@ export class Hint {
         if (this.isComparing) {
             this.hideComparison();
             this.el.classList.remove('active');
-            this.game.message.show("Hint Mode: OFF");
+            showTooltip(this.el, "Hint Mode: OFF");
             this.isComparing = false;
         } else {
             this.showComparison();
             this.el.classList.add('active');
-            this.game.message.show("Hint Mode: ON");
+            showTooltip(this.el, "Hint Mode: ON");
             this.isComparing = true;
         }
     }
@@ -144,7 +144,7 @@ export class Hint {
         this.board.el.innerHTML = '';
         const wordSize = this.game.wordSize;
         const animationDuration = 250; // duration of the flip (.fast)
-        const rowDelay = 600; // Time between rows (flip + reading time)
+        const rowDelay = 470; // Time between rows (flip + reading time)
 
         // 1. Create the grid structure (empty initially)
         const rows = [];
