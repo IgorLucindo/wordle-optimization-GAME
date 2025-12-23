@@ -55,6 +55,10 @@ export class Board {
             cell.classList.remove('shake');
             void cell.offsetWidth;
             cell.classList.add('shake');
+
+            setTimeout(() => {
+                cell.classList.remove('shake');
+            }, 300);
         }
     }
 }
