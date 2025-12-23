@@ -16,6 +16,9 @@ export class Game {
         this.keyWord = "";
         this.gameEnded = false;
         this.hardmode = false;
+        
+        // New flag to prevent input during animations
+        this.isAnimating = false;
     }
 
 
@@ -23,7 +26,6 @@ export class Game {
         this.getVariables(variables);
         this.createEvents();
         this.start();
-        this.hint.solve();
     }
 
 
@@ -33,9 +35,8 @@ export class Game {
         this.board = variables.board;
         this.keyboard = variables.keyboard;
         this.message = variables.message;
-        this.hint = variables.hint;
 
-        this.words = variables.dataset.allWords
+        this.words = variables.dataset.allWords;
     }
 
 
@@ -64,24 +65,24 @@ export class Game {
         this.currentRow = 0;
         this.currentGuess = [];
         this.gameEnded = false;
+        this.isAnimating = false;
         this.resetButton.style.display = 'none';
         this.keyWord = this.selectRandomWord().toUpperCase();
+        console.log("Word of the day:", this.keyWord);
 
         this.keyboard.resetKeyColors();
         this.hardConstraints = { greens: Array(this.wordSize).fill(null), yellows: new Set() };
     }
 
 
-    // Selects a random word from the provided word list
     selectRandomWord() {
         const keyWords = this.dataset.keyWords;
         return keyWords[Math.floor(Math.random() * keyWords.length)];
     }
 
 
-    // Handles a key press event, whether from the on-screen keyboard or physical keyboard
     handleKeyPress(key) {
-        if (this.gameEnded) return;
+        if (this.gameEnded || this.isAnimating) return; // Block input during animation
 
         if (key === 'BACKSPACE') {
             this.currentGuess.pop();
@@ -97,14 +98,12 @@ export class Game {
     }
 
 
-    // Handles physical keyboard input
     handlePhysicalKeyPress(e) {
         const key = e.key.toUpperCase();
         this.handleKeyPress(key);
     }
 
 
-    // Changes game mode
     changeMode() {
         const diffA = this.diffButton.querySelector('a');
         const diffSVG = this.diffButton.querySelector('svg');
@@ -116,48 +115,47 @@ export class Game {
         if (this.hardmode) {
             diffA.innerHTML = `Hard`;
             diffSVG.style.transform = 'scaleX(1)';
-            svgPathInnerArc.style.fill = 'var(--red)'
-            showTooltip(this.diffButton, "Any revealed hints must be used in subsequent guesses.")
+            svgPathInnerArc.style.fill = 'var(--red)';
+            showTooltip(this.diffButton, "Any revealed hints must be used in subsequent guesses.");
         }
         else {
             diffA.innerHTML = `Regular`;
             diffSVG.style.transform = 'scaleX(-1)';
-            svgPathInnerArc.style.fill = 'var(--green)'
-            showTooltip(this.diffButton, "Hints are optional and can be ignored for any subsequent guess.")
+            svgPathInnerArc.style.fill = 'var(--green)';
+            showTooltip(this.diffButton, "Hints are optional and can be ignored for any subsequent guess.");
         }
     }
 
 
-    // Checks the current guess against the word of the day and updates the UI
     checkGuess() {
         const guessString = this.currentGuess.join('');
         const guessLetters = guessString.split('');
         const wordLetters = this.keyWord.split('');
         const currentRowElement = this.board.el.children[this.currentRow];
 
-        // 1. Validation: Word exists
+        // 1. Validation
         if (!this.words.includes(guessString.toLowerCase())) {
             this.board.shakeRow();
             this.message.show('Not in word list');
             return;
         }
 
-        // 2. Validation: Hard Mode
         if (this.hardmode && !this.validateHardMode(guessLetters)) {
             this.board.shakeRow();
             return;
         }
 
-        // 3. Prepare for Feedback Calculation
+        // Lock input
+        this.isAnimating = true;
+
+        // 2. Calculation
         const letterCounts = {};
-        for (const char of wordLetters) {
-            letterCounts[char] = (letterCounts[char] || 0) + 1;
-        }
+        for (const char of wordLetters) letterCounts[char] = (letterCounts[char] || 0) + 1;
 
         const status = Array(this.wordSize).fill('');
         const feedback = [];
 
-        // First Pass: Identify Greens (Correct)
+        // Pass 1: Greens
         for (let i = 0; i < this.wordSize; i++) {
             if (guessLetters[i] === wordLetters[i]) {
                 status[i] = 'correct';
@@ -165,63 +163,85 @@ export class Game {
             }
         }
 
-        // Second Pass: Identify Yellows/Greys and Update UI
+        // Pass 2: Yellows/Greys (Logic only)
         for (let i = 0; i < this.wordSize; i++) {
-            const char = guessLetters[i];
-            const cell = currentRowElement.children[i];
-
             if (status[i] === 'correct') {
-                cell.classList.add('correct');
-                this.keyboard.updateKeyColor(char, 'correct');
-            } 
-            else if (letterCounts[char] > 0) {
+                feedback.push(2);
+                continue;
+            }
+            if (letterCounts[guessLetters[i]] > 0) {
                 status[i] = 'present';
-                cell.classList.add('present');
-                this.keyboard.updateKeyColor(char, 'present');
-                letterCounts[char]--;
+                letterCounts[guessLetters[i]]--;
+                feedback.push(1);
+            } else {
+                status[i] = 'incorrect';
+                feedback.push(0);
+            }
+        }
+
+        // 3. Animation & UI Update
+        const animDuration = 500; // matches CSS .animate-flip duration
+        const delayBetween = 250; 
+
+        for (let i = 0; i < this.wordSize; i++) {
+            setTimeout(() => {
+                const cell = currentRowElement.children[i];
+                const char = guessLetters[i];
+
+                // Trigger Flip
+                cell.classList.add('animate-flip');
+
+                // Change Color Halfway (when card is flat/invisible)
+                setTimeout(() => {
+                    if (status[i] === 'correct') {
+                        cell.classList.add('correct');
+                        this.keyboard.updateKeyColor(char, 'correct');
+                    } else if (status[i] === 'present') {
+                        cell.classList.add('present');
+                        this.keyboard.updateKeyColor(char, 'present');
+                    } else {
+                        cell.classList.add('incorrect');
+                        this.keyboard.updateKeyColor(char, 'incorrect');
+                    }
+                }, animDuration / 2);
+
+            }, i * delayBetween);
+        }
+
+        // 4. Game End Check (After all animations)
+        const totalDelay = (this.wordSize - 1) * delayBetween + animDuration;
+
+        setTimeout(() => {
+            this.isAnimating = false; // Unlock input
+
+            // Hard Mode Updates
+            for (let i = 0; i < this.wordSize; i++) {
+                if (status[i] === 'correct') this.hardConstraints.greens[i] = guessLetters[i];
+                else if (status[i] === 'present') this.hardConstraints.yellows.add(guessLetters[i]);
+            }
+
+            // Win/Loss
+            if (guessString === this.keyWord) {
+                this.message.show('You guessed it! 🎉');
+                this.gameEnded = true;
+                this.resetButton.style.display = 'block';
+            } 
+            else if (this.currentRow === this.numOfGuesses - 1) {
+                this.message.show(`Game Over! The word was "${this.keyWord}"`);
+                this.gameEnded = true;
+                this.resetButton.style.display = 'block';
             } 
             else {
-                status[i] = 'incorrect';
-                cell.classList.add('incorrect');
-                this.keyboard.updateKeyColor(char, 'incorrect');
+                this.currentRow++;
+                this.currentGuess = [];
             }
-        }
-
-        // 4. Update Hard Mode Constraints for next turn
-        for (let i = 0; i < this.wordSize; i++) {
-            if (status[i] === 'correct') {
-                this.hardConstraints.greens[i] = guessLetters[i];
-            } else if (status[i] === 'present') {
-                this.hardConstraints.yellows.add(guessLetters[i]);
-            }
-        }
-
-        // 5. Check Game End Conditions
-        if (guessString === this.keyWord) {
-            this.message.show('You guessed it! 🎉');
-            this.gameEnded = true;
-        } 
-        else if (this.currentRow === this.numOfGuesses - 1) {
-            this.message.show(`Game Over! The word was "${this.keyWord}"`);
-            this.gameEnded = true;
-        } 
-        else {
-            this.currentRow++;
-            this.currentGuess = [];
-        }
-
-        // 6. Pass Feedback Tuple to Hint System
-        if (this.gameEnded) {
-            this.resetButton.style.display = 'block';
-        }
+        }, totalDelay);
     }
 
 
-    // Validates the current guess against hard mode rules
     validateHardMode(guessLetters) {
         const { greens, yellows } = this.hardConstraints;
 
-        // Check greens (must match position)
         for (let i = 0; i < greens.length; i++) {
             if (greens[i] && guessLetters[i] !== greens[i]) {
                 this.message.show(`Hard mode: must keep "${greens[i]}" at position ${i + 1}.`);
@@ -230,7 +250,6 @@ export class Game {
             }
         }
 
-        // Check yellows (must be included somewhere)
         for (const letter of yellows) {
             if (!guessLetters.includes(letter)) {
                 this.message.show(`Hard mode: must include letter "${letter}".`);
@@ -238,7 +257,6 @@ export class Game {
                 return false;
             }
         }
-
         return true;
     }
 }

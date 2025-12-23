@@ -24,8 +24,25 @@
     text-transform: uppercase;
     box-sizing: border-box;
     color: var(--text-color);
+    background-color: transparent; /* Default */
 }
 
+/* Flip Animation */
+@keyframes flip {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+}
+
+.cell.animate-flip {
+    animation: flip 0.5s ease-in-out forwards;
+}
+
+.cell.animate-flip.fast {
+    animation-duration: 0.25s; /* Quicker for the hint/comparison view */
+}
+
+/* Shake Animation */
 @keyframes shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -38,20 +55,21 @@
     animation: shake 0.3s ease-in-out;
 }
 
+/* Colors - These will be applied halfway through the flip via JS */
 .cell.correct {
-    background-color: var(--green); /* Green */
+    background-color: var(--green);
     border-color: var(--green);
     color: white;
 }
 
 .cell.present {
-    background-color: var(--yellow); /* Yellow */
+    background-color: var(--yellow);
     border-color: var(--yellow);
     color: white;
 }
 
 .cell.incorrect {
-    background-color: var(--border-color); /* Gray */
+    background-color: var(--border-color);
     border-color: var(--border-color);
     color: white;
 }
