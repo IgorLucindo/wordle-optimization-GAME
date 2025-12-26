@@ -24,6 +24,7 @@ footer {
 .website-purpose {
     font-size: 0.9em;
     line-height: 1.5;
+    fill: var(--text-color);
 }
 
 .team-members {

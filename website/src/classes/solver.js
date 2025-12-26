@@ -1,9 +1,9 @@
 import { showTooltip } from '../utils/document_utils.js';
 
 
-export class Hint {
+export class Solver {
     constructor() {
-        this.el = document.querySelector('#hint-btn');
+        this.el = document.querySelector('#solve-btn');
 
         this.tree = {};
         this.tree_hard = {};
@@ -20,8 +20,8 @@ export class Hint {
         this.createEvents();
 
         setTimeout(() => {
-            showTooltip(this.el, "Click to reveal our calculated best guesses. Try beating it!", 5);
-        }, 1000);
+            showTooltip(this.el, "Click to reveal our solution. Try beating it!", 6);
+        }, 1500);
     }
 
 
@@ -46,18 +46,18 @@ export class Hint {
         if (this.isComparing) {
             this.hideComparison();
             this.el.classList.remove('active');
-            showTooltip(this.el, "Hint Mode: OFF");
+            showTooltip(this.el, "Solution: Hidden"); 
             this.isComparing = false;
         } else {
             this.showComparison();
             this.el.classList.add('active');
-            showTooltip(this.el, "Hint Mode: ON");
+            showTooltip(this.el, "Solution: Visible"); 
             this.isComparing = true;
         }
     }
 
 
-    // Resets hint state (called when Game restarts)
+    // Resets solve state (called when Game restarts)
     reset() {
         this.isComparing = false;
         this.savedBoardState = null;

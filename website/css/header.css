@@ -53,11 +53,10 @@ header > h1 {
     transform: scale(1.15);
 }
 
-/* Active style for the Hint Toggle */
-#hint-btn.active {
+#solve-btn.active {
     fill: var(--green);
     color: var(--green);
-    transform: scale(1.1); /* Subtle persistent scale */
+    transform: scale(1.1);
 }
 
 .header-buttons a {

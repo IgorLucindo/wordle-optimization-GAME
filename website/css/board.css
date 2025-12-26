@@ -41,7 +41,7 @@
 }
 
 .cell.animate-flip.fast {
-    animation-duration: 0.25s; /* Quicker for the hint/comparison view */
+    animation-duration: 0.25s;
 }
 
 /* Shake Animation */

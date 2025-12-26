@@ -35,7 +35,7 @@
     gap: 15px;
 }
 
-#reset-button, #hint-button-end {
+#reset-button, #solve-button-end {
     background-color: var(--green);
     color: white;
     padding: 10px 20px;
@@ -48,10 +48,10 @@
     transition: transform 0.1s, filter 0.1s;
 }
 
-#reset-button:active, #hint-button-end:active {
+#reset-button:active, #solve-button-end:active {
     transform: scale(0.95);
 }
 
-#reset-button:hover, #hint-button-end:hover {
+#reset-button:hover, #solve-button-end:hover {
     filter: brightness(1.1);
 }
