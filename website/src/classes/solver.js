@@ -18,7 +18,7 @@ export class Solver {
     init(variables) {
         this.getVariables(variables);
         this.createEvents();
-        this.showTutorialMessage();
+        setTimeout(() => {this.showTutorialMessage();}, 1500);
     }
 
 
@@ -39,10 +39,12 @@ export class Solver {
     }
 
 
-    showTutorialMessage(delay=1.5) {
-        setTimeout(() => {
-            showTooltip(this.el, "Click to reveal our solution. Try beating it!", 6);
-        }, delay * 1000);
+    showTutorialMessage() {
+        showTooltip(this.el, "Click to reveal our solution. Try beating it!", 6);
+        this.el.classList.add('tutorial-active');
+        this.el.addEventListener('animationend', () => {
+            this.el.classList.remove('tutorial-active');
+        }, { once: true });
     }
 
 
