@@ -18,10 +18,7 @@ export class Solver {
     init(variables) {
         this.getVariables(variables);
         this.createEvents();
-
-        setTimeout(() => {
-            showTooltip(this.el, "Click to reveal our solution. Try beating it!", 6);
-        }, 1500);
+        this.showTutorialMessage();
     }
 
 
@@ -39,6 +36,13 @@ export class Solver {
             e.preventDefault();
             this.toggleComparison();
         });
+    }
+
+
+    showTutorialMessage(delay=1.5) {
+        setTimeout(() => {
+            showTooltip(this.el, "Click to reveal our solution. Try beating it!", 6);
+        }, delay * 1000);
     }
 
 
