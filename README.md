@@ -7,7 +7,7 @@ This repository contains the data, code, and computational outputs for the paper
 **A Polytime and Interpretable Approach for Solving Wordle**   
 Igor Lucindo, Gabriel Teodoro, Hamidreza Validi
 
-We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **Regular** and **Hard** modes, quantifying the trade-offs between strict constraint satisfaction (Hard mode) and the freedom to choose information-maximizing probes (Regular mode).
+We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **regular** and **hard** modes, quantifying the trade-offs between strict constraint satisfaction (hard mode) and the freedom to choose information-maximizing probes (regular mode).
 
 ## 📊 Key Results
 
@@ -26,7 +26,7 @@ The choice of the first word significantly impacts the game's trajectory. Our so
 | **3** | `SLATE` | 3.425 | `TRACE` | 3.512 |
 | **4** | `TRACE` | 3.426 | `REAST` | 3.514 |
 
-> **Note:** Our result of **3.421** guesses for Regular Mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
+> **Note:** Our result of **3.421** guesses for regular mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
 
 ### 2) Performance by Metric
 
@@ -44,8 +44,8 @@ We compared a baseline greedy strategy ("Avg. Size") against our optimized look-
 ### 3) Guess Distribution
 
 We analyzed the stability of our heuristic by plotting the distribution of guesses required to solve all 2,315 words.
-* **Consistency:** In Regular Mode, **100%** of games are solved within 5 guesses. Hard Mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
-* **Reliability:** Over **98%** of games are solved within 4 guesses in Regular Mode, while Hard Mode solves over **93%** within the same window.
+* **Consistency:** In regular Mode, **100%** of games are solved within 5 guesses. hard mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
+* **Reliability:** Over **98%** of games are solved within 4 guesses in regular mode, while hard mode solves over **93%** within the same window.
 
 <p align="center">
   <img src="results/dist_pdf.png" width="45%" />
@@ -57,7 +57,7 @@ We analyzed the stability of our heuristic by plotting the distribution of guess
 
 ### 4) GPU Acceleration
 
-To address the computational cost of look-ahead search (Regular Mode), we implemented a parallelized GPU solver.
+To address the computational cost of look-ahead search (regular mode), we implemented a parallelized GPU solver.
 
 * **Exhaustive Search (Subtree All):** Reduced build time from **~120 hours** (CPU) to **8.3 hours** (GPU), a **93.1% reduction**.
 * **Optimized Search (Subtree Top 10):** Reduced build time from **~4.3 minutes** (CPU) to just **20.6 seconds** (GPU), enabling near real-time decision tree construction.
