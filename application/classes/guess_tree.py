@@ -4,7 +4,6 @@ import cupy as cp
 import threading
 import json
 import time
-import ast
 import sys
 
 
@@ -51,6 +50,7 @@ class Guess_Tree:
         }
         self.v_curr = -1
         self.depths = np.zeros(len(self.T))
+        self.hybrid_threshold = 1000
 
 
     def build(self, start_data=None, build_flag=True):
@@ -66,33 +66,13 @@ class Guess_Tree:
         self.v_curr = -1
         depths = []
 
-        # Threshold to switch to CPU
-        HYBRID_THRESHOLD = 1000
-
         while queue:
             T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
             self.v_curr += 1
-
-            # --- HYBRID DISPATCH LOGIC ---
-            F = self.F
-            C = self.C
-            xp = self.xp
-            if self.configs['GPU'] and self.configs['hard_mode'] and len(G_curr) < HYBRID_THRESHOLD:
-                # 1. Check if we are currently on GPU but should switch to CPU
-                if isinstance(G_curr, cp.ndarray):
-                    T_curr = cp.asnumpy(T_curr)
-                    G_curr = cp.asnumpy(G_curr)
-
-                # 2. Select Backend (xp), Matrices, and Solver based on data location
-                if isinstance(T_curr, np.ndarray):
-                    xp = np
-                    F = self.F_cpu
-                    C = self.C_cpu
-                    self.get_best_guess = self.get_best_guess_CPU
-                    self.get_best_guesses = self.get_best_guesses_CPU
-                else:
-                    self.get_best_guess = self.get_best_guess_GPU
-                    self.get_best_guesses = self.get_best_guesses_GPU
+            
+            # If the current G_curr is small enough, switch to CPU for faster computation
+            if self.configs['GPU']:
+                T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
 
             G_arg = G_curr if self.configs['hard_mode'] else self.G
             g_star, g_star_in_T = self.get_best_guess_starting_word(T_curr, G_arg, F)
@@ -134,8 +114,38 @@ class Guess_Tree:
         return g_star, g_star_in_T
     
 
-    def convert_to_CPU():
-        pass
+    def optimize_compute_device(self, T_curr, G_curr, switch_threshold=1000):
+        """
+        Determines the most efficient device (CPU vs GPU) for the current workload size
+        Moves data to CPU if the workload is small and updates solver references
+        """
+        # Reset to GPU defaults
+        xp = self.xp
+        F = self.F
+        C = self.C
+        self.get_best_guess = self.get_best_guess_GPU
+        self.get_best_guesses = self.get_best_guesses_GPU
+        switch_to_cpu = False
+
+        # Condition A: Data is already on CPU (inherited from a CPU parent vertex)
+        if isinstance(T_curr, np.ndarray):
+            switch_to_cpu = True
+        # Condition B: Data is on GPU, but small enough to be faster on CPU
+        elif self.configs['hard_mode'] and G_curr is not None and len(G_curr) < switch_threshold:
+            # Move data from GPU to CPU
+            T_curr = cp.asnumpy(T_curr)
+            G_curr = cp.asnumpy(G_curr)
+            switch_to_cpu = True
+
+        # Apply the switch if conditions are met
+        if switch_to_cpu:
+            xp = np
+            F = self.F_cpu
+            C = self.C_cpu
+            self.get_best_guess = self.get_best_guess_CPU
+            self.get_best_guesses = self.get_best_guesses_CPU
+
+        return T_curr, G_curr, xp, F, C
 
 
     def append2Tree(self, g_star, v_curr, v_parent, p_parent, build_flag):
