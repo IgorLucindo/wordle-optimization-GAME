@@ -141,6 +141,10 @@ def _get_best_guess_subtree(T, G, F, subtree):
     if n <= 2:
         return T[0], True
     
+    # If the current G is small enough, switch to CPU for faster computation
+    if subtree.configs['GPU']:
+        T, G, _, _, _ = subtree.optimize_compute_device(T, G)
+    
     # Get guess candidates based on chosen metric
     g_candidates, candidates_in_T = subtree.get_best_guesses(T, G, F, num_of_guesses=10)
     # g_candidates = G
@@ -152,9 +156,9 @@ def _get_best_guess_subtree(T, G, F, subtree):
     subtree.T = T
     subtree.G = G
 
-    for i, g in enumerate(g_candidates):
-        g_in_T = candidates_in_T[i]
-        subtree.build(start_data=(g, g_in_T), build_flag=False)
+    for i, g_start in enumerate(g_candidates):
+        g_start_in_T = candidates_in_T[i]
+        subtree.build_subtree(g_start, g_start_in_T)
         subtree.evaluate_quick()
         scores[i] = subtree.results['exp_guesses'] + 0.001 * subtree.results['max_guesses']
 

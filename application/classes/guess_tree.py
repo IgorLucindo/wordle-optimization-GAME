@@ -53,13 +53,12 @@ class Guess_Tree:
         self.hybrid_threshold = 1000
 
 
-    def build(self, start_data=None, build_flag=True):
+    def build_tree(self):
         """
         Iterative build using explicit queue (BFS)
         """
         xp = self.xp
         start_time = time.time()
-        self.start_data = start_data
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.reset_tree()
@@ -75,8 +74,8 @@ class Guess_Tree:
                 T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
 
             G_arg = G_curr if self.configs['hard_mode'] else self.G
-            g_star, g_star_in_T = self.get_best_guess_starting_word(T_curr, G_arg, F)
-            self.append2Tree(g_star, self.v_curr, v_parent, p_parent, build_flag)
+            g_star, g_star_in_T = self.get_best_guess(T_curr, G_arg, F)
+            self.append2Tree(g_star, self.v_curr, v_parent, p_parent)
             if g_star_in_T:
                 depths.append(depth)
 
@@ -100,21 +99,58 @@ class Guess_Tree:
         self.results['#vertices'] = self.v_curr
 
 
-    def get_best_guess_starting_word(self, T, G, F):
+    def build_subtree(self, g_start, g_start_in_T):
         """
-        Get best guess considering a fixed starting word
+        Iterative build using explicit queue (BFS)
         """
-        if self.start_data is not None:
-            g_star = self.start_data[0]
-            g_star_in_T = self.start_data[1]
-            self.start_data = None
-        else:
-            g_star, g_star_in_T = self.get_best_guess(T, G, F)
-        
-        return g_star, g_star_in_T
+        xp = self.xp
+        start_time = time.time()
+        G_curr = self.G if self.configs['hard_mode'] else None
+        queue = deque([(self.T, G_curr, -1, None, 1)])
+        self.v_curr = -1
+        depths = []
+
+        while queue:
+            T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
+            self.v_curr += 1
+            
+            # If the current G_curr is small enough, switch to CPU for faster computation
+            if self.configs['GPU']:
+                T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
+
+            G_arg = G_curr if self.configs['hard_mode'] else self.G
+            
+            # Get best guess considering starting guess
+            if g_start is not None:
+                g_star, g_star_in_T = g_start, g_start_in_T
+                g_start = None
+            else:
+                g_star, g_star_in_T = self.get_best_guess(T_curr, G_arg, F)
+
+            if g_star_in_T:
+                depths.append(depth)
+
+            # Stop condition
+            if len(T_curr) == 1:
+                continue
+            
+            # Partition candidates by feedback
+            T_curr = T_curr[T_curr != g_star]
+            feedbacks = F[T_curr, g_star]
+            unique_feedbacks, inverse_indices = xp.unique(feedbacks, return_inverse=True)
+
+            # Expand children
+            for i, p in enumerate(unique_feedbacks):
+                T_p = T_curr[inverse_indices == i]
+                G_p = self.get_next_guesses_hardmode(T_p, G_curr, p, g_star, F, C)
+                queue.append((T_p, G_p, self.v_curr, p.item(), depth + 1))
+
+        self.depths = np.array(depths)
+        self.results['build_runtime'] = time.time() - start_time
+        self.results['#vertices'] = self.v_curr
     
 
-    def optimize_compute_device(self, T_curr, G_curr, switch_threshold=1000):
+    def optimize_compute_device(self, T_curr, G_curr, switch_threshold=500):
         """
         Determines the most efficient device (CPU vs GPU) for the current workload size
         Moves data to CPU if the workload is small and updates solver references

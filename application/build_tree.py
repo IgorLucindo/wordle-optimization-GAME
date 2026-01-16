@@ -9,9 +9,9 @@ flags = {
 }
 
 configs = {
-    'GPU': True,
+    'GPU': False,
     'hard_mode': True,
-    'subtree_score': True
+    'subtree_score': False
 }
 
 
@@ -20,7 +20,7 @@ def main():
 
     gt = Guess_Tree(instance, flags, configs)
     gt.start_diagnosis()
-    gt.build()
+    gt.build_tree()
     gt.stop_diagnosis()
     gt.evaluate()
     gt.print_results()
