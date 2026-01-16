@@ -55,10 +55,12 @@ class Guess_Tree:
 
     def build_tree(self):
         """
-        Iterative build using explicit queue (BFS)
+        Build tree iteratively using explicit queue (BFS)
         """
-        xp = self.xp
         start_time = time.time()
+
+        xp = self.xp
+        F, C = self.F, self.C
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.reset_tree()
@@ -101,12 +103,15 @@ class Guess_Tree:
 
     def build_subtree(self, g_start, g_start_in_T):
         """
-        Iterative build using explicit queue (BFS)
+        Build subtree iteratively using explicit queue (BFS)
         """
-        xp = self.xp
         start_time = time.time()
+
+        xp = self.xp
+        F, C = self.F, self.C
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
+        self.reset_tree()
         self.v_curr = -1
         depths = []
 
@@ -118,13 +123,12 @@ class Guess_Tree:
             if self.configs['GPU']:
                 T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
 
-            G_arg = G_curr if self.configs['hard_mode'] else self.G
-            
             # Get best guess considering starting guess
             if g_start is not None:
                 g_star, g_star_in_T = g_start, g_start_in_T
                 g_start = None
             else:
+                G_arg = G_curr if self.configs['hard_mode'] else self.G
                 g_star, g_star_in_T = self.get_best_guess(T_curr, G_arg, F)
 
             if g_star_in_T:
@@ -184,13 +188,10 @@ class Guess_Tree:
         return T_curr, G_curr, xp, F, C
 
 
-    def append2Tree(self, g_star, v_curr, v_parent, p_parent, build_flag):
+    def append2Tree(self, g_star, v_curr, v_parent, p_parent):
         """
         Append vertex and edge to tree
         """
-        if not build_flag:
-            return
-        
         self.tree['vertices'].append((v_curr, g_star))
         if v_curr != 0:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
