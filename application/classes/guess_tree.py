@@ -11,26 +11,35 @@ import sys
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Get instance
-        G, T, F, C, decode_feedback, get_best_guess, get_best_guesses = instance
+        G, T, F, C, decode_feedback, _best_guess_functions, _best_guesses_functions = instance
         xp = cp if configs['GPU'] else np
         self.xp = xp
 
         # Words as an int not strings
         self.words_map = G
-        self.G = xp.arange(len(G))                    # Guess words
-        self.T = xp.arange(len(T))                    # Target words
-        self.F = F                                    # Feedback matrix
-        self.C = C                                    # Feedback compatibility matrix
-        self.decode_feedback = decode_feedback        # Feedback decoding function
-        self.get_best_guess = get_best_guess          # Best guess function
-        self.get_best_guesses = get_best_guesses      # Best guesses function
+        self.G = xp.arange(len(G)) # Guess words
+        self.T = xp.arange(len(T)) # Target words
+        self.F = F                 # Feedback matrix
+        self.C = C                 # Feedback compatibility matrix
+        self.decode_feedback = decode_feedback                                                               # Feedback decoding function
+        self.get_best_guess = _best_guess_functions[1] if configs['GPU'] else _best_guess_functions[0]       # Best guess function
+        self.get_best_guesses = _best_guesses_functions[1] if configs['GPU'] else _best_guesses_functions[0] # Best guesses function
         self.flags = flags
         self.configs = configs
+        
+        # Saving cpu instances for hybrid approach
+        if configs['GPU']:
+            self.F_cpu = cp.asnumpy(F)
+            self.C_cpu = cp.asnumpy(C) if C is not None else None
+            self.get_best_guess_CPU = _best_guess_functions[0]
+            self.get_best_guess_GPU = _best_guess_functions[1]
+            self.get_best_guesses_CPU = _best_guesses_functions[0]
+            self.get_best_guesses_GPU = _best_guesses_functions[1]
         
         self.start_data = None
         self._stop_diagnosis = False
         self._diagnosis_thread = None
-        self.tree = {'root': 1, 'nodes': {}, 'successors': {}}
+        self.tree = {'root': 0, 'vertices': [], 'successors': {}}
         self.decoded_tree = {}
         self.results = {
             'exp_guesses': 0,
@@ -38,9 +47,9 @@ class Guess_Tree:
             'max_guesses': 0,
             'distribution': None,
             'build_runtime': 0,
-            'nodes': 0
+            '#vertices': 0
         }
-        self.node_count = 0
+        self.v_curr = -1
         self.depths = np.zeros(len(self.T))
 
 
@@ -51,40 +60,64 @@ class Guess_Tree:
         xp = self.xp
         start_time = time.time()
         self.start_data = start_data
-        G_hard = self.G if self.configs['hard_mode'] else None
-        queue = deque([(self.T, G_hard, None, None, 1)])
+        G_curr = self.G if self.configs['hard_mode'] else None
+        queue = deque([(self.T, G_curr, -1, None, 1)])
         self.reset_tree()
-        self.node_count = 0
+        self.v_curr = -1
         depths = []
 
-        while queue:
-            T_filtered, G_hard, parent_id, feedback, depth = queue.popleft()
-            self.node_count += 1
+        # Threshold to switch to CPU
+        HYBRID_THRESHOLD = 1000
 
-            G_arg = G_hard if self.configs['hard_mode'] else self.G
-            g_star, g_star_in_T = self.get_best_guess_starting_word(T_filtered, G_arg, self.F)
-            self.append2Tree(g_star, self.node_count, parent_id, feedback, build_flag)
+        while queue:
+            T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
+            self.v_curr += 1
+
+            # --- HYBRID DISPATCH LOGIC ---
+            F = self.F
+            C = self.C
+            xp = self.xp
+            if self.configs['GPU'] and self.configs['hard_mode'] and len(G_curr) < HYBRID_THRESHOLD:
+                # 1. Check if we are currently on GPU but should switch to CPU
+                if isinstance(G_curr, cp.ndarray):
+                    T_curr = cp.asnumpy(T_curr)
+                    G_curr = cp.asnumpy(G_curr)
+
+                # 2. Select Backend (xp), Matrices, and Solver based on data location
+                if isinstance(T_curr, np.ndarray):
+                    xp = np
+                    F = self.F_cpu
+                    C = self.C_cpu
+                    self.get_best_guess = self.get_best_guess_CPU
+                    self.get_best_guesses = self.get_best_guesses_CPU
+                else:
+                    self.get_best_guess = self.get_best_guess_GPU
+                    self.get_best_guesses = self.get_best_guesses_GPU
+
+            G_arg = G_curr if self.configs['hard_mode'] else self.G
+            g_star, g_star_in_T = self.get_best_guess_starting_word(T_curr, G_arg, F)
+            self.append2Tree(g_star, self.v_curr, v_parent, p_parent, build_flag)
             if g_star_in_T:
                 depths.append(depth)
 
             # Stop condition
-            if len(T_filtered) == 1:
+            if len(T_curr) == 1:
                 continue
             
             # Partition candidates by feedback
-            T_filtered = T_filtered[T_filtered != g_star]
-            feedbacks = self.F[T_filtered, g_star]
+            T_curr = T_curr[T_curr != g_star]
+            feedbacks = F[T_curr, g_star]
             unique_feedbacks, inverse_indices = xp.unique(feedbacks, return_inverse=True)
 
             # Expand children
-            for i, f_new in enumerate(unique_feedbacks):
-                T_filtered_new = T_filtered[inverse_indices == i]
-                G_hard_new = self.get_next_guesses_hardmode(T_filtered_new, G_hard, f_new, g_star)
-                queue.append((T_filtered_new, G_hard_new, self.node_count, f_new.item(), depth + 1))
+            for i, p in enumerate(unique_feedbacks):
+                T_p = T_curr[inverse_indices == i]
+                G_p = self.get_next_guesses_hardmode(T_p, G_curr, p, g_star, F, C)
+                queue.append((T_p, G_p, self.v_curr, p.item(), depth + 1))
 
         self.depths = np.array(depths)
         self.results['build_runtime'] = time.time() - start_time
-        self.results['nodes'] = self.node_count
+        self.results['#vertices'] = self.v_curr
 
 
     def get_best_guess_starting_word(self, T, G, F):
@@ -99,20 +132,25 @@ class Guess_Tree:
             g_star, g_star_in_T = self.get_best_guess(T, G, F)
         
         return g_star, g_star_in_T
+    
+
+    def convert_to_CPU():
+        pass
 
 
-    def append2Tree(self, g_star, node_id, parent_id, feedback, build_flag):
+    def append2Tree(self, g_star, v_curr, v_parent, p_parent, build_flag):
         """
-        Append node and edge to tree
+        Append vertex and edge to tree
         """
         if not build_flag:
             return
         
-        self.tree['nodes'][node_id] = {'guess': g_star}
-        self.tree['successors'][(parent_id, feedback)] = node_id
+        self.tree['vertices'].append((v_curr, g_star))
+        if v_curr != 0:
+            self.tree['successors'][(v_parent, p_parent)] = v_curr
 
 
-    def get_next_guesses_hardmode(self, T, G_hard, feedback, g_star):
+    def get_next_guesses_hardmode(self, T, G_curr, feedback, g_star, F, C):
         """
         Vectorized hard-mode filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
@@ -121,43 +159,38 @@ class Guess_Tree:
             return None
         
         # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
-        possible_feedbacks = self.F[G_hard, g_star]
+        possible_feedbacks = F[G_curr, g_star]
 
         # Mask of which feedbacks are compatible
-        valid_mask = self.C[possible_feedbacks, feedback]
+        valid_mask = C[possible_feedbacks, feedback]
 
-        return G_hard[valid_mask]
+        return G_curr[valid_mask]
     
 
     def reset_tree(self):
         """
         Resets the tree structure to its initial empty state
         """
-        self.tree = {'root': 1, 'nodes': {}, 'successors': {}}
+        self.tree = {'root': 0, 'vertices': [], 'successors': {}}
 
 
     def decode_tree(self):
         """
         Decode tree: Converts internal IDs and codes to readable strings and tuples.
         """
-        if self.decoded_tree or not self.tree['nodes']:
+        if self.decoded_tree or not self.tree['vertices']:
             return
         
-        self.decoded_tree = {'root': 1, 'nodes': {}, 'successors': {}}
+        self.decoded_tree = {'root': 0, 'vertices': [], 'successors': {}}
 
-        # 1. Decode Nodes
-        for node_id, data in self.tree['nodes'].items():
-            guess_idx = data['guess']
-            if hasattr(guess_idx, 'item'):
-                guess_idx = guess_idx.item()
-            
-            # Ensure safe string conversion
-            self.decoded_tree['nodes'][str(node_id)] = {
-                'guess': self.words_map[guess_idx]
-            }
+        # Decode vertices
+        for v_curr, guess_idx in self.tree['vertices']:
+            self.decoded_tree['vertices'].append(
+                (v_curr, self.words_map[guess_idx.item()])
+            )
 
         # Decode Successors
-        for (parent_id, feedback_code), child_id in self.tree['successors'].items():
+        for (v_parent, feedback_code), child_id in self.tree['successors'].items():
             if feedback_code is None:
                 continue
 
@@ -167,7 +200,7 @@ class Guess_Tree:
             # Decode feedback
             feedback_array = self.decode_feedback(feedback_code)
             feedback_tuple = tuple(feedback_array.tolist())
-            key = str((parent_id, feedback_tuple))
+            key = str((v_parent, feedback_tuple))
             
             if hasattr(child_id, 'item'):
                 child_id = child_id.item()
@@ -181,7 +214,6 @@ class Guess_Tree:
         """
         with open(filepath, 'r') as f:
             tree = json.load(f)
-            tree['nodes'] = {ast.literal_eval(k): v for k, v in tree['nodes'].items()}
             self.decoded_tree = tree
 
 
@@ -201,16 +233,16 @@ class Guess_Tree:
         depths = []
         
         for target in self.T:
-            node_id = 1
+            v_curr = 0
             depth = 1
 
             while True:
-                guess = self.tree['nodes'][node_id]['guess']
+                v_curr, guess = self.tree['vertices'][v_curr]
                 if guess == target:
                     depths.append(depth)
                     break
                 f = self.F[target, guess].item()
-                node_id = self.tree['successors'][(node_id, f)]
+                v_curr = self.tree['successors'][(v_curr, f)]
                 depth += 1
 
         depths = np.array(depths)
@@ -230,11 +262,11 @@ class Guess_Tree:
         word_to_idx = {w: i for i, w in enumerate(self.words_map)}
 
         for target in self.T:
-            node_id = 1
+            v_curr = 0
             depth = 1
 
             while True:
-                guess_str = self.decoded_tree['nodes'][node_id]['guess']
+                v_curr, guess_str = self.decoded_tree['vertices'][v_curr]
                 guess_idx = word_to_idx[guess_str]
                 if guess_idx == target:
                     depths.append(depth)
@@ -242,10 +274,10 @@ class Guess_Tree:
                 f_code = self.F[target, guess_idx].item()
                 f_array = self.decode_feedback(f_code)
                 f_tuple = tuple(f_array.tolist())
-                key = str((node_id, f_tuple))
-                node_id = self.decoded_tree['successors'][key]
-                if hasattr(node_id, 'item'):
-                    node_id = node_id.item()
+                key = str((v_curr, f_tuple))
+                v_curr = self.decoded_tree['successors'][key]
+                if hasattr(v_curr, 'item'):
+                    v_curr = v_curr.item()
                 depth += 1
 
         depths = np.array(depths)
@@ -255,6 +287,7 @@ class Guess_Tree:
         self.results['std_guesses'] = depths.std()
         self.results['max_guesses'] = depths.max()
         self.results['distribution'] = distribution
+        self.results['#vertices'] = len(self.decoded_tree['vertices'])
     
 
     def print_results(self):
@@ -265,9 +298,9 @@ class Guess_Tree:
             return
         
         first_guess = (
-            self.words_map[self.tree['nodes'][1]['guess'].item()] 
-            if self.tree['nodes']
-            else self.decoded_tree['nodes'][1]['guess']
+            self.words_map[self.tree['vertices'][0][1].item()] 
+            if self.tree['vertices']
+            else self.decoded_tree['vertices'][0][1]
         )
         
         print(
@@ -277,7 +310,7 @@ class Guess_Tree:
             f"Max. guesses: {self.results['max_guesses']}\n"
             f"Distribution: {self.results['distribution']}\n"
             f"Build Runtime: {self.results['build_runtime']:.3f}s\n"
-            f"Nodes: {self.results['nodes']}\n"
+            f"#Vertices: {self.results['#vertices']}\n"
             f"Best first guess: {first_guess}\n"
         )
 
@@ -295,7 +328,7 @@ class Guess_Tree:
             while not self._stop_diagnosis:
                 elapsed = int(time.time() - start_time)
                 sys.stdout.write(
-                    f"\rNode count: {self.node_count} | Time: {elapsed}s   "
+                    f"\rVertex count: {self.v_curr + 1} | Time: {elapsed}s   "
                 )
                 sys.stdout.flush()
                 time.sleep(1)

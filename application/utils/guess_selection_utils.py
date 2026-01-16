@@ -4,27 +4,27 @@ import numpy as np
 import cupy as cp
 
 
-def best_guess_function(instance_data, flags, configs):
+def best_guess_functions(instance_data, flags, configs):
     """
     Selects the appropriate best guess function based on flags
     """
-    get_best_guess = _get_best_guess_GPU if configs['GPU'] else _get_best_guess_CPU
-    get_best_guesses = best_guesses_function(configs)
-    instance_for_subtree = instance_data + (get_best_guess, get_best_guesses,)
+    _best_guess_functions = (_get_best_guess_CPU, _get_best_guess_GPU)
+    _best_guesses_functions = best_guesses_functions()
     
     # Get best guess function if subtree metric is choosen
     if configs['subtree_score']:
-        subtree = Guess_Tree(instance_for_subtree, flags, configs)
+        instance = instance_data + (_best_guess_functions, _best_guesses_functions)
+        subtree = Guess_Tree(instance, flags, configs)
         
         def get_best_guess_subtree(T, G, F):
             return _get_best_guess_subtree(T, G, F, subtree)
-        get_best_guess = get_best_guess_subtree
+        _best_guess_functions = (get_best_guess_subtree, get_best_guess_subtree)
 
-    return get_best_guess
+    return _best_guess_functions
 
 
-def best_guesses_function(configs):
-    return _get_best_guesses_GPU if configs['GPU'] else _get_best_guesses_CPU
+def best_guesses_functions():
+    return _get_best_guesses_CPU, _get_best_guesses_GPU
 
 
 def _get_best_guess_CPU(T, G, F):

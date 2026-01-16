@@ -13,10 +13,10 @@ def get_instance(flags, configs):
     C = _get_feedback_compatibility_matrix(configs)
     decode_feedback = decode_feedback_GPU if configs['GPU'] else decode_feedback_CPU
     instance_data = (G, T, F, C, decode_feedback)
-    get_best_guess = best_guess_function(instance_data, flags, configs)
-    get_best_guesses = best_guesses_function(configs)
+    _best_guess_functions = best_guess_functions(instance_data, flags, configs)
+    _best_guesses_functions = best_guesses_functions()
 
-    return instance_data + (get_best_guess, get_best_guesses,)
+    return instance_data + (_best_guess_functions, _best_guesses_functions)
 
 
 def _get_words(filepath):
