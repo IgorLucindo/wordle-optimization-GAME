@@ -50,7 +50,6 @@ class Guess_Tree:
         }
         self.v_curr = -1
         self.depths = np.zeros(len(self.T))
-        self.hybrid_threshold = 1000
 
 
     def build_tree(self):
@@ -111,7 +110,6 @@ class Guess_Tree:
         F, C = self.F, self.C
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
-        self.reset_tree()
         self.v_curr = -1
         depths = []
 

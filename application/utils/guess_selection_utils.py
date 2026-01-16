@@ -1,5 +1,4 @@
 from classes.guess_tree import *
-from cupyx import scatter_add
 import numpy as np
 import cupy as cp
 
@@ -39,7 +38,7 @@ def _get_best_guess_CPU(T, G, F):
     T_set = set(T.tolist())
 
     for i, g in enumerate(G):
-        P_g = np.unique(F[T, g])
+        P_g = np.nonzero(np.bincount(F[T, g], minlength=243))[0]
         scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
 
     # Best guess
@@ -55,26 +54,27 @@ def _get_best_guess_GPU(T, G, F):
     n = len(T)
     if n <= 2:
         return T[0], True
-
+    
     nG = len(G)
-    base = 243  # Number of possible feedback patterns
+    base = 243
 
     # Extract feedback submatrix
     feedbacks_sub = F[T[:, None], G]
 
-    # Flatten in column-major order to align with guesses
-    flat_fb = feedbacks_sub.ravel(order='F')
-    flat_col = cp.repeat(cp.arange(nG), n)
+    # Linear Indexing
+    offsets = cp.arange(nG, dtype=cp.int32) * base
+    global_indices = feedbacks_sub + offsets
 
-    # Build histogram table [guess × feedback]
-    hist = cp.zeros((nG, base), dtype=cp.int32)
-    scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
-    num_feedbacks = (hist > 0).sum(axis=1)
+    # Bincount
+    counts_flat = cp.bincount(global_indices.ravel(), minlength=nG * base)
+    counts = counts_flat.reshape(nG, base)
+    num_feedbacks = (counts > 0).sum(axis=1)
+
+    # Score
     global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
     global_mask[T] = True
     in_T = global_mask[G]
 
-    # Score
     scores = (n - in_T) / num_feedbacks
 
     # Best guess
@@ -92,7 +92,7 @@ def _get_best_guesses_CPU(T, G, F, num_of_guesses=10):
     T_set = set(T.tolist())
 
     for i, g in enumerate(G):
-        P_g = np.unique(F[T, g])
+        P_g = np.nonzero(np.bincount(F[T, g], minlength=243))[0]
         scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
 
     # Best guesses
@@ -105,26 +105,26 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     """
     Finds the best guesses by minimizing the average size of remaining set (GPU)
     """
-    n = len(T)
-    nG = len(G)
-    base = 243  # Number of possible feedback patterns
+    n, nG = len(T), len(G)
+    base = 243
 
     # Extract feedback submatrix for feasible targets vs all guesses
     feedbacks_sub = F[T[:, None], G]
 
-    # Flatten in column-major order to align correctly with guesses
-    flat_fb = feedbacks_sub.ravel(order='F')
-    flat_col = cp.repeat(cp.arange(nG), n)
+    # Linear Indexing
+    offsets = cp.arange(nG, dtype=cp.int32) * base
+    global_indices = feedbacks_sub + offsets
 
-    # Build histogram table [guess × feedback]
-    hist = cp.zeros((nG, base), dtype=cp.int32)
-    scatter_add(hist, (flat_col, flat_fb), cp.ones_like(flat_fb, dtype=cp.int32))
-    num_feedbacks = (hist > 0).sum(axis=1)
+    # Bincount
+    counts_flat = cp.bincount(global_indices.ravel(), minlength=nG * base)
+    counts = counts_flat.reshape(nG, base)
+    num_feedbacks = (counts > 0).sum(axis=1)
+
+    # Score
     global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
     global_mask[T] = True
     in_T = global_mask[G]
 
-    # Score
     scores = (n - in_T) / num_feedbacks
 
     # Best guesses
@@ -143,20 +143,20 @@ def _get_best_guess_subtree(T, G, F, subtree):
     
     # If the current G is small enough, switch to CPU for faster computation
     if subtree.configs['GPU']:
-        T, G, _, _, _ = subtree.optimize_compute_device(T, G)
+        T, G, xp, F, C = subtree.optimize_compute_device(T, G)
     
     # Get guess candidates based on chosen metric
-    g_candidates, candidates_in_T = subtree.get_best_guesses(T, G, F, num_of_guesses=10)
-    # g_candidates = G
-    # global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
+    G_prime, candidates_in_T = subtree.get_best_guesses(T, G, F, num_of_guesses=10)
+    # G_prime = G
+    # global_mask = xp.zeros(F.shape[1], dtype=xp.bool_)
     # global_mask[T] = True
     # candidates_in_T = global_mask[G]
     
-    scores = np.zeros(len(g_candidates))
+    scores = np.zeros(len(G_prime))
     subtree.T = T
     subtree.G = G
 
-    for i, g_start in enumerate(g_candidates):
+    for i, g_start in enumerate(G_prime):
         g_start_in_T = candidates_in_T[i]
         subtree.build_subtree(g_start, g_start_in_T)
         subtree.evaluate_quick()
@@ -164,5 +164,5 @@ def _get_best_guess_subtree(T, G, F, subtree):
 
     # Best guess
     argmin = np.argmin(scores)
-    g_star = g_candidates[argmin]
+    g_star = G_prime[argmin]
     return g_star, candidates_in_T[argmin]
