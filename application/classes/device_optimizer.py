@@ -1,6 +1,8 @@
 import numpy as np
 import cupy as cp
 import time
+import json
+import os
 
 
 class DeviceOptimizer:
@@ -11,7 +13,7 @@ class DeviceOptimizer:
         self.threshold = 0
 
         # --- Solver References ---
-        # 0 = CPU, 1 = GPU
+        # 0 -> CPU, 1 -> GPU
         self.solvers_cpu = (best_guess_fns[0], best_guesses_fns[0])
         self.solvers_gpu = (best_guess_fns[1], best_guesses_fns[1])
         
@@ -21,12 +23,32 @@ class DeviceOptimizer:
         self.F_gpu = F
         self.C_gpu = C
         
-        # Pre-load CPU data for fast switching
-        if configs['GPU']:
+        # Run initialization
+        self._initialize_data_and_calibration(T, G, F, C)
+        
+
+    def _initialize_data_and_calibration(self, T, G, F, C):
+        """
+        Pre-loads CPU data and handles calibration logic (load/save/run)
+        """
+        if self.configs['GPU']:
             self.F_cpu = cp.asnumpy(F)
             self.C_cpu = cp.asnumpy(C) if C is not None else None
-            # Run Calibration immediately
-            self.threshold = self._calibrate_threshold(T, G)
+            
+            # Unique key based on metric AND the specific solver function being used
+            solver_name = self.solvers_cpu[0].__name__
+            self.calibration_key = f"metric_{self.configs['metric']}_{solver_name}"
+            self.calibration_file = "results/calibration.json"
+
+            cached_val = self._load_calibration()
+            
+            if cached_val is not None:
+                self.threshold = cached_val
+                if self.flags['print_diagnosis']:
+                    print(f"  [Calibration] Loaded threshold for '{self.calibration_key}': {self.threshold}")
+            else:
+                self.threshold = self._calibrate_threshold(T, G)
+                self._save_calibration(self.threshold)
         else:
             self.F_cpu = F
             self.C_cpu = C
@@ -135,3 +157,40 @@ class DeviceOptimizer:
             print(f"  [Calibration] Threshold set to {best_threshold} ops")
             
         return best_threshold
+    
+
+    def _load_calibration(self):
+        """
+        Loads the calibration value from the JSON file if it exists
+        """
+        if not os.path.exists(self.calibration_file):
+            return None
+        
+        try:
+            with open(self.calibration_file, 'r') as f:
+                data = json.load(f)
+                return data.get(self.calibration_key)
+        except (json.JSONDecodeError, IOError):
+            return None
+
+
+    def _save_calibration(self, value):
+        """
+        Saves the calibration value to the JSON file
+        """
+        data = {}
+        # Load existing data first to avoid overwriting other keys
+        if os.path.exists(self.calibration_file):
+            try:
+                with open(self.calibration_file, 'r') as f:
+                    data = json.load(f)
+            except (json.JSONDecodeError, IOError):
+                data = {} # Reset on corruption
+
+        data[self.calibration_key] = value
+
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(self.calibration_file), exist_ok=True)
+        
+        with open(self.calibration_file, 'w') as f:
+            json.dump(data, f, indent=4)
