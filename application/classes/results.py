@@ -1,13 +1,12 @@
 import json
 import numpy as np
-import cupy as cp
 
 
 class Results:
     def __init__(self, instance, flags, configs):
         G, T, F, _, decode_feedback, _, _ = instance
         self.words_map = G
-        self.T = T
+        self.T = np.arange(len(T))
         self.F = F
         self.decode_feedback = decode_feedback
         self.flags = flags
@@ -35,10 +34,9 @@ class Results:
         """
         Evaluates the tree by simulating all possible games (Full Simulation)
         """
-        targets = self.T if isinstance(self.T, (np.ndarray, list)) else cp.asnumpy(self.T)
         D = []
 
-        for target in targets:
+        for target in self.T:
             v_curr = 0
             depth = 1
 
@@ -59,10 +57,9 @@ class Results:
         Evaluates the decoded tree by simulating all possible games
         """
         word_to_idx = {w: i for i, w in enumerate(self.words_map)}
-        targets = self.T if isinstance(self.T, (np.ndarray, list)) else cp.asnumpy(self.T)
         D = []
 
-        for target in targets:
+        for target in self.T:
             v_curr = 0
             depth = 1
 
