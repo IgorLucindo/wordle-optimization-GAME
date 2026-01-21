@@ -38,7 +38,7 @@ class DeviceOptimizer:
             # Unique key based on metric AND the specific solver function being used
             solver_name = self.solvers_cpu[0].__name__
             self.calibration_key = f"metric_{self.configs['metric']}_{solver_name}"
-            self.calibration_file = "results/calibration.json"
+            self.calibration_file = "application/results/calibration.json"
 
             cached_val = self._load_calibration()
             

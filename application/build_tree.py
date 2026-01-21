@@ -10,8 +10,8 @@ flags = {
 }
 
 configs = {
-    'GPU': True,
-    'hard_mode': False,
+    'GPU': False,
+    'hard_mode': True,
     'metric': 1       # 0 -> Avg. Size     1 -> Subtree-10     2 -> Subtree-Full
 }
 
