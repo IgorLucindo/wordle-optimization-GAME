@@ -1,6 +1,6 @@
+from classes.device_optimizer import DeviceOptimizer
 from collections import deque
 import numpy as np
-import cupy as cp
 import threading
 import json
 import time
@@ -9,31 +9,21 @@ import sys
 
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
-        # Get instance
-        G, T, F, C, decode_feedback, _best_guess_functions, _best_guesses_functions = instance
-        xp = cp if configs['GPU'] else np
-        self.xp = xp
+        # Initialize Optimizer (Handles calibration, data, and solvers)
+        self.optimizer = DeviceOptimizer(instance, flags, configs)
+        
+        G, T, F, C, decode_feedback, _, _ = instance
+        self.xp = self.optimizer.xp
 
         # Words as an int not strings
         self.words_map = G
-        self.G = xp.arange(len(G)) # Guess words
-        self.T = xp.arange(len(T)) # Target words
-        self.F = F                 # Feedback matrix
-        self.C = C                 # Feedback compatibility matrix
-        self.decode_feedback = decode_feedback                                                               # Feedback decoding function
-        self.get_best_guess = _best_guess_functions[1] if configs['GPU'] else _best_guess_functions[0]       # Best guess function
-        self.get_best_guesses = _best_guesses_functions[1] if configs['GPU'] else _best_guesses_functions[0] # Best guesses function
+        self.G = self.xp.arange(len(G)) # Guess words
+        self.T = self.xp.arange(len(T)) # Target words
+        self.F = F                      # Feedback matrix (Default Device)
+        self.C = C                      # Feedback compatibility matrix
+        self.decode_feedback = decode_feedback
         self.flags = flags
         self.configs = configs
-        
-        # Saving cpu instances for hybrid approach
-        if configs['GPU']:
-            self.F_cpu = cp.asnumpy(F)
-            self.C_cpu = cp.asnumpy(C) if C is not None else None
-            self.get_best_guess_CPU = _best_guess_functions[0]
-            self.get_best_guess_GPU = _best_guess_functions[1]
-            self.get_best_guesses_CPU = _best_guesses_functions[0]
-            self.get_best_guesses_GPU = _best_guesses_functions[1]
         
         self.start_data = None
         self._stop_diagnosis = False
@@ -50,7 +40,6 @@ class Guess_Tree:
         }
         self.v_curr = -1
         self.depths = np.zeros(len(self.T))
-        self.hybrid_threshold = 1000
 
 
     def build_tree(self):
@@ -59,10 +48,10 @@ class Guess_Tree:
         """
         start_time = time.time()
 
-        xp = self.xp
-        F, C = self.F, self.C
+        # Queue: (T_curr, G_curr, v_parent, p_parent, depth)
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
+        
         self.reset_tree()
         self.v_curr = -1
         depths = []
@@ -71,12 +60,12 @@ class Guess_Tree:
             T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
             self.v_curr += 1
             
-            # If the current G_curr is small enough, switch to CPU for faster computation
-            if self.configs['GPU']:
-                T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
+            # Ask optimizer for the best context for this specific vertex
+            T_curr, G_curr, xp, F, C, get_best_guess, _ = self.optimizer.get_context(T_curr, G_curr)
 
             G_arg = G_curr if self.configs['hard_mode'] else self.G
-            g_star, g_star_in_T = self.get_best_guess(T_curr, G_arg, F)
+            g_star, g_star_in_T = get_best_guess(T_curr, G_arg, F)
+            
             self.append2Tree(g_star, self.v_curr, v_parent, p_parent)
             if g_star_in_T:
                 depths.append(depth)
@@ -107,11 +96,9 @@ class Guess_Tree:
         """
         start_time = time.time()
 
-        xp = self.xp
-        F, C = self.F, self.C
+        # Queue: (T_curr, G_curr, v_parent, p_parent, depth)
         G_curr = self.G if self.configs['hard_mode'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
-        self.reset_tree()
         self.v_curr = -1
         depths = []
 
@@ -119,9 +106,8 @@ class Guess_Tree:
             T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
             self.v_curr += 1
             
-            # If the current G_curr is small enough, switch to CPU for faster computation
-            if self.configs['GPU']:
-                T_curr, G_curr, xp, F, C = self.optimize_compute_device(T_curr, G_curr)
+            # Ask optimizer for the best context for this specific vertex
+            T_curr, G_curr, xp, F, C, get_best_guess, _ = self.optimizer.get_context(T_curr, G_curr)
 
             # Get best guess considering starting guess
             if g_start is not None:
@@ -129,7 +115,7 @@ class Guess_Tree:
                 g_start = None
             else:
                 G_arg = G_curr if self.configs['hard_mode'] else self.G
-                g_star, g_star_in_T = self.get_best_guess(T_curr, G_arg, F)
+                g_star, g_star_in_T = get_best_guess(T_curr, G_arg, F)
 
             if g_star_in_T:
                 depths.append(depth)
@@ -152,40 +138,6 @@ class Guess_Tree:
         self.depths = np.array(depths)
         self.results['build_runtime'] = time.time() - start_time
         self.results['#vertices'] = self.v_curr
-    
-
-    def optimize_compute_device(self, T_curr, G_curr, switch_threshold=500):
-        """
-        Determines the most efficient device (CPU vs GPU) for the current workload size
-        Moves data to CPU if the workload is small and updates solver references
-        """
-        # Reset to GPU defaults
-        xp = self.xp
-        F = self.F
-        C = self.C
-        self.get_best_guess = self.get_best_guess_GPU
-        self.get_best_guesses = self.get_best_guesses_GPU
-        switch_to_cpu = False
-
-        # Condition A: Data is already on CPU (inherited from a CPU parent vertex)
-        if isinstance(T_curr, np.ndarray):
-            switch_to_cpu = True
-        # Condition B: Data is on GPU, but small enough to be faster on CPU
-        elif self.configs['hard_mode'] and G_curr is not None and len(G_curr) < switch_threshold:
-            # Move data from GPU to CPU
-            T_curr = cp.asnumpy(T_curr)
-            G_curr = cp.asnumpy(G_curr)
-            switch_to_cpu = True
-
-        # Apply the switch if conditions are met
-        if switch_to_cpu:
-            xp = np
-            F = self.F_cpu
-            C = self.C_cpu
-            self.get_best_guess = self.get_best_guess_CPU
-            self.get_best_guesses = self.get_best_guesses_CPU
-
-        return T_curr, G_curr, xp, F, C
 
 
     def append2Tree(self, g_star, v_curr, v_parent, p_parent):
@@ -197,7 +149,7 @@ class Guess_Tree:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
 
 
-    def get_next_guesses_hardmode(self, T, G_curr, feedback, g_star, F, C):
+    def get_next_guesses_hardmode(self, T, G, feedback, g_star, F, C):
         """
         Vectorized hard-mode filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
@@ -206,12 +158,12 @@ class Guess_Tree:
             return None
         
         # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)
-        possible_feedbacks = F[G_curr, g_star]
+        possible_feedbacks = F[G, g_star]
 
         # Mask of which feedbacks are compatible
         valid_mask = C[possible_feedbacks, feedback]
 
-        return G_curr[valid_mask]
+        return G[valid_mask]
     
 
     def reset_tree(self):
@@ -223,7 +175,7 @@ class Guess_Tree:
 
     def decode_tree(self):
         """
-        Decode tree: Converts internal IDs and codes to readable strings and tuples.
+        Decode tree: Converts internal IDs and codes to readable strings and tuples
         """
         if self.decoded_tree or not self.tree['vertices']:
             return
@@ -339,7 +291,7 @@ class Guess_Tree:
 
     def print_results(self):
         """
-        Prints the evaluation results to the console.
+        Prints the evaluation results to the console
         """
         if not self.flags['evaluate']:
             return
