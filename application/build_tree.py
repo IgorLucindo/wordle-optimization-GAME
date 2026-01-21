@@ -1,5 +1,6 @@
-from utils.instance_utils import *
 from classes.guess_tree import *
+from classes.results import *
+from utils.instance_utils import *
 
 
 flags = {
@@ -11,7 +12,7 @@ flags = {
 configs = {
     'GPU': True,
     'hard_mode': False,
-    'subtree_score': True
+    'metric': 1       # 0 -> Avg. Size     1 -> Subtree-10     2 -> Subtree-Full
 }
 
 
@@ -19,12 +20,13 @@ def main():
     instance = get_instance(flags, configs)
 
     gt = Guess_Tree(instance, flags, configs)
-    gt.start_diagnosis()
-    gt.build_tree()
-    gt.stop_diagnosis()
-    gt.evaluate()
-    gt.print_results()
-    gt.save()
+    tree, D, runtime = gt.build_tree()
+
+    results = Results(instance, flags, configs)
+    results.set_data(tree, runtime)
+    results.evaluate()
+    results.print()
+    results.save()
 
 
 if __name__ == "__main__":

@@ -11,12 +11,12 @@ def best_guess_functions(instance_data, flags, configs):
     _best_guesses_functions = best_guesses_functions()
     
     # Get best guess function if subtree metric is choosen
-    if configs['subtree_score']:
+    if configs['metric']:
         instance = instance_data + (_best_guess_functions, _best_guesses_functions)
         subtree = Guess_Tree(instance, flags, configs)
         
         def get_best_guess_subtree(T, G, F):
-            return _get_best_guess_subtree(T, G, F, subtree)
+            return _get_best_guess_subtree(T, G, F, subtree, configs)
         _best_guess_functions = (get_best_guess_subtree, get_best_guess_subtree)
 
     return _best_guess_functions
@@ -133,7 +133,7 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10):
     return G[g_star_idxs], in_T[g_star_idxs]
 
 
-def _get_best_guess_subtree(T, G, F, subtree):
+def _get_best_guess_subtree(T, G, F, subtree, configs):
     """
     Finds the best guess using a subtree metric
     """
@@ -141,16 +141,16 @@ def _get_best_guess_subtree(T, G, F, subtree):
     if n <= 2:
         return T[0], True
     
-    # If the current G is small enough, switch to CPU for faster computation
-    if subtree.configs['GPU']:
-        T, G, xp, F, C = subtree.optimize_compute_device(T, G)
+    # Ask Optimizer for Context
+    T, G, xp, F, _, _, get_best_guesses = subtree.optimizer.get_context(T, G)
     
     # Get guess candidates based on chosen metric
-    G_prime, candidates_in_T = subtree.get_best_guesses(T, G, F, num_of_guesses=10)
-    # G_prime = G
-    # global_mask = xp.zeros(F.shape[1], dtype=xp.bool_)
-    # global_mask[T] = True
-    # candidates_in_T = global_mask[G]
+    if configs['metric'] == 1:
+        G_prime, candidates_in_T = get_best_guesses(T, G, F)
+    else:
+        global_mask = xp.zeros(F.shape[1], dtype=xp.bool_)
+        global_mask[T] = True
+        G_prime, candidates_in_T = G, global_mask[G]
     
     scores = np.zeros(len(G_prime))
     subtree.T = T
@@ -158,9 +158,8 @@ def _get_best_guess_subtree(T, G, F, subtree):
 
     for i, g_start in enumerate(G_prime):
         g_start_in_T = candidates_in_T[i]
-        subtree.build_subtree(g_start, g_start_in_T)
-        subtree.evaluate_quick()
-        scores[i] = subtree.results['exp_guesses'] + 0.001 * subtree.results['max_guesses']
+        D = subtree.build_subtree(g_start, g_start_in_T)
+        scores[i] = D.mean() + 0.001 * D.max()
 
     # Best guess
     argmin = np.argmin(scores)

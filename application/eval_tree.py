@@ -1,5 +1,5 @@
 from utils.instance_utils import *
-from classes.guess_tree import *
+from classes.results import *
 
 
 flags = {
@@ -11,19 +11,20 @@ flags = {
 configs = {
     'GPU': True,
     'hard_mode': False,
-    'subtree_score': False
+    'metric': 0       # 0 -> Avg. Size     1 -> Subtree-10     2 -> Subtree-Full
 }
 
 
 def main():
     filename = "decision_tree_hard.json" if configs['hard_mode'] else "decision_tree.json"
+    filepath = 'dataset/' + filename
 
     instance = get_instance(flags, configs)
 
-    gt = Guess_Tree(instance, flags, configs)
-    gt.load_tree('dataset/' + filename)
-    gt.evaluate_decoded()
-    gt.print_results()
+    results = Results(instance, flags, configs)
+    results.load_tree(filepath)
+    results.evaluate_decoded()
+    results.print()
 
 
 if __name__ == "__main__":

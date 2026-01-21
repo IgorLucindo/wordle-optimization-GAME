@@ -2,6 +2,7 @@ import numpy as np
 import cupy as cp
 import time
 
+
 class DeviceOptimizer:
     def __init__(self, instance, flags, configs):
         G, T, F, C, _, best_guess_fns, best_guesses_fns = instance
