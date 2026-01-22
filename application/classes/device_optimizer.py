@@ -13,7 +13,7 @@ class DeviceOptimizer:
         self.threshold = 0
 
         # --- Solver References ---
-        # 0 -> CPU, 1 -> GPU
+        # 0 = CPU, 1 = GPU
         self.solvers_cpu = (best_guess_fns[0], best_guesses_fns[0])
         self.solvers_gpu = (best_guess_fns[1], best_guesses_fns[1])
         
@@ -25,7 +25,7 @@ class DeviceOptimizer:
         
         # Run initialization
         self._initialize_data_and_calibration(T, G, F, C)
-        
+
 
     def _initialize_data_and_calibration(self, T, G, F, C):
         """
@@ -60,7 +60,7 @@ class DeviceOptimizer:
         Decides the optimal compute context (CPU vs GPU) for the given workload
         Returns: (T, G, xp, F, C, get_best_guess, get_best_guesses)
         """
-        # Fast Exit: If we are already on CPU, stay there.
+        # Fast Exit: If we are already on CPU, stay there
         if isinstance(T_curr, np.ndarray):
             return (
                 T_curr, G_curr, np, 
@@ -102,21 +102,21 @@ class DeviceOptimizer:
 
     def _calibrate_threshold(self, T_full, G_full):
         """
-        Runs a race between CPU and GPU to find the exact crossover point
+        Runs a race between CPU and GPU
+        Includes 'Blowout Rule' and 'Safety Brake' to exit early if CPU is winning
         """
         if self.flags['print_diagnosis']:
-            print("  [Calibration] Calibrating CPU/GPU switch threshold...")
+            print(f"  [Calibration] Calibrating CPU/GPU threshold for {self.calibration_key}...")
 
-        # Warm Up (JIT Compile)
-        warm_T, warm_G = np.arange(10), np.arange(100)
+        # Warm Up (JIT Compile) with tiny workload
+        warm_T, warm_G = np.arange(10), np.arange(50) 
         self.solvers_cpu[0](warm_T, warm_G, self.F_cpu)
         self.solvers_gpu[0](cp.array(warm_T), cp.array(warm_G), self.F_gpu)
         cp.cuda.Stream.null.synchronize()
 
-        # Race
-        # Test points: (Targets, Guesses) -> Ops
-        test_points = [(50, 1000), (250, 1000), (1000, 1000), (2000, 2500)]
-        best_threshold = 5000000  # Default high
+        # Race Points
+        test_points = [(10, 50), (50, 1000), (250, 1000), (1000, 1000), (2000, 2500)]
+        best_threshold = float('inf')  # Default to CPU
         found_crossover = False
 
         for n_t, n_g in test_points:
@@ -125,7 +125,6 @@ class DeviceOptimizer:
             n_g = min(n_g, len(G_full))
             workload = n_t * n_g
             
-            # Generate Random Indices
             idxs_t = np.random.choice(len(T_full), n_t, replace=False)
             idxs_g = np.random.choice(len(G_full), n_g, replace=False)
 
@@ -143,21 +142,40 @@ class DeviceOptimizer:
             if self.flags['print_diagnosis']:
                 print(f"    Workload {workload:8d} | CPU: {dur_cpu:.4f}s | GPU: {dur_gpu:.4f}s")
 
-            if dur_gpu < dur_cpu:
+            # --- Safety Brake (Timeout) ---
+            # If any test takes > 0.5s, stop testing. It's too heavy
+            if dur_cpu > 0.5 or dur_gpu > 0.5:
+                if self.flags['print_diagnosis']:
+                    print("    [Calibration] Test took too long. Stopping race.")
+                if dur_gpu < (dur_cpu * 0.9):
+                    best_threshold = workload
+                    found_crossover = True
+                break
+
+            # --- Blowout Rule (Early Exit) ---
+            # If GPU is >2x slower than CPU on a non-trivial task, stop
+            # We don't need to test larger workloads to know CPU wins
+            if dur_gpu > (dur_cpu * 2.0) and dur_cpu > 0.01:
+                if self.flags['print_diagnosis']:
+                    print("    [Calibration] CPU is >2x faster. Stopping race early.")
+                break
+
+            # --- Crossover Check ---
+            # GPU must be at least 10% faster to justify the switch
+            if dur_gpu < (dur_cpu * 0.9):
                 best_threshold = workload
                 found_crossover = True
                 break
         
-        if not found_crossover:
-            best_threshold = 5000000
-        elif best_threshold == test_points[0][0] * test_points[0][1]:
-            best_threshold = 0 
+        # If we found a crossover at the very first (tiniest) point, GPU is always faster
+        if found_crossover and best_threshold == test_points[0][0] * test_points[0][1]:
+            best_threshold = 0
 
         if self.flags['print_diagnosis']:
             print(f"  [Calibration] Threshold set to {best_threshold} ops")
             
         return best_threshold
-    
+
 
     def _load_calibration(self):
         """
@@ -179,17 +197,15 @@ class DeviceOptimizer:
         Saves the calibration value to the JSON file
         """
         data = {}
-        # Load existing data first to avoid overwriting other keys
         if os.path.exists(self.calibration_file):
             try:
                 with open(self.calibration_file, 'r') as f:
                     data = json.load(f)
             except (json.JSONDecodeError, IOError):
-                data = {} # Reset on corruption
+                data = {} 
 
         data[self.calibration_key] = value
 
-        # Ensure directory exists
         os.makedirs(os.path.dirname(self.calibration_file), exist_ok=True)
         
         with open(self.calibration_file, 'w') as f:
