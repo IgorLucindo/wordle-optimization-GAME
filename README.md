@@ -7,7 +7,7 @@ This repository contains the data, code, and computational outputs for the paper
 **A Polytime and Interpretable Approach for Solving Wordle**   
 Igor Lucindo, Gabriel Teodoro, Hamidreza Validi
 
-We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **regular** and **hard** modes, quantifying the trade-offs between strict constraint satisfaction (hard mode) and the freedom to choose information-maximizing probes (regular mode).
+We implement a **decision tree-based solver** for the popular game [Wordle](https://www.nytimes.com/games/wordle/index.html) to minimize the **expected number of guesses** while ensuring correctness. We explore both **normal** and **hard** modes, quantifying the trade-offs between strict constraint satisfaction (hard mode) and the freedom to choose information-maximizing probes (normal mode).
 
 ## 📊 Key Results
 
@@ -19,14 +19,14 @@ The word lists used for the target words and valid guesses are located in the `d
 
 The choice of the first word significantly impacts the game's trajectory. Our solver identified the following openers as mathematically optimal for minimizing expected guesses:
 
-| Rank | Regular Mode | Exp. Guesses | Hard Mode | Exp. Guesses |
+| Rank | Normal Mode | Exp. Guesses | Hard Mode | Exp. Guesses |
 | :---: | :--- | :---: | :--- | :---: |
 | **1** | `SALET` | **3.421** | `SALET` | **3.506** |
 | **2** | `REAST` | 3.423 | `SLATE` | 3.510 |
 | **3** | `SLATE` | 3.425 | `TRACE` | 3.512 |
 | **4** | `TRACE` | 3.426 | `REAST` | 3.514 |
 
-> **Note:** Our result of **3.421** guesses for regular mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
+> **Note:** Our result of **3.421** guesses for normal mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
 
 ### 2) Performance by Metric
 
@@ -34,18 +34,18 @@ We compared a baseline greedy strategy ("Avg. Size") against our optimized look-
 
 | Strategy | Mode | Exp. Guesses | Std. Guesses | Max. Guesses | Build Time (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Avg. Size** | Regular | 3.435 | 0.627 | 6 | 14.790 |
+| **Avg. Size** | Normal | 3.435 | 0.627 | 6 | 14.790 |
 | | Hard | 3.531 | 0.790 | 8 | 1.337 |
-| **Subtree** (Top 10) | Regular | **3.421** | 0.588 | **5** | 256.700 |
+| **Subtree** (Top 10) | Normal | **3.421** | 0.588 | **5** | 256.700 |
 | | Hard | 3.507 | 0.716 | 7 | 14.194 |
-| **Subtree** (All) | Regular | **3.421** | 0.588 | **5** | $4.335 \times 10^5$ |
+| **Subtree** (All) | Normal | **3.421** | 0.588 | **5** | $4.335 \times 10^5$ |
 | | Hard | **3.506** | 0.720 | **7** | $1.522 \times 10^4$ |
 
 ### 3) Guess Distribution
 
 We analyzed the stability of our heuristic by plotting the distribution of guesses required to solve all 2,315 words.
-* **Consistency:** In regular Mode, **100%** of games are solved within 5 guesses. hard mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
-* **Reliability:** Over **98%** of games are solved within 4 guesses in regular mode, while hard mode solves over **93%** within the same window.
+* **Consistency:** In normal Mode, **100%** of games are solved within 5 guesses. hard mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
+* **Reliability:** Over **98%** of games are solved within 4 guesses in normal mode, while hard mode solves over **93%** within the same window.
 
 <p align="center">
   <img src="results/dist_pdf.png" width="45%" />
@@ -57,7 +57,7 @@ We analyzed the stability of our heuristic by plotting the distribution of guess
 
 ### 4) GPU Acceleration
 
-To address the computational cost of look-ahead search (regular mode), we implemented a parallelized GPU solver.
+To address the computational cost of look-ahead search (normal mode), we implemented a parallelized GPU solver.
 
 * **Exhaustive Search (Subtree All):** Reduced build time from **~120 hours** (CPU) to **8.3 hours** (GPU), a **93.1% reduction**.
 * **Optimized Search (Subtree Top 10):** Reduced build time from **~4.3 minutes** (CPU) to just **20.6 seconds** (GPU), enabling near real-time decision tree construction.
