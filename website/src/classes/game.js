@@ -131,7 +131,7 @@ export class Game {
             showTooltip(this.diffButton, "Any revealed hints must be used in subsequent guesses.");
         }
         else {
-            diffA.innerHTML = `Regular`;
+            diffA.innerHTML = `Normal`;
             diffSVG.style.transform = 'scaleX(-1)';
             svgPathInnerArc.style.fill = 'var(--green)';
             showTooltip(this.diffButton, "Hints are optional and can be ignored for any subsequent guess.");
