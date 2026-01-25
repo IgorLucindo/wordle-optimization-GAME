@@ -29,6 +29,11 @@ header > h1 {
     user-select: none;
 }
 
+.header-buttons svg {
+    height: 28px;
+    width: auto;
+}
+
 .header-buttons div {
     display: flex;
     justify-content: center;
@@ -82,6 +87,11 @@ header > h1 {
 
 #solve-btn.active, #diff-btn:active {
     transform: translateY(-20%) scale(1.15);
+}
+
+#solve-btn svg {
+    position: relative;
+    top: -1px;
 }
 
 #diff-btn svg {
