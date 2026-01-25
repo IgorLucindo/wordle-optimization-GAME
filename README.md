@@ -15,9 +15,9 @@ We evaluated our "Subtree Look-ahead" strategy against the official Wordle datas
 
 The word lists used for the target words and valid guesses are located in the `dataset/` folder.
 
-### 1) Optimal Starting Words
+### 1) Best Starting Words
 
-The choice of the first word significantly impacts the game's trajectory. Our solver identified the following openers as mathematically optimal for minimizing expected guesses:
+The choice of the first word significantly impacts the game's trajectory. Our solver identified the following openers as mathematically efficient for minimizing expected guesses:
 
 | Rank | Normal Mode | Exp. Guesses | Hard Mode | Exp. Guesses |
 | :---: | :--- | :---: | :--- | :---: |
@@ -106,4 +106,4 @@ To make the solver accessible to non-technical audiences, we provide a web-based
 
 [![Play Game](https://img.shields.io/badge/PLAY-Wordle_Optimization_Game-2ea44f?style=for-the-badge)](https://igorlucindo.github.io/wordle-optimization-GAME)
 
-Users can use this tool to compare human intuition against the mathematically optimal strategies evaluated in this project.
+Users can use this tool to compare human intuition against the mathematically efficient strategies evaluated in this project.
