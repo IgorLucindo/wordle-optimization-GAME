@@ -5,10 +5,10 @@ import cupy as cp
 
 def best_guess_functions(instance_data, flags, configs):
     """
-    Selects the appropriate best guess function based on flags
+    Selects the appropriate best guess functions
     """
     _best_guess_functions = (_get_best_guess_CPU, _get_best_guess_GPU)
-    _best_guesses_functions = best_guesses_functions()
+    _best_guesses_functions = best_guesses_functions(configs)
     
     # Get best guess function if subtree metric is choosen
     if configs['metric']:
@@ -22,8 +22,18 @@ def best_guess_functions(instance_data, flags, configs):
     return _best_guess_functions
 
 
-def best_guesses_functions():
-    return _get_best_guesses_CPU, _get_best_guesses_GPU
+def best_guesses_functions(configs):
+    """
+    Selects the appropriate best guesses functions
+    """
+    def get_best_guesses_CPU(T, G, F):
+        return _get_best_guesses_CPU(T, G, F, num_of_guesses=configs['k'])
+    
+    def get_best_guesses_GPU(T, G, F):
+        return _get_best_guesses_GPU(T, G, F, num_of_guesses=configs['k'])
+    
+    _best_guesses_functions = (get_best_guesses_CPU, get_best_guesses_GPU)
+    return _best_guesses_functions
 
 
 def _get_best_guess_CPU(T, G, F):

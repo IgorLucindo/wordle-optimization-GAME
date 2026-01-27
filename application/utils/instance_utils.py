@@ -14,7 +14,7 @@ def get_instance(flags, configs):
     decode_feedback = decode_feedback_GPU if configs['GPU'] else decode_feedback_CPU
     instance_data = (G, T, F, C, decode_feedback)
     _best_guess_functions = best_guess_functions(instance_data, flags, configs)
-    _best_guesses_functions = best_guesses_functions()
+    _best_guesses_functions = best_guesses_functions(configs)
 
     return instance_data + (_best_guess_functions, _best_guesses_functions)
 

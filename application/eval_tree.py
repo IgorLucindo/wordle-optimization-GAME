@@ -1,5 +1,5 @@
-from utils.instance_utils import *
 from classes.results import *
+from utils.instance_utils import *
 
 
 flags = {
@@ -11,7 +11,8 @@ flags = {
 configs = {
     'GPU': True,
     'hard_mode': False,
-    'metric': 0       # 0 -> Avg. Size     1 -> Subtree-10     2 -> Subtree-Full
+    'metric': 0,       # 0 -> Avg. Size     1 -> Subtree-k     2 -> Subtree-Full
+    'k': 10
 }
 
 
