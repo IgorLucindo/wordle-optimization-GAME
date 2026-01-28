@@ -23,45 +23,46 @@ The choice of the first word significantly impacts the game's trajectory. Our so
 | :---: | :--- | :---: | :--- | :---: |
 | **1** | `SALET` | **3.421** | `SALET` | **3.506** |
 | **2** | `REAST` | 3.423 | `SLATE` | 3.510 |
-| **3** | `SLATE` | 3.425 | `TRACE` | 3.512 |
-| **4** | `TRACE` | 3.426 | `REAST` | 3.514 |
+| **3** | `TRACE` | 3.424 | `TRACE` | 3.512 |
+| **4** | `SLATE` | 3.425 | `REAST` | 3.514 |
 
 > **Note:** Our result of **3.421** guesses for normal mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
 
 ### 2) Performance by Metric
 
-We compared a baseline greedy strategy ("Avg. Size") against our optimized look-ahead strategies. The **Subtree (Top 10)** approach yields results virtually identical to an exhaustive search (**Subtree All**) but with drastically lower computational cost.
+We compared the baseline greedy strategy (**Avg. Size**) against our optimized look-ahead strategies (**Subtree-$k$**). As shown below, the look-ahead approaches ($k=10$ and $k=15$) yield results virtually identical to an exhaustive search (**Subtree-Full**), but with drastically lower computational cost—reducing build times from days to minutes.
 
-| Strategy | Mode | Exp. Guesses | Std. Guesses | Max. Guesses | Build Time (s) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Avg. Size** | Normal | 3.435 | 0.627 | 6 | 14.790 |
-| | Hard | 3.531 | 0.790 | 8 | 1.337 |
-| **Subtree** (Top 10) | Normal | **3.421** | 0.588 | **5** | 256.700 |
-| | Hard | 3.507 | 0.716 | 7 | 14.194 |
-| **Subtree** (All) | Normal | **3.421** | 0.588 | **5** | $4.335 \times 10^5$ |
-| | Hard | **3.506** | 0.720 | **7** | $1.522 \times 10^4$ |
+| Mode | Statistic | Avg. Size | Subtree-10 | Subtree-15 | Subtree-Full |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Normal** | Exp. Guesses | 3.435 | **3.421** | **3.421** | **3.421** |
+| | Max. Guesses | 6 | **5** | **5** | **5** |
+| | Build Time (s) | 10.01 | 180.12 | 260.17 | $4.34 \times 10^5$ |
+| **Hard** | Exp. Guesses | 3.531 | 3.507 | **3.506** | **3.506** |
+| | Max. Guesses | 8 | **7** | **7** | **7** |
+| | Build Time (s) | 1.00 | 10.01 | 14.01 | $1.52 \times 10^4$ |
 
-### 3) Guess Distribution
+### 3) Guess Distributions
 
-We analyzed the stability of our heuristic by plotting the distribution of guesses required to solve all 2,315 words.
-* **Consistency:** In normal Mode, **100%** of games are solved within 5 guesses. hard mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
-* **Reliability:** Over **98%** of games are solved within 4 guesses in normal mode, while hard mode solves over **93%** within the same window.
+We analyzed the stability of our heuristic by plotting the **solve rate and cumulative solve rate per number of guesses** required to solve all 2,315 words.
+
+* **Consistency:** In Normal Mode, **100%** of games are solved within 5 guesses. Hard Mode is nearly as robust, solving **99.9%** of instances within the standard 6-guess limit.
+* **Reliability:** **98.3%** of games are solved within 4 guesses in Normal Mode, while Hard Mode solves **93.8%** within the same window.
 
 <p align="center">
   <img src="results/dist_pdf.png" width="45%" />
   <img src="results/dist_cdf.png" width="45%" /> 
 </p>
 
-> **Left:** Probability Density Function (PDF) showing the percentage of games solved in $k$ guesses.  
-> **Right:** Cumulative Distribution Function (CDF) showing the total percentage solved within $k$ guesses.
+> **Left:** **Solve Rate** showing the percentage of games solved in exactly $k$ guesses.  
+> **Right:** **Cumulative Solve Rate** showing the total percentage solved within $k$ guesses.
 
-### 4) GPU Acceleration
+### 4) GPU Acceleration For Normal Mode
 
-To address the computational cost of look-ahead search (normal mode), we implemented a parallelized GPU solver.
+To address the computational cost of look-ahead search (Normal Mode), we implemented a parallelized GPU solver. This implementation yielded **identical statistical results** (expected and maximum guesses) to the CPU version while delivering significant speed improvements.
 
-* **Exhaustive Search (Subtree All):** Reduced build time from **~120 hours** (CPU) to **8.3 hours** (GPU), a **93.1% reduction**.
-* **Optimized Search (Subtree Top 10):** Reduced build time from **~4.3 minutes** (CPU) to just **20.6 seconds** (GPU), enabling near real-time decision tree construction.
----
+* **Avg. Size:** Reduced build time from **10.01s** (CPU) to **1.00s** (GPU), a **90.0% reduction**.
+* **Subtree-10:** Reduced build time from **180.12s** (CPU) to **23.01s** (GPU), an **87.2% reduction**.
+* **Subtree-15:** Reduced build time from **260.17s** (CPU) to **36.02s** (GPU), an **86.2% reduction**.
 
 ## ✨ Features
 
@@ -86,16 +87,55 @@ To address the computational cost of look-ahead search (normal mode), we impleme
 
 ## 🚀 Execution
 
-* Build and evaluate decision tree:
+You can run the solver using the default settings (GPU, Normal Mode) or customize the execution using command-line arguments.
+
+### Build and Optimize Tree
+To build the decision tree, run:
 
 ```bash
 python application/build_tree.py
 ```
 
-* Evaluate our decision tree:
+### Common Options:
+
+* `--hard_mode`: Enable constraints for Hard Mode.
+* `--cpu`: Run strictly on the CPU (disables GPU acceleration).
+* `--save_tree`: Save the resulting tree to a JSON file (results/decision_tree.json).
+* `--metric {0,1,2}`: Choose the optimization metric (default: 1).
+   * `0`: Average Size (Greedy)
+   * `1`: Subtree-k (Look-ahead)
+   * `2`: Subtree-Full (Exhaustive)
+* `--k {int}`: Number of candidates to evaluate when using Metric 1 (default: 15).
+
+### Example:
+
+```bash
+# Build for Hard Mode and save the tree
+python application/build_tree.py --hard_mode --save_tree
+
+# Run on CPU with a greedy strategy (faster build, slightly less optimal)
+python application/build_tree.py --cpu --metric 0
+```
+
+### Evaluate Our Tree:
+
+To evaluate a saved decision tree against the full dataset:
 
 ```bash
 python application/eval_tree.py
+```
+
+### Common Options:
+
+* `--hard_mode`: Evaluate the hard mode tree (dataset/decision_tree_hard.json) instead of the normal one.
+* `--cpu`: Run evaluation on the CPU.
+* `--no_diagnosis`: Hide the progress bar/diagnosis output.
+
+### Example:
+
+```bash
+# Evaluate the Hard Mode tree
+python application/eval_tree.py --hard_mode
 ```
 
 ---

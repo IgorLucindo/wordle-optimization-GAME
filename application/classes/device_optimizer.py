@@ -173,7 +173,7 @@ class DeviceOptimizer:
             best_threshold = 0
 
         if self.flags['print_diagnosis']:
-            print(f"  [Calibration] Threshold set to {best_threshold} ops\n")
+            print(f"  [Calibration] Threshold set to {best_threshold} ops")
             
         return best_threshold
 

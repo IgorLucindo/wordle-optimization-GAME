@@ -161,10 +161,20 @@ def _get_best_guess_subtree(T, G, F, subtree, configs):
         global_mask = xp.zeros(F.shape[1], dtype=xp.bool_)
         global_mask[T] = True
         G_prime, candidates_in_T = G, global_mask[G]
+
+    # Best guess according to subtree metric
+    g_star, g_star_in_T = _get_best_subtree_candidate(T, G, G_prime, F, candidates_in_T, subtree)
     
-    scores = np.zeros(len(G_prime))
+    return g_star, g_star_in_T
+
+
+def _get_best_subtree_candidate(T, G, G_prime, F, candidates_in_T, subtree):
+    """
+    Evaluates the provided candidates (G_prime) using the subtree metric and selects the best one
+    """
     subtree.T = T
     subtree.G = G
+    scores = np.zeros(len(G_prime))
 
     for i, g_start in enumerate(G_prime):
         g_start_in_T = candidates_in_T[i]

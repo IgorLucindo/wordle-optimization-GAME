@@ -152,6 +152,7 @@ class Guess_Tree:
     def start_diagnosis(self):
         if not self.flags['print_diagnosis']: return
         start_time = time.time()
+        print("")
         def _diagnose():
             while not self._stop_diagnosis:
                 elapsed = int(time.time() - start_time)
