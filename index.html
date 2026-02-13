@@ -84,7 +84,7 @@
                 </svg> 
                 functionality.
             </p>
-            <p class="copyright">© 2025 Developed by <a href="https://www.linkedin.com/in/igorlucindo/">Igor Cardoso</a></p>
+            <p class="copyright">© <span id="currentYear"></span> Developed by <a href="https://www.linkedin.com/in/igorlucindo/">Igor Cardoso</a></p>
         </div>
     </footer>
 
@@ -95,6 +95,10 @@
     <div id="tooltipText" class="tooltip"></div>
     
     <!-- Scripts -->
+     
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
     <script src="website/src/toggleTheme.js"></script>
     <script type="module" src="website/src/index.js"></script>
 </body>
