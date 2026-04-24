@@ -13,7 +13,7 @@ We implement a **decision tree-based solver** for the popular game [Wordle](http
 
 We evaluated our "Subtree Look-ahead" strategy against the official Wordle dataset (2,315 possible target words). All experiments were conducted on an Intel Core i7-9800X CPU and NVIDIA RTX A2000 GPU.
 
-The word lists used for the target words and valid guesses are located in the `dataset/` folder.
+The word lists used for the target words and valid guesses are located in the `data/` folder.
 
 ### 1) Best Starting Words
 
@@ -98,9 +98,11 @@ python application/build_tree.py
 
 ### Common Options:
 
-* `--hard_mode`: Enable constraints for Hard Mode.
+* `--game {wordle,mastermind,zoo}`: Select the guessing game instance
+  (default: `wordle`). Mastermind and Zoo run on CPU only.
+* `--hard_mode`: Enable constraints for Hard Mode (Wordle only).
 * `--cpu`: Run strictly on the CPU (disables GPU acceleration).
-* `--save_tree`: Save the resulting tree to a JSON file (results/decision_tree.json).
+* `--save_tree`: Save the resulting tree to a JSON file (`data/decision_tree.json`, or `data/decision_tree_hard.json` in hard mode).
 * `--metric {0,1,2}`: Choose the optimization metric (default: 1).
    * `0`: Average Size (Greedy)
    * `1`: Subtree-k (Look-ahead)
@@ -127,7 +129,8 @@ python application/eval_tree.py
 
 ### Common Options:
 
-* `--hard_mode`: Evaluate the hard mode tree (dataset/decision_tree_hard.json) instead of the normal one.
+* `--hard_mode`: Evaluate the hard mode tree (`data/decision_tree_hard.json`) instead of the normal one (`data/decision_tree.json`).
+* `--game {wordle,mastermind,zoo}`: Select the game instance to evaluate (default: `wordle`).
 * `--cpu`: Run evaluation on the CPU.
 * `--no_diagnosis`: Hide the progress bar/diagnosis output.
 
@@ -139,6 +142,44 @@ python application/eval_tree.py --hard_mode
 ```
 
 ---
+
+---
+
+## 🧩 Other Guessing Games (Mastermind & UCI Zoo)
+
+In addition to Wordle, the same solver can build decision trees for two other
+sequential testing games used in the accompanying paper:
+
+* **Mastermind 4×6** — 1,296 codes, black/white-peg feedback encoded as
+  `5·black + white` (base=25).
+* **UCI Zoo** — 59 feature-distinct animals, 16 attributes
+  (15 binary plus *legs* ∈ {0,2,4,5,6,8}; base=9). Guesses are
+  attribute queries; identification occurs by arrival at a singleton
+  leaf (no terminal "self-id" action).
+
+The `--game` flag switches instances. Both use CPU only and disable Hard Mode.
+
+```bash
+# Greedy (PC / Avg. Size) on Mastermind 4x6
+python application/build_tree.py --game mastermind --metric 0
+
+# Subtree-10 look-ahead on UCI Zoo
+python application/build_tree.py --game zoo --metric 1 --k 10
+```
+
+### Reference results
+
+| Game        | Metric        | Exp. Guesses | Max. | First action |
+|:------------|:--------------|:------------:|:----:|:-------------|
+| Mastermind  | Avg. Size     | 4.373        | 6    | `0012`       |
+| Mastermind  | Subtree-10    | 4.355        | 5    | `0015`       |
+| Zoo         | Avg. Size     | **5.559**    | **8** | `legs`      |
+| Zoo         | Subtree-10    | 5.034        | 6    | `aquatic`    |
+
+The Zoo greedy number reproduces the paper's 5.5593/max 8 exactly. The
+Subtree-10 numbers in this codebase are *better* than the paper's reference
+figures because this implementation applies Subtree-k at *every* internal
+node, whereas the paper's ablation uses it only at the root.
 
 ## 🎮 Interactive Game
 

@@ -1,0 +1,5 @@
+prompts:
+    - should we move data/ folder to inside application/ folder?
+    - also take a look at this paper. this is the code for this paper.
+    - notice that this code only has the metric rule PC, right? lets implement the other rules weighted average WA and entropy H. lets make a very solid implementation like everything else is and make it a thing we can choose in sparse, with default value PC. we should update readme.md
+    - just to confirm, weighted average and h are not implemented, right. if not lets do our implementation

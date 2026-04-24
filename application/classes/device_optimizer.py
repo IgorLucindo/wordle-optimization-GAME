@@ -1,5 +1,5 @@
+from utils.xp_utils import cp, HAS_CUPY
 import numpy as np
-import cupy as cp
 import time
 import json
 import os
@@ -12,11 +12,18 @@ class DeviceOptimizer:
         self.configs = configs
         self.threshold = 0
 
+        # If CuPy is unavailable, quietly force CPU mode so the rest of
+        # the pipeline (Mastermind/Zoo and CPU-only Wordle builds) still works.
+        if configs.get('GPU') and not HAS_CUPY:
+            if flags.get('print_diagnosis'):
+                print("  [DeviceOptimizer] CuPy not available; forcing CPU mode.")
+            configs['GPU'] = False
+
         # --- Solver References ---
         # 0 = CPU, 1 = GPU
         self.solvers_cpu = (best_guess_fns[0], best_guesses_fns[0])
         self.solvers_gpu = (best_guess_fns[1], best_guesses_fns[1])
-        
+
         # --- Data Management ---
         # Default to GPU if enabled
         self.xp = cp if configs['GPU'] else np

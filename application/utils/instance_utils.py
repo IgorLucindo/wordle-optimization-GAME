@@ -1,22 +1,77 @@
 from utils.guess_selection_utils import *
+from utils.xp_utils import cp, HAS_CUPY
+from utils import games as _games
 import numpy as np
-import cupy as cp
 
 
 def get_instance(flags, configs):
     """
-    Return word lists from dataset of words, feedback matrix and best guess function
+    Return word lists from dataset of words, feedback matrix and best guess function.
+
+    Dispatches on ``configs.get('game', 'wordle')``:
+      * 'wordle'     -- original Wordle pipeline (ternary feedback, GPU/CPU, hard mode)
+      * 'mastermind' -- 4x6 Mastermind (CPU only, normal mode)
+      * 'zoo'        -- UCI Zoo (CPU only, normal mode)
     """
-    T = _get_words("dataset/solutions.txt") # Target words
-    G = T + _get_words("dataset/non_solutions.txt") # Guesses
+    game = configs.get('game', 'wordle')
+    if game == 'wordle':
+        return _get_instance_wordle(flags, configs)
+    elif game in ('mastermind', 'zoo'):
+        return _get_instance_generic(game, flags, configs)
+    else:
+        raise ValueError(f"Unknown game '{game}'. Supported: wordle, mastermind, zoo.")
+
+
+def _get_instance_wordle(flags, configs):
+    """Original Wordle pipeline (kept intact for reproducibility)."""
+    T = _get_words("data/solutions.txt") # Target words
+    G = T + _get_words("data/non_solutions.txt") # Guesses
     F = _get_feedback_matrix(T, G, configs)
     C = _get_feedback_compatibility_matrix(configs)
     decode_feedback = decode_feedback_GPU if configs['GPU'] else decode_feedback_CPU
     instance_data = (G, T, F, C, decode_feedback)
-    _best_guess_functions = best_guess_functions(instance_data, flags, configs)
-    _best_guesses_functions = best_guesses_functions(configs)
-
+    configs['targets_have_self_id'] = True
+    _best_guess_functions = best_guess_functions(instance_data, flags, configs, base=243)
+    _best_guesses_functions = best_guesses_functions(configs, base=243)
     return instance_data + (_best_guess_functions, _best_guesses_functions)
+
+
+def _get_instance_generic(game, flags, configs):
+    """Shared CPU pipeline for Mastermind and Zoo (no hard-mode, no GPU)."""
+    if configs.get('hard_mode'):
+        raise ValueError(f"Game '{game}' does not support hard mode.")
+
+    data = _games.load_game(game, dataset_dir='data')
+    G_names = data['G_names']
+    T_names = data['T_names']
+    F = data['F']                    # numpy
+    base = int(data['base'])
+
+    # Route everything through CPU: these games are small and don't need GPU.
+    configs['GPU'] = False
+
+    # Propagate per-game flags needed by the solver and the tree builder.
+    # ``targets_have_self_id`` is False only for Zoo, which has no terminal
+    # identification action (guesses are attributes).
+    configs['targets_have_self_id'] = bool(data.get('targets_have_self_id', True))
+
+    decode_fn = _wrap_decode_feedback(data['decode_feedback'])
+
+    instance_data = (G_names, T_names, F, None, decode_fn)
+    _best_guess_functions = best_guess_functions(instance_data, flags, configs, base=base)
+    _best_guesses_functions = best_guesses_functions(configs, base=base)
+    return instance_data + (_best_guess_functions, _best_guesses_functions)
+
+
+def _wrap_decode_feedback(decode_game):
+    """Return a decode_feedback callable that matches the Wordle API
+    (decode_feedback(code) returns a numpy-array-like)."""
+    def decode(code):
+        result = decode_game(code)
+        if isinstance(result, np.ndarray):
+            return result
+        return np.array(result)
+    return decode
 
 
 def _get_words(filepath):

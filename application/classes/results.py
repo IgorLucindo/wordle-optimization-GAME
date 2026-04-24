@@ -2,6 +2,10 @@ import json
 import numpy as np
 
 
+# Must match Guess_Tree.LEAF_SENTINEL.
+LEAF_SENTINEL = -1
+
+
 class Results:
     def __init__(self, instance, flags, configs):
         G, T, F, _, decode_feedback, _, _ = instance
@@ -11,6 +15,11 @@ class Results:
         self.decode_feedback = decode_feedback
         self.flags = flags
         self.configs = configs
+        # For games like Zoo, targets are identified by arrival at a leaf
+        # (no terminal "self-id" guess). In that case, tree leaves are marked
+        # with LEAF_SENTINEL and the reported cost is the number of queries
+        # on the root-to-leaf path.
+        self.targets_have_self_id = bool(configs.get('targets_have_self_id', True))
 
         # Result Containers
         self.tree = {'root': 0, 'vertices': [], 'successors': {}}
@@ -32,7 +41,16 @@ class Results:
 
     def evaluate(self):
         """
-        Evaluates the tree by simulating all possible games (Full Simulation)
+        Evaluates the tree by simulating all possible games (Full Simulation).
+
+        For games with self-id actions (Wordle, Mastermind): ``depth`` counts
+        guesses and a leaf is reached when the vertex's action equals the
+        target.
+
+        For games without self-id actions (Zoo): the tree uses LEAF_SENTINEL
+        at pure leaves, and the cost is the number of attribute queries on
+        the root-to-leaf path (``depth - 1`` in the current indexing where
+        ``depth`` starts at 1 at the root).
         """
         D = []
 
@@ -42,10 +60,24 @@ class Results:
 
             while True:
                 v_curr, guess = self.tree['vertices'][v_curr]
-                if guess == target:
-                    D.append(depth)
-                    break
-                f = self.F[target, guess].item()
+                # Normalize (guess may be a 0-d numpy / cupy array).
+                if hasattr(guess, 'item'):
+                    guess_val = guess.item()
+                else:
+                    guess_val = int(guess)
+
+                if self.targets_have_self_id:
+                    if guess_val == int(target):
+                        D.append(depth)
+                        break
+                else:
+                    # Zoo: LEAF_SENTINEL marks a pure leaf (identification by
+                    # arrival). Record cost as the number of queries = depth - 1.
+                    if guess_val == LEAF_SENTINEL:
+                        D.append(max(0, depth - 1))
+                        break
+
+                f = self.F[target, guess_val].item()
                 v_curr = self.tree['successors'][(v_curr, f)]
                 depth += 1
 
@@ -56,6 +88,8 @@ class Results:
         """
         Evaluates the decoded tree by simulating all possible games
         """
+        if not self.configs.get('targets_have_self_id', True):
+            raise NotImplementedError("evaluate_decoded is not supported for games without self-id actions (e.g. Zoo)")
         word_to_idx = {w: i for i, w in enumerate(self.words_map)}
         D = []
 
@@ -101,9 +135,14 @@ class Results:
 
         # Decode vertices
         for v_curr, guess_idx in self.tree['vertices']:
-            self.decoded_tree['vertices'].append(
-                (v_curr, self.words_map[guess_idx.item()])
-            )
+            gi = guess_idx.item() if hasattr(guess_idx, 'item') else int(guess_idx)
+            if gi == LEAF_SENTINEL:
+                # Pure leaf (Zoo): no terminal action.
+                self.decoded_tree['vertices'].append((v_curr, None))
+            else:
+                self.decoded_tree['vertices'].append(
+                    (v_curr, self.words_map[gi])
+                )
 
         # Decode Successors
         for (v_parent, feedback_code), child_id in self.tree['successors'].items():
@@ -145,9 +184,14 @@ class Results:
         # Determine first guess for display
         first_guess = "N/A"
         if self.tree['vertices']:
-             first_guess = self.words_map[self.tree['vertices'][0][1].item()]
+            root_action = self.tree['vertices'][0][1]
+            ra = root_action.item() if hasattr(root_action, 'item') else int(root_action)
+            if ra == LEAF_SENTINEL:
+                first_guess = "(leaf)"
+            else:
+                first_guess = self.words_map[ra]
         elif self.decoded_tree and self.decoded_tree['vertices']:
-             first_guess = self.decoded_tree['vertices'][0][1]
+             first_guess = self.decoded_tree['vertices'][0][1] or "(leaf)"
 
         print(
             f"\n\n"
@@ -170,9 +214,9 @@ class Results:
         
         self.decode_tree()
         filepath = (
-            "results/decision_tree_hard.json"
+            "data/decision_tree_hard.json"
             if self.configs['hard_mode']
-            else "results/decision_tree.json"
+            else "data/decision_tree.json"
         )
 
         with open(filepath, "w") as f:
