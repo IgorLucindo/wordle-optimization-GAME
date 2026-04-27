@@ -20,6 +20,8 @@ def get_args():
                         help='Optimization metric: 0=Avg. Size, 1=Subtree-k, 2=Subtree-Full')
     parser.add_argument('--k', type=int, default=15,
                         help='Top-k candidates to evaluate (for metric 1)')
+    parser.add_argument('--score', type=str, default='PC', choices=['PC', 'WA', 'H'],
+                        help='Score rule: PC=Partition Count, WA=Weighted Average, H=Entropy (default: PC)')
 
     # Flags
     parser.add_argument('--no_diagnosis', action='store_true', help='Disable diagnosis printing')
@@ -43,7 +45,8 @@ def main():
         'game': args.game,
         'hard_mode': args.hard_mode,
         'metric': args.metric,
-        'k': args.k
+        'k': args.k,
+        'score': args.score
     }
 
     # Mastermind and Zoo don't (yet) ship GPU kernels; force CPU so calibration

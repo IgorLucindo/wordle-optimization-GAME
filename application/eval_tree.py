@@ -33,7 +33,8 @@ def main():
         'game': args.game,
         'hard_mode': args.hard_mode,
         'metric': 0,
-        'k': 15
+        'k': 15,
+        'score': 'PC'
     }
 
     filename = "decision_tree_hard.json" if configs['hard_mode'] else "decision_tree.json"

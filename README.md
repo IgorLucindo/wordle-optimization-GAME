@@ -108,6 +108,10 @@ python application/build_tree.py
    * `1`: Subtree-k (Look-ahead)
    * `2`: Subtree-Full (Exhaustive)
 * `--k {int}`: Number of candidates to evaluate when using Metric 1 (default: 15).
+* `--score {PC,WA,H}`: Choose the score rule (default: PC).
+   * `PC`: Partition Count - minimizes average partition size
+   * `WA`: Weighted Average - minimizes sum of squared partition sizes
+   * `H`: Entropy - maximizes information-theoretic entropy
 
 ### Example:
 
@@ -117,6 +121,12 @@ python application/build_tree.py --hard_mode --save_tree
 
 # Run on CPU with a greedy strategy (faster build, slightly less optimal)
 python application/build_tree.py --cpu --metric 0
+
+# Use Weighted Average (WA) score rule instead of Partition Count (PC)
+python application/build_tree.py --score WA
+
+# Use Entropy (H) score rule with Subtree-10 look-ahead
+python application/build_tree.py --score H --k 10
 ```
 
 ### Evaluate Our Tree:

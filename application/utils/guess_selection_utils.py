@@ -12,14 +12,17 @@ def best_guess_functions(instance_data, flags, configs, base=243):
     9 for UCI Zoo).
     """
     targets_have_self_id = bool(configs.get('targets_have_self_id', True))
+    score_rule = configs.get('score', 'PC')
 
     def _get_best_guess_CPU(T, G, F):
         return _get_best_guess_CPU_impl(
-            T, G, F, base=base, targets_have_self_id=targets_have_self_id)
+            T, G, F, base=base, targets_have_self_id=targets_have_self_id,
+            score_rule=score_rule)
 
     def _get_best_guess_GPU(T, G, F):
         return _get_best_guess_GPU_impl(
-            T, G, F, base=base, targets_have_self_id=targets_have_self_id)
+            T, G, F, base=base, targets_have_self_id=targets_have_self_id,
+            score_rule=score_rule)
 
     _best_guess_functions = (_get_best_guess_CPU, _get_best_guess_GPU)
     _best_guesses_functions = best_guesses_functions(configs, base=base)
@@ -39,23 +42,26 @@ def best_guess_functions(instance_data, flags, configs, base=243):
 def best_guesses_functions(configs, base=243):
     """Top-k candidate generators for Subtree-k."""
     targets_have_self_id = bool(configs.get('targets_have_self_id', True))
+    score_rule = configs.get('score', 'PC')
 
     def get_best_guesses_CPU(T, G, F):
         return _get_best_guesses_CPU(T, G, F, num_of_guesses=configs['k'],
                                       base=base,
-                                      targets_have_self_id=targets_have_self_id)
+                                      targets_have_self_id=targets_have_self_id,
+                                      score_rule=score_rule)
 
     def get_best_guesses_GPU(T, G, F):
         return _get_best_guesses_GPU(T, G, F, num_of_guesses=configs['k'],
                                       base=base,
-                                      targets_have_self_id=targets_have_self_id)
+                                      targets_have_self_id=targets_have_self_id,
+                                      score_rule=score_rule)
 
     return (get_best_guesses_CPU, get_best_guesses_GPU)
 
 
-def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True):
+def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True, score_rule='PC'):
     """
-    Finds the best guess by minimizing the average size of remaining set (CPU).
+    Finds the best guess by minimizing the specified score rule (CPU).
 
     ``base`` is the feedback-code upper bound (bincount minlength).
     ``targets_have_self_id`` is False for games where targets are not valid
@@ -64,6 +70,8 @@ def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True):
     is suppressed, and ``g_star_in_T`` is always False -- a numeric
     coincidence between a guess index (attribute column) and a target index
     (animal row) carries no semantic meaning.
+    ``score_rule`` specifies the scoring rule: 'PC' (Partition Count),
+    'WA' (Weighted Average), or 'H' (Entropy).
     """
     n = len(T)
     if n <= 2 and targets_have_self_id:
@@ -77,8 +85,26 @@ def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True):
 
     for i, g in enumerate(G):
         g = int(g)
-        P_g = np.nonzero(np.bincount(F[T, g], minlength=base))[0]
-        scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
+        partition_sizes = np.bincount(F[T, g], minlength=base)
+        partition_sizes = partition_sizes[partition_sizes > 0]  # Keep only non-empty partitions
+
+        # Adjust n for self-id credit
+        n_adjusted = (n - 1) if g in T_set else n
+
+        if score_rule == 'PC':
+            # Partition Count: average partition size = n / |P_g|
+            scores[i] = n_adjusted / len(partition_sizes)
+        elif score_rule == 'WA':
+            # Weighted Average: sum(|partition_i|^2) / n
+            scores[i] = np.sum(partition_sizes ** 2) / n_adjusted
+        elif score_rule == 'H':
+            # Entropy: -sum((|partition_i| / n) * log(|partition_i| / n))
+            # We minimize negative entropy (maximize entropy)
+            probs = partition_sizes / n_adjusted
+            entropy = -np.sum(probs * np.log2(probs))
+            scores[i] = -entropy  # Negate to minimize
+        else:
+            raise ValueError(f"Unknown score rule: {score_rule}")
 
     argmin = int(np.argmin(scores))
     g_star = G[argmin]
@@ -86,12 +112,12 @@ def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True):
     return g_star, g_star_in_T
 
 
-def _get_best_guess_GPU_impl(T, G, F, base=243, targets_have_self_id=True):
+def _get_best_guess_GPU_impl(T, G, F, base=243, targets_have_self_id=True, score_rule='PC'):
     """
-    Finds the best guess by minimizing the average size of remaining set (GPU).
+    Finds the best guess by minimizing the specified score rule (GPU).
 
     See ``_get_best_guess_CPU_impl`` for the semantics of
-    ``targets_have_self_id``.
+    ``targets_have_self_id`` and ``score_rule``.
     """
     n = len(T)
     if n <= 2 and targets_have_self_id:
@@ -109,19 +135,35 @@ def _get_best_guess_GPU_impl(T, G, F, base=243, targets_have_self_id=True):
     # Bincount over the flattened (target, guess) entries
     counts_flat = cp.bincount(global_indices.ravel(), minlength=nG * base)
     counts = counts_flat.reshape(nG, base)
-    num_feedbacks = (counts > 0).sum(axis=1)
 
-    # Score. Without self-id (Zoo), the ``-in_T`` correction is meaningless
-    # because the overlap between guess-column indices and target-row indices
-    # is coincidental.
+    # Determine in_T for self-id credit
     if targets_have_self_id:
         global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
         global_mask[T] = True
         in_T = global_mask[G]
-        scores = (n - in_T) / num_feedbacks
+        n_adjusted = n - in_T
     else:
         in_T = cp.zeros(nG, dtype=cp.bool_)
-        scores = n / num_feedbacks
+        n_adjusted = cp.full(nG, n, dtype=cp.float64)
+
+    if score_rule == 'PC':
+        # Partition Count: average partition size = n / |P_g|
+        num_feedbacks = (counts > 0).sum(axis=1)
+        scores = n_adjusted / num_feedbacks
+    elif score_rule == 'WA':
+        # Weighted Average: sum(|partition_i|^2) / n
+        scores = (counts ** 2).sum(axis=1) / n_adjusted
+    elif score_rule == 'H':
+        # Entropy: -sum((|partition_i| / n) * log2(|partition_i| / n))
+        # We minimize negative entropy (maximize entropy)
+        # Avoid log(0) by masking zero counts
+        mask = counts > 0
+        probs = counts / n_adjusted[:, None]
+        log_probs = cp.where(mask, cp.log2(probs), 0.0)
+        entropy = -cp.sum(probs * log_probs, axis=1)
+        scores = -entropy  # Negate to minimize
+    else:
+        raise ValueError(f"Unknown score rule: {score_rule}")
 
     # Best guess
     argmin = cp.argmin(scores)
@@ -130,9 +172,9 @@ def _get_best_guess_GPU_impl(T, G, F, base=243, targets_have_self_id=True):
 
 
 def _get_best_guesses_CPU(T, G, F, num_of_guesses=10, base=243,
-                          targets_have_self_id=True):
+                          targets_have_self_id=True, score_rule='PC'):
     """
-    Finds the best guesses by minimizing the average size of remaining set (CPU).
+    Finds the best guesses by minimizing the specified score rule (CPU).
     """
     n = len(T)
     scores = np.empty(len(G), dtype=np.float64)
@@ -143,8 +185,21 @@ def _get_best_guesses_CPU(T, G, F, num_of_guesses=10, base=243,
 
     for i, g in enumerate(G):
         g = int(g)
-        P_g = np.nonzero(np.bincount(F[T, g], minlength=base))[0]
-        scores[i] = ((n - 1) if g in T_set else n) / len(P_g)
+        partition_sizes = np.bincount(F[T, g], minlength=base)
+        partition_sizes = partition_sizes[partition_sizes > 0]
+
+        n_adjusted = (n - 1) if g in T_set else n
+
+        if score_rule == 'PC':
+            scores[i] = n_adjusted / len(partition_sizes)
+        elif score_rule == 'WA':
+            scores[i] = np.sum(partition_sizes ** 2) / n_adjusted
+        elif score_rule == 'H':
+            probs = partition_sizes / n_adjusted
+            entropy = -np.sum(probs * np.log2(probs))
+            scores[i] = -entropy
+        else:
+            raise ValueError(f"Unknown score rule: {score_rule}")
 
     sorted_indices = np.argsort(scores, kind='stable')
     g_star_idxs = sorted_indices[:num_of_guesses]
@@ -157,9 +212,9 @@ def _get_best_guesses_CPU(T, G, F, num_of_guesses=10, base=243,
 
 
 def _get_best_guesses_GPU(T, G, F, num_of_guesses=10, base=243,
-                          targets_have_self_id=True):
+                          targets_have_self_id=True, score_rule='PC'):
     """
-    Finds the best guesses by minimizing the average size of remaining set (GPU).
+    Finds the best guesses by minimizing the specified score rule (GPU).
     """
     n, nG = len(T), len(G)
 
@@ -169,16 +224,29 @@ def _get_best_guesses_GPU(T, G, F, num_of_guesses=10, base=243,
 
     counts_flat = cp.bincount(global_indices.ravel(), minlength=nG * base)
     counts = counts_flat.reshape(nG, base)
-    num_feedbacks = (counts > 0).sum(axis=1)
 
     if targets_have_self_id:
         global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
         global_mask[T] = True
         in_T = global_mask[G]
-        scores = (n - in_T) / num_feedbacks
+        n_adjusted = n - in_T
     else:
         in_T = cp.zeros(nG, dtype=cp.bool_)
-        scores = n / num_feedbacks
+        n_adjusted = cp.full(nG, n, dtype=cp.float64)
+
+    if score_rule == 'PC':
+        num_feedbacks = (counts > 0).sum(axis=1)
+        scores = n_adjusted / num_feedbacks
+    elif score_rule == 'WA':
+        scores = (counts ** 2).sum(axis=1) / n_adjusted
+    elif score_rule == 'H':
+        mask = counts > 0
+        probs = counts / n_adjusted[:, None]
+        log_probs = cp.where(mask, cp.log2(probs), 0.0)
+        entropy = -cp.sum(probs * log_probs, axis=1)
+        scores = -entropy
+    else:
+        raise ValueError(f"Unknown score rule: {score_rule}")
 
     sorted_indices = cp.argsort(scores)
     g_star_idxs = sorted_indices[:num_of_guesses]
@@ -236,8 +304,8 @@ def _get_best_subtree_candidate(T, G, G_prime, F, candidates_in_T, subtree):
 # any caller that imports `_get_best_guess_CPU` by name still works.
 # ---------------------------------------------------------------------------
 def _get_best_guess_CPU(T, G, F):
-    return _get_best_guess_CPU_impl(T, G, F, base=243)
+    return _get_best_guess_CPU_impl(T, G, F, base=243, score_rule='PC')
 
 
 def _get_best_guess_GPU(T, G, F):
-    return _get_best_guess_GPU_impl(T, G, F, base=243)
+    return _get_best_guess_GPU_impl(T, G, F, base=243, score_rule='PC')
