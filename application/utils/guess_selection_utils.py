@@ -87,22 +87,19 @@ def _get_best_guess_CPU_impl(T, G, F, base=243, targets_have_self_id=True, score
         g = int(g)
         partition_sizes = np.bincount(F[T, g], minlength=base)
         partition_sizes = partition_sizes[partition_sizes > 0]  # Keep only non-empty partitions
-
-        # Adjust n for self-id credit
-        n_adjusted = (n - 1) if g in T_set else n
+        indicator = 1 if (g in T_set) else 0
 
         if score_rule == 'PC':
-            # Partition Count: average partition size = n / |P_g|
-            scores[i] = n_adjusted / len(partition_sizes)
+            # PC applies the indicator to the numerator (n - 1)
+            scores[i] = (n - indicator) / len(partition_sizes)
         elif score_rule == 'WA':
-            # Weighted Average: sum(|partition_i|^2) / n
-            scores[i] = np.sum(partition_sizes ** 2) / n_adjusted
+            # WA applies the indicator subtraction to the sum of squares, divided by standard n
+            scores[i] = (np.sum(partition_sizes ** 2) - indicator) / n
         elif score_rule == 'H':
-            # Entropy: -sum((|partition_i| / n) * log(|partition_i| / n))
-            # We minimize negative entropy (maximize entropy)
-            probs = partition_sizes / n_adjusted
+            # Entropy MUST use standard n so probabilities sum to 1
+            probs = partition_sizes / n
             entropy = -np.sum(probs * np.log2(probs))
-            scores[i] = -entropy  # Negate to minimize
+            scores[i] = -entropy
         else:
             raise ValueError(f"Unknown score rule: {score_rule}")
 
@@ -136,39 +133,35 @@ def _get_best_guess_GPU_impl(T, G, F, base=243, targets_have_self_id=True, score
     counts_flat = cp.bincount(global_indices.ravel(), minlength=nG * base)
     counts = counts_flat.reshape(nG, base)
 
-    # Determine in_T for self-id credit
+    # Determine indicator function
     if targets_have_self_id:
         global_mask = cp.zeros(F.shape[1], dtype=cp.bool_)
         global_mask[T] = True
-        in_T = global_mask[G]
-        n_adjusted = n - in_T
+        indicator = global_mask[G]
     else:
-        in_T = cp.zeros(nG, dtype=cp.bool_)
-        n_adjusted = cp.full(nG, n, dtype=cp.float64)
+        indicator = cp.zeros(nG, dtype=cp.bool_)
 
     if score_rule == 'PC':
-        # Partition Count: average partition size = n / |P_g|
+        # PC: (n - indicator) / |P_g|
         num_feedbacks = (counts > 0).sum(axis=1)
-        scores = n_adjusted / num_feedbacks
+        scores = (n - indicator) / num_feedbacks
     elif score_rule == 'WA':
-        # Weighted Average: sum(|partition_i|^2) / n
-        scores = (counts ** 2).sum(axis=1) / n_adjusted
+        # WA: (sum of squares - indicator) / n
+        scores = ((counts ** 2).sum(axis=1) - indicator) / n
     elif score_rule == 'H':
-        # Entropy: -sum((|partition_i| / n) * log2(|partition_i| / n))
-        # We minimize negative entropy (maximize entropy)
-        # Avoid log(0) by masking zero counts
+        # Entropy: uses standard n
         mask = counts > 0
-        probs = counts / n_adjusted[:, None]
+        probs = counts / n  # Standard n, NOT n_adjusted
         log_probs = cp.where(mask, cp.log2(probs), 0.0)
         entropy = -cp.sum(probs * log_probs, axis=1)
-        scores = -entropy  # Negate to minimize
+        scores = -entropy
     else:
         raise ValueError(f"Unknown score rule: {score_rule}")
 
     # Best guess
     argmin = cp.argmin(scores)
     g_star = G[argmin]
-    return g_star, in_T[argmin]
+    return g_star, indicator[argmin]
 
 
 def _get_best_guesses_CPU(T, G, F, num_of_guesses=10, base=243,
@@ -271,10 +264,10 @@ def _get_best_guess_subtree(T, G, F, subtree, configs):
         if targets_have_self_id:
             global_mask = xp.zeros(F.shape[1], dtype=xp.bool_)
             global_mask[T] = True
-            G_prime, candidates_in_T = G, global_mask[G]
+            G_prime, candidates_in_T = G, global_mask[G].tolist()
         else:
             G_prime = G
-            candidates_in_T = xp.zeros(len(G), dtype=xp.bool_)
+            candidates_in_T = [False] * len(G)
 
     g_star, g_star_in_T = _get_best_subtree_candidate(T, G, G_prime, F, candidates_in_T, subtree)
     return g_star, g_star_in_T

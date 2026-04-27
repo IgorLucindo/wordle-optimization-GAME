@@ -181,10 +181,10 @@ python application/build_tree.py --game zoo --metric 1 --k 10
 
 | Game        | Metric        | Exp. Guesses | Max. | First action |
 |:------------|:--------------|:------------:|:----:|:-------------|
-| Mastermind  | Avg. Size     | 4.373        | 6    | `0012`       |
-| Mastermind  | Subtree-10    | 4.355        | 5    | `0015`       |
-| Zoo         | Avg. Size     | **5.559**    | **8** | `legs`      |
-| Zoo         | Subtree-10    | 5.034        | 6    | `aquatic`    |
+| Mastermind  | Avg. Size     | 4.373     | 6     | `0012`       |
+| Mastermind  | Subtree-10    | **4.355** | **5** | `0015`       |
+| Zoo         | Avg. Size     | 5.559     | 8     | `legs`      |
+| Zoo         | Subtree-10    | **5.034** | **6** | `aquatic`    |
 
 The Zoo greedy number reproduces the paper's 5.5593/max 8 exactly. The
 Subtree-10 numbers in this codebase are *better* than the paper's reference
