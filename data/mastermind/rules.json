@@ -1,0 +1,12 @@
+{
+  "format": "generated",
+  "base": 25,
+  "shortcut_threshold": 2,
+  "constrained_guessing": false,
+  "generator_params": {
+    "pegs": 4,
+    "colors": 6,
+    "repetition_allowed": true
+  },
+  "description": "Mastermind 4x6 with black/white-peg feedback"
+}

@@ -86,7 +86,7 @@ class DeviceOptimizer:
 
         # Check Conditions
         # If GPU enabled but workload is tiny, switch to CPU
-        if self.configs['GPU'] and self.configs['hard_mode'] and G_curr is not None:
+        if self.configs['GPU'] and self.configs['constrained_guessing'] and G_curr is not None:
             if workload < self.threshold:
                 use_cpu = True
                 # Move data to CPU

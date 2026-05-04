@@ -98,11 +98,10 @@ python application/build_tree.py
 
 ### Common Options:
 
-* `--game {wordle,mastermind,zoo}`: Select the guessing game instance
-  (default: `wordle`). Mastermind and Zoo run on CPU only.
-* `--hard_mode`: Enable constraints for Hard Mode (Wordle only).
+* `--game {wordle,wordle_hard,mastermind,zoo}`: Select the guessing game instance
+  (default: `wordle`). Use `wordle_hard` for constrained guessing mode. Mastermind and Zoo run on CPU only.
 * `--cpu`: Run strictly on the CPU (disables GPU acceleration).
-* `--save_tree`: Save the resulting tree to a JSON file (`data/decision_tree.json`, or `data/decision_tree_hard.json` in hard mode).
+* `--save_tree`: Save the resulting tree to a JSON file in the instance directory (e.g., `data/wordle/decision_tree.json`).
 * `--metric {0,1,2}`: Choose the optimization metric (default: 1).
    * `0`: Average Size (Greedy)
    * `1`: Subtree-k (Look-ahead)
@@ -116,8 +115,8 @@ python application/build_tree.py
 ### Example:
 
 ```bash
-# Build for Hard Mode and save the tree
-python application/build_tree.py --hard_mode --save_tree
+# Build for constrained guessing mode (hard mode) and save the tree
+python application/build_tree.py --game wordle_hard --save_tree
 
 # Run on CPU with a greedy strategy (faster build, slightly less optimal)
 python application/build_tree.py --cpu --metric 0
@@ -129,27 +128,15 @@ python application/build_tree.py --score WA
 python application/build_tree.py --score H --k 10
 ```
 
-### Evaluate Our Tree:
+### Evaluate Saved Trees:
 
-To evaluate a saved decision tree against the full dataset:
+To evaluate all saved decision trees in `data/`:
 
 ```bash
 python application/eval_tree.py
 ```
 
-### Common Options:
-
-* `--hard_mode`: Evaluate the hard mode tree (`data/decision_tree_hard.json`) instead of the normal one (`data/decision_tree.json`).
-* `--game {wordle,mastermind,zoo}`: Select the game instance to evaluate (default: `wordle`).
-* `--cpu`: Run evaluation on the CPU.
-* `--no_diagnosis`: Hide the progress bar/diagnosis output.
-
-### Example:
-
-```bash
-# Evaluate the Hard Mode tree
-python application/eval_tree.py --hard_mode
-```
+This automatically discovers and evaluates all `data/*/decision_tree.json` files, showing results for each instance found.
 
 ---
 

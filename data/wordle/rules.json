@@ -1,0 +1,11 @@
+{
+  "format": "wordlist",
+  "base": 243,
+  "shortcut_threshold": 2,
+  "constrained_guessing": false,
+  "data_files": {
+    "targets": "solutions.txt",
+    "guesses": "non_solutions.txt"
+  },
+  "description": "Official Wordle 2,315 targets with ternary feedback"
+}

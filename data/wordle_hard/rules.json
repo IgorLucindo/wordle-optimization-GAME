@@ -1,0 +1,11 @@
+{
+  "format": "wordlist",
+  "base": 243,
+  "shortcut_threshold": 2,
+  "constrained_guessing": true,
+  "data_files": {
+    "targets": "solutions.txt",
+    "guesses": "non_solutions.txt"
+  },
+  "description": "Wordle Hard Mode - only valid guesses allowed after feedback"
+}

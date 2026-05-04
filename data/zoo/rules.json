@@ -1,0 +1,11 @@
+{
+  "format": "csv",
+  "base": 9,
+  "shortcut_threshold": 0,
+  "constrained_guessing": false,
+  "data_files": {
+    "dataset": "zoo.csv",
+    "has_header": true
+  },
+  "description": "UCI Zoo 59 animals with 16 attribute queries"
+}

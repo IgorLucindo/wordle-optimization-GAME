@@ -1,0 +1,1 @@
+I wanted to make feedback function or matrix very general, that doesn't depend much on instance, or that depends a little as possible. maybe we create a helper function for each type of feedback function, idk.

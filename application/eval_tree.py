@@ -1,51 +1,91 @@
 from classes.results import *
-from utils.instance_utils import *
-import argparse
+from classes.instance_loader import InstanceLoader
+from pathlib import Path
 
 
-def get_args():
-    parser = argparse.ArgumentParser(description="Evaluate a saved Wordle decision tree.")
+def find_all_trees(data_dir='data'):
+    """
+    Discover all decision_tree.json files in data/ subdirectories.
 
-    # Configs
-    parser.add_argument('--game', type=str, default='wordle',
-                        choices=['wordle', 'mastermind', 'zoo'],
-                        help='Game instance to evaluate (default: wordle)')
-    parser.add_argument('--cpu', action='store_true', help='Run on CPU only (disable GPU)')
-    parser.add_argument('--hard_mode', action='store_true', help='Evaluate in Hard Mode')
+    Returns list of (instance_name, tree_path) tuples.
+    """
+    # Handle both running from root and from application/ directory
+    data_path = Path(data_dir)
+    if not data_path.exists():
+        data_path = Path('..') / data_dir
+    if not data_path.exists():
+        raise FileNotFoundError(f"Could not find data directory at {data_dir} or ../{data_dir}")
 
-    # Flags
-    parser.add_argument('--no_diagnosis', action='store_true', help='Disable diagnosis printing')
+    trees = []
 
-    return parser.parse_args()
+    for instance_dir in data_path.iterdir():
+        if not instance_dir.is_dir():
+            continue
+
+        tree_file = instance_dir / 'decision_tree.json'
+        if tree_file.exists():
+            trees.append((instance_dir.name, tree_file))
+
+    return sorted(trees)
 
 
 def main():
-    args = get_args()
-
-    # Get flags and configs from args
+    # Evaluation doesn't need GPU or diagnosis - just simulates games from saved trees
     flags = {
-        'print_diagnosis': not args.no_diagnosis,
+        'print_diagnosis': False,
         'evaluate': True,
         'save_tree': False
     }
     configs = {
-        'GPU': not args.cpu,
-        'game': args.game,
-        'hard_mode': args.hard_mode,
+        'GPU': False,  # CPU is sufficient for evaluation
         'metric': 0,
         'k': 15,
         'score': 'PC'
     }
 
-    filename = "decision_tree_hard.json" if configs['hard_mode'] else "decision_tree.json"
-    filepath = 'data/' + filename
+    # Find all decision trees
+    trees = find_all_trees()
 
-    instance = get_instance(flags, configs)
+    if not trees:
+        print("No decision trees found in data/")
+        return
 
-    results = Results(instance, flags, configs)
-    results.load_tree(filepath)
-    results.evaluate_decoded()
-    results.print()
+    print(f"\nFound {len(trees)} decision tree(s):\n")
+
+    # Evaluate each tree
+    for instance_name, tree_path in trees:
+        print(f"{'='*60}")
+        print(f"Instance: {instance_name}")
+        print(f"Tree: {tree_path}")
+        print(f"{'='*60}")
+
+        try:
+            # Load instance
+            configs['game'] = instance_name
+            loader = InstanceLoader(
+                instance_name=instance_name,
+                use_gpu=configs['GPU']
+            )
+            instance = loader.get_full_instance(flags, configs)
+
+            # Evaluate tree
+            results = Results(instance, flags, configs)
+            results.load_tree(str(tree_path))
+
+            # Use appropriate evaluation method based on instance type
+            if loader.is_target.any():
+                # Has self-identifying targets (Wordle, Mastermind)
+                results.evaluate_decoded()
+            else:
+                # No self-identifying targets (Zoo) - would need evaluate() on raw tree
+                print("Note: This instance has no self-identifying targets.")
+                print("Loaded tree cannot be fully evaluated without raw tree data.\n")
+                continue
+
+            results.print()
+
+        except Exception as e:
+            print(f"Error evaluating {instance_name}: {e}\n")
 
 
 if __name__ == "__main__":
