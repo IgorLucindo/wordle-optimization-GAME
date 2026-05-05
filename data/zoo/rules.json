@@ -1,6 +1,6 @@
 {
   "format": "csv",
-  "base": 9,
+  "feedback_engine": "attribute_matrix",
   "guesses_include_targets": false,
   "constrained_guessing": false,
   "data_files": {

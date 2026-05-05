@@ -133,7 +133,7 @@ python application/build_tree.py --score H --k 10
 To evaluate all saved decision trees in `data/`:
 
 ```bash
-python application/eval_tree.py
+python application/eval_trees.py
 ```
 
 This automatically discovers and evaluates all `data/*/decision_tree.json` files, showing results for each instance found.

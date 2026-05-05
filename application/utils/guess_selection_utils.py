@@ -1,5 +1,5 @@
 from classes.guess_tree import *
-from utils.xp_utils import cp, HAS_CUPY
+from utils.xp_utils import cp
 import numpy as np
 
 
@@ -75,7 +75,7 @@ def _get_best_guess_CPU_impl(T, G, F, base=243, guesses_include_targets=True, sc
     # Threshold: 2 if targets can be guessed directly, 1 (leaf only) otherwise
     shortcut_threshold = 2 if guesses_include_targets else 1
     if n <= shortcut_threshold:
-        return T[0], guesses_include_targets
+        return T[0], True
 
     scores = np.empty(len(G), dtype=np.float64)
     indicator = np.isin(G, T) if guesses_include_targets else np.zeros(len(G), dtype=bool)

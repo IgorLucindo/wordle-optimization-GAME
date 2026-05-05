@@ -41,7 +41,6 @@ class Guess_Tree:
         G_curr = self.G if self.configs['constrained_guessing'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.v_curr = -1
-        D = []
 
         while queue:
             T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
@@ -50,36 +49,19 @@ class Guess_Tree:
             # Ask optimizer for context
             T_curr, G_curr, xp, F, C, get_best_guess, _ = self.optimizer.get_context(T_curr, G_curr)
 
-            # Leaf case: a single remaining target
-            if len(T_curr) == 1:
-                target = int(T_curr[0])
-                # Check if this target can self-identify
-                # For Zoo, targets are NOT guesses, so is_target.any() is False
-                # For Wordle/Mastermind, targets ARE guesses, and target < len(is_target)
-                can_self_identify = (target < len(self.is_target) and self.is_target[target])
-
-                if can_self_identify:
-                    # Target can self-identify (Wordle/Mastermind)
-                    # depth counts guesses, and this terminal guess is included
-                    self.append2Tree(target, self.v_curr, v_parent, p_parent)
-                    D.append(depth)
-                else:
-                    # Target identified by arrival (Zoo/UCI)
-                    # depth counts queries only; cost is number of queries on path
-                    self.append2Tree(None, self.v_curr, v_parent, p_parent)
-                    D.append(max(0, depth - 1))
-                continue
-
+            # Pick best guess
             G_arg = G_curr if self.configs['constrained_guessing'] else self.G
             g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
-            self.append2Tree(g_star, self.v_curr, v_parent, p_parent)
-            if is_target_flag:
-                D.append(depth)
+            # Append to tree with terminal flag and depth
+            self.append2Tree(g_star, self.v_curr, v_parent, p_parent,
+                           is_terminal=is_target_flag, depth=depth)
+
+            # Stop if we just guessed the last target
+            if len(T_curr) == 1:
+                continue
 
             # Partition candidates by feedback
-            # Only strip g_star from T_curr if g_star is itself a target index
-            # (guaranteed in Wordle and Mastermind; false for Zoo attribute queries).
             if is_target_flag:
                 T_curr = T_curr[T_curr != g_star]
             feedbacks = F[T_curr, g_star]
@@ -94,7 +76,7 @@ class Guess_Tree:
         self.stop_diagnosis()
 
         runtime = time.time() - start_time
-        return self.tree, np.array(D), runtime
+        return self.tree, runtime
 
 
     def build_subtree(self, g_start, g_start_in_T):
@@ -106,7 +88,7 @@ class Guess_Tree:
         G_curr = self.G if self.configs['constrained_guessing'] else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.v_curr = -1
-        D = []
+        depths = []
 
         while queue:
             T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
@@ -114,18 +96,6 @@ class Guess_Tree:
 
             # Ask optimizer for context
             T_curr, G_curr, xp, F, C, get_best_guess, _ = self.optimizer.get_context(T_curr, G_curr)
-
-            # Leaf case: single target without self-identification
-            if len(T_curr) == 1:
-                target = int(T_curr[0])
-                # Check if target can self-identify
-                can_self_identify = (target < len(self.is_target) and self.is_target[target])
-
-                if not can_self_identify:
-                    # Pure leaf for attribute-only games (Zoo)
-                    # Cost is number of queries on path = depth - 1
-                    D.append(max(0, depth - 1))
-                    continue
 
             # Get best guess considering starting guess
             if g_start is not None:
@@ -136,15 +106,13 @@ class Guess_Tree:
                 g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
             if is_target_flag:
-                D.append(depth)
+                depths.append(depth)
 
-            # Stop condition
+            # Stop if we just guessed the last target
             if len(T_curr) == 1:
                 continue
 
             # Partition candidates by feedback
-            # Only strip g_star from T_curr if g_star is itself a target index
-            # (guaranteed in Wordle and Mastermind; false for Zoo attribute queries).
             if is_target_flag:
                 T_curr = T_curr[T_curr != g_star]
             feedbacks = F[T_curr, g_star]
@@ -156,14 +124,22 @@ class Guess_Tree:
                 G_p = self.get_next_guesses_hardmode(T_p, G_curr, p, g_star, F, C)
                 queue.append((T_p, G_p, self.v_curr, p.item(), depth + 1))
 
-        return np.array(D)
+        return np.array(depths)
 
 
-    def append2Tree(self, g_star, v_curr, v_parent, p_parent):
+    def append2Tree(self, g_star, v_curr, v_parent, p_parent, is_terminal=False, depth=None):
         """
         Append vertex and edge to tree
+
+        Args:
+            g_star: guess index
+            v_curr: current vertex id
+            v_parent: parent vertex id
+            p_parent: feedback from parent
+            is_terminal: True if this vertex identifies a target
+            depth: depth of this vertex (recorded for terminal vertices)
         """
-        self.tree['vertices'].append((v_curr, g_star))
+        self.tree['vertices'].append((v_curr, g_star, is_terminal, depth if is_terminal else None))
         if v_curr != 0:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
 

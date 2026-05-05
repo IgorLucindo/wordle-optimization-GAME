@@ -1,1 +1,3 @@
-I wanted to make feedback function or matrix very general, that doesn't depend much on instance, or that depends a little as possible. maybe we create a helper function for each type of feedback function, idk.
+check if zoo.csv is handling attributes correctly when calculating feedbacks. bc attributes ahve different basis, some are binary, others have other basis. are we unifying all in a single unique compact feedback number?
+
+complete validate_trees.py

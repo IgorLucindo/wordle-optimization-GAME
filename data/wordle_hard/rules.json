@@ -1,6 +1,6 @@
 {
   "format": "wordlist",
-  "base": 243,
+  "feedback_engine": "wordle_ternary",
   "guesses_include_targets": true,
   "constrained_guessing": true,
   "data_files": {

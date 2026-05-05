@@ -53,9 +53,9 @@ def main():
     instance = loader.get_full_instance(flags, configs)
 
     gt = Guess_Tree(instance, flags, configs)
-    tree, D, runtime = gt.build_tree()
+    tree, runtime = gt.build_tree()
 
-    results = Results(instance, flags, configs)
+    results = Results(flags, configs)
     results.set_data(tree, runtime)
     results.evaluate()
     results.print()

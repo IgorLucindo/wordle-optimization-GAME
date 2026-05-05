@@ -1,4 +1,4 @@
-from classes.results import *
+from classes.results import Results
 from classes.instance_loader import InstanceLoader
 from pathlib import Path
 
@@ -30,18 +30,13 @@ def find_all_trees(data_dir='data'):
 
 
 def main():
-    # Evaluation doesn't need GPU or diagnosis - just simulates games from saved trees
+    # Minimal flags/configs - no instance needed!
     flags = {
         'print_diagnosis': False,
         'evaluate': True,
         'save_tree': False
     }
-    configs = {
-        'GPU': False,  # CPU is sufficient for evaluation
-        'metric': 0,
-        'k': 15,
-        'score': 'PC'
-    }
+    configs = {}
 
     # Find all decision trees
     trees = find_all_trees()
@@ -60,28 +55,15 @@ def main():
         print(f"{'='*60}")
 
         try:
-            # Load instance
             configs['game'] = instance_name
-            loader = InstanceLoader(
-                instance_name=instance_name,
-                use_gpu=configs['GPU']
-            )
-            instance = loader.get_full_instance(flags, configs)
 
-            # Evaluate tree
-            results = Results(instance, flags, configs)
-            results.load_tree(str(tree_path))
+            # Load tree using InstanceLoader
+            tree = InstanceLoader.load_tree(str(tree_path))
 
-            # Use appropriate evaluation method based on instance type
-            if loader.is_target.any():
-                # Has self-identifying targets (Wordle, Mastermind)
-                results.evaluate_decoded()
-            else:
-                # No self-identifying targets (Zoo) - would need evaluate() on raw tree
-                print("Note: This instance has no self-identifying targets.")
-                print("Loaded tree cannot be fully evaluated without raw tree data.\n")
-                continue
-
+            # Evaluate tree (no instance needed!)
+            results = Results(flags, configs)
+            results.set_data(tree, runtime=0)
+            results.evaluate()
             results.print()
 
         except Exception as e:

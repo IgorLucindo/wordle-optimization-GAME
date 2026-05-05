@@ -1,12 +1,13 @@
 """
 Unified instance loader for the decision tree solver.
 
-Encapsulates all instance loading, format handling, feedback matrix building,
-GPU conversion, and setup logic in a single class.
+Encapsulates all instance loading, format handling, GPU conversion,
+and setup logic in a single class.
 """
 from pathlib import Path
 from utils.xp_utils import cp, HAS_CUPY
 from utils.guess_selection_utils import best_guess_functions, best_guesses_functions
+from classes.feedback_engine import FeedbackEngine
 import itertools
 import csv
 import json
@@ -38,6 +39,9 @@ class InstanceLoader:
         if instance_name not in ('wordle', 'wordle_hard') and self.use_gpu:
             self.use_gpu = False
 
+        # Initialize feedback engine
+        self.feedback_engine = FeedbackEngine(use_gpu=self.use_gpu)
+
         # Load raw data from disk
         data = self._load_from_disk(dataset_dir)
 
@@ -46,9 +50,9 @@ class InstanceLoader:
         self.T_names = data['T_names']
         self.decode_feedback = data['decode_feedback']
 
-        # Rules from config file
+        # Base is now returned by the feedback engine
+        self.base = data['base']
         rules = data['rules']
-        self.base = rules['base']
         self.guesses_include_targets = rules.get('guesses_include_targets', True)
         self.constrained_guessing = rules.get('constrained_guessing', False)
 
@@ -104,12 +108,11 @@ class InstanceLoader:
 
         n_T, n_G = len(T), len(G)
 
-        # For constrained guessing mode, we need full (n_G, n_G) feedback matrix
-        # For normal mode, we only need (n_T, n_G)
+        # For constrained guessing mode, use full guess set for both T and G
         if rules.get('constrained_guessing', False):
-            F = self._build_wordle_feedback_matrix(G, G, use_gpu=self.use_gpu)
+            F, base = self.feedback_engine.build_matrix(G, G, rules)
         else:
-            F = self._build_wordle_feedback_matrix(T, G, use_gpu=self.use_gpu)
+            F, base = self.feedback_engine.build_matrix(T, G, rules)
 
         # First n_T guesses are targets
         is_target = np.zeros(n_G, dtype=bool)
@@ -119,9 +122,9 @@ class InstanceLoader:
             'G_names': G,
             'T_names': T,
             'F': F,
-            'base': rules['base'],
+            'base': base,
             'is_target': is_target,
-            'decode_feedback': self._wordle_decode_feedback,
+            'decode_feedback': self.feedback_engine.get_decode_function(rules['feedback_engine']),
             'rules': rules
         }
 
@@ -141,19 +144,14 @@ class InstanceLoader:
             uniq_animals.append(a)
             uniq_feats.append(f)
 
-        n_T = len(uniq_animals)
         feats_arr = np.array(uniq_feats, dtype=np.int16)
         n_attrs = feats_arr.shape[1]
 
-        F = feats_arr.astype(np.uint8)
-        max_val = int(feats_arr.max())
-        base = max(2, max_val + 1)
+        # Build feedback matrix using attribute engine
+        F, base = self.feedback_engine.build_matrix(list(uniq_animals), list(attr_names), rules, raw_data=feats_arr)
 
         # Attributes are NOT targets (no self-identification)
         is_target = np.zeros(n_attrs, dtype=bool)
-
-        def decode_feedback(code):
-            return (int(code),)
 
         return {
             'G_names': list(attr_names),
@@ -161,7 +159,7 @@ class InstanceLoader:
             'F': F,
             'base': base,
             'is_target': is_target,
-            'decode_feedback': decode_feedback,
+            'decode_feedback': self.feedback_engine.get_decode_function(rules['feedback_engine']),
             'rules': rules
         }
 
@@ -174,29 +172,17 @@ class InstanceLoader:
         codes = list(itertools.product(range(colors), repeat=pegs))
         n = len(codes)
         names = ["".join(str(x) for x in c) for c in codes]
-        codes_arr = np.array(codes, dtype=np.int8)
 
-        # Black counts: F_black[i_t, i_g] = # positions where codes agree
-        black = (codes_arr[:, None, :] == codes_arr[None, :, :]).sum(axis=2).astype(np.int16)
-
-        # Per-code color counts
-        counts = np.zeros((n, colors), dtype=np.int16)
-        for c in range(colors):
-            counts[:, c] = (codes_arr == c).sum(axis=1)
-
-        # Common multiset intersection
-        common = np.minimum(counts[:, None, :], counts[None, :, :]).sum(axis=2).astype(np.int16)
-        white = common - black
-
-        pegs_plus_1 = pegs + 1
-        F = (black * pegs_plus_1 + white).astype(np.uint8)
-        base = pegs_plus_1 * pegs_plus_1
+        # Build feedback matrix using mastermind engine
+        F, base = self.feedback_engine.build_matrix(names, names, rules)
 
         # All codes can be targets (self-identifying)
         is_target = np.ones(n, dtype=bool)
 
+        # Mastermind decode function needs pegs parameter
         def decode_feedback(code):
             code = int(code)
+            pegs_plus_1 = pegs + 1
             return (code // pegs_plus_1, code % pegs_plus_1)
 
         return {
@@ -208,109 +194,6 @@ class InstanceLoader:
             'decode_feedback': decode_feedback,
             'rules': rules
         }
-
-    def _build_wordle_feedback_matrix(self, T, G, use_gpu=False):
-        """
-        Build Wordle feedback matrix on CPU or GPU.
-
-        Encodes the 5-position ternary code (green=2, yellow=1, gray=0)
-        as a single base-3 integer in [0, 243).
-        """
-        if use_gpu:
-            return self._build_wordle_feedback_matrix_GPU(T, G)
-        else:
-            return self._build_wordle_feedback_matrix_CPU(T, G)
-
-    def _build_wordle_feedback_matrix_CPU(self, T, G):
-        """Build Wordle feedback matrix (CPU)."""
-        K, nG, L = len(T), len(G), 5
-        T_int = [[ord(c) - 97 for c in w] for w in T]
-        G_int = [[ord(c) - 97 for c in w] for w in G]
-        F = np.zeros((K, nG), dtype=np.uint8)
-        powers = [3 ** (L - 1 - i) for i in range(L)]
-        c_t = np.zeros((K, 26), dtype=np.int16)
-        for t_idx, t_word in enumerate(T_int):
-            for ch in t_word:
-                c_t[t_idx][ch] += 1
-        for t_idx in range(K):
-            target = T_int[t_idx]
-            for g_idx in range(nG):
-                guess = G_int[g_idx]
-                f_row = [0] * L
-                c_prime = c_t[t_idx].copy()
-                for i in range(L):
-                    if guess[i] == target[i]:
-                        f_row[i] = 2
-                        c_prime[guess[i]] -= 1
-                for i in range(L):
-                    if f_row[i] == 0 and c_prime[guess[i]] > 0:
-                        f_row[i] = 1
-                        c_prime[guess[i]] -= 1
-                code = 0
-                for i in range(L):
-                    code += f_row[i] * powers[i]
-                F[t_idx, g_idx] = code
-        return F
-
-    def _build_wordle_feedback_matrix_GPU(self, T, G):
-        """Build Wordle feedback matrix (GPU)."""
-        # Encode words to GPU arrays
-        key_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in T])
-        all_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in G])
-
-        K = key_words.shape[0]
-        nG = all_words.shape[0]
-        L = key_words.shape[1]  # 5 for Wordle
-
-        # Compute letter counts for each target
-        flat_idx = cp.ravel(key_words) + cp.repeat(cp.arange(K), L) * 26
-        count_t = cp.bincount(flat_idx, minlength=K * 26).reshape(K, 26).astype(cp.int32)
-
-        # Compute equality mask for greens
-        equal = key_words[:, None, :] == all_words[None, :, :]
-
-        # Initialize feedback
-        feedback = cp.zeros((K, nG, L), dtype=cp.uint8)
-        feedback[equal] = 2
-
-        # Compute green counts per letter per pair
-        green_counts = cp.zeros((K, nG, 26), dtype=cp.int32)
-        for l in range(L):
-            mask_l = equal[:, :, l]
-            k, g = cp.where(mask_l)
-            if len(k):
-                c = key_words[k, l]
-                green_counts[k, g, c] += 1
-
-        # Remaining counts after greens
-        remaining_counts = count_t[:, None, :] - green_counts
-
-        # Second pass for yellows
-        for i in range(L):
-            mask = (feedback[:, :, i] == 0)
-            letter_i = all_words[:, i]
-            idx_k = cp.arange(K)[:, None]
-            idx_g = cp.arange(nG)[None, :]
-            idx_c = letter_i[None, :]
-            rem = remaining_counts[idx_k, idx_g, idx_c]
-            cond = (rem > 0) & mask
-            feedback[:, :, i][cond] = 1
-            remaining_counts[idx_k, idx_g, idx_c] -= cond.astype(cp.int32)
-
-        # Compute the encoded feedback codes
-        powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
-        F = cp.sum(feedback * powers[None, None, :], axis=2, dtype=cp.uint8)
-        return F
-
-    @staticmethod
-    def _wordle_decode_feedback(code):
-        """Decode Wordle feedback code to tuple."""
-        base, L = 3, 5
-        out = []
-        c = int(code)
-        for i in range(L):
-            out.append((c // (base ** (L - 1 - i))) % base)
-        return tuple(out)
 
     def _read_csv(self, path):
         """Read CSV file for attribute-based instances."""
@@ -346,6 +229,40 @@ class InstanceLoader:
         C = xp.all(digits[:, None, :] >= digits[None, :, :], axis=2)
 
         return C
+
+    @staticmethod
+    def load_tree(filepath):
+        """
+        Load a saved decision tree from JSON file.
+
+        Converts serialized format back to internal format:
+        vertices: [(v_id, guess, is_terminal, depth), ...]
+        successors: {(v_parent, feedback): v_child, ...}
+
+        Args:
+            filepath: Path to decision_tree.json file
+
+        Returns:
+            Tree dict with 'root', 'vertices', 'successors'
+        """
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+
+        # Convert vertices from JSON format
+        vertices = [(v, g, term, d) for v, g, term, d in data['vertices']]
+
+        # Convert successors from JSON format (keys are strings "v_f")
+        successors = {}
+        for key_str, child_v in data['successors'].items():
+            # Parse "v_f" format
+            v_parent, feedback = map(int, key_str.split('_'))
+            successors[(v_parent, feedback)] = child_v
+
+        return {
+            'root': data['root'],
+            'vertices': vertices,
+            'successors': successors
+        }
 
     def get_instance_tuple(self):
         """
