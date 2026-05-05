@@ -49,11 +49,11 @@ class InstanceLoader:
         # Rules from config file
         rules = data['rules']
         self.base = rules['base']
-        self.shortcut_threshold = rules.get('shortcut_threshold', 2)
+        self.guesses_include_targets = rules.get('guesses_include_targets', True)
         self.constrained_guessing = rules.get('constrained_guessing', False)
 
-        # Convert data to GPU if needed (CPU-then-convert approach)
-        self.F = cp.array(data['F']) if self.use_gpu else data['F']
+        # Convert is_target to GPU if needed
+        self.F = data['F']
         self.is_target = cp.array(data['is_target']) if self.use_gpu else data['is_target']
 
         # Build compatibility matrix for constrained guessing
@@ -107,9 +107,9 @@ class InstanceLoader:
         # For constrained guessing mode, we need full (n_G, n_G) feedback matrix
         # For normal mode, we only need (n_T, n_G)
         if rules.get('constrained_guessing', False):
-            F = self._build_wordle_feedback_matrix(G, G)  # Full matrix
+            F = self._build_wordle_feedback_matrix(G, G, use_gpu=self.use_gpu)
         else:
-            F = self._build_wordle_feedback_matrix(T, G)  # Targets x Guesses
+            F = self._build_wordle_feedback_matrix(T, G, use_gpu=self.use_gpu)
 
         # First n_T guesses are targets
         is_target = np.zeros(n_G, dtype=bool)
@@ -209,13 +209,20 @@ class InstanceLoader:
             'rules': rules
         }
 
-    def _build_wordle_feedback_matrix(self, T, G):
+    def _build_wordle_feedback_matrix(self, T, G, use_gpu=False):
         """
-        Build Wordle feedback matrix (CPU).
+        Build Wordle feedback matrix on CPU or GPU.
 
         Encodes the 5-position ternary code (green=2, yellow=1, gray=0)
         as a single base-3 integer in [0, 243).
         """
+        if use_gpu:
+            return self._build_wordle_feedback_matrix_GPU(T, G)
+        else:
+            return self._build_wordle_feedback_matrix_CPU(T, G)
+
+    def _build_wordle_feedback_matrix_CPU(self, T, G):
+        """Build Wordle feedback matrix (CPU)."""
         K, nG, L = len(T), len(G), 5
         T_int = [[ord(c) - 97 for c in w] for w in T]
         G_int = [[ord(c) - 97 for c in w] for w in G]
@@ -243,6 +250,56 @@ class InstanceLoader:
                 for i in range(L):
                     code += f_row[i] * powers[i]
                 F[t_idx, g_idx] = code
+        return F
+
+    def _build_wordle_feedback_matrix_GPU(self, T, G):
+        """Build Wordle feedback matrix (GPU)."""
+        # Encode words to GPU arrays
+        key_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in T])
+        all_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in G])
+
+        K = key_words.shape[0]
+        nG = all_words.shape[0]
+        L = key_words.shape[1]  # 5 for Wordle
+
+        # Compute letter counts for each target
+        flat_idx = cp.ravel(key_words) + cp.repeat(cp.arange(K), L) * 26
+        count_t = cp.bincount(flat_idx, minlength=K * 26).reshape(K, 26).astype(cp.int32)
+
+        # Compute equality mask for greens
+        equal = key_words[:, None, :] == all_words[None, :, :]
+
+        # Initialize feedback
+        feedback = cp.zeros((K, nG, L), dtype=cp.uint8)
+        feedback[equal] = 2
+
+        # Compute green counts per letter per pair
+        green_counts = cp.zeros((K, nG, 26), dtype=cp.int32)
+        for l in range(L):
+            mask_l = equal[:, :, l]
+            k, g = cp.where(mask_l)
+            if len(k):
+                c = key_words[k, l]
+                green_counts[k, g, c] += 1
+
+        # Remaining counts after greens
+        remaining_counts = count_t[:, None, :] - green_counts
+
+        # Second pass for yellows
+        for i in range(L):
+            mask = (feedback[:, :, i] == 0)
+            letter_i = all_words[:, i]
+            idx_k = cp.arange(K)[:, None]
+            idx_g = cp.arange(nG)[None, :]
+            idx_c = letter_i[None, :]
+            rem = remaining_counts[idx_k, idx_g, idx_c]
+            cond = (rem > 0) & mask
+            feedback[:, :, i][cond] = 1
+            remaining_counts[idx_k, idx_g, idx_c] -= cond.astype(cp.int32)
+
+        # Compute the encoded feedback codes
+        powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
+        F = cp.sum(feedback * powers[None, None, :], axis=2, dtype=cp.uint8)
         return F
 
     @staticmethod
@@ -313,8 +370,8 @@ class InstanceLoader:
         """
         # Merge instance properties into configs
         configs['base'] = self.base
-        configs['shortcut_threshold'] = self.shortcut_threshold
         configs['is_target'] = self.is_target
+        configs['guesses_include_targets'] = self.guesses_include_targets
         configs['constrained_guessing'] = self.constrained_guessing
         configs['GPU'] = self.use_gpu
 
@@ -322,7 +379,7 @@ class InstanceLoader:
         instance = self.get_instance_tuple()
 
         # Build best guess functions
-        _best_guess_fns = best_guess_functions(instance, self.is_target, flags, configs)
-        _best_guesses_fns = best_guesses_functions(self.is_target, configs)
+        _best_guess_fns = best_guess_functions(instance, flags, configs)
+        _best_guesses_fns = best_guesses_functions(configs)
 
         return instance + (_best_guess_fns, _best_guesses_fns)

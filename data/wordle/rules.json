@@ -1,7 +1,7 @@
 {
   "format": "wordlist",
   "base": 243,
-  "shortcut_threshold": 2,
+  "guesses_include_targets": true,
   "constrained_guessing": false,
   "data_files": {
     "targets": "solutions.txt",
