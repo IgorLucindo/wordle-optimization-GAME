@@ -4,6 +4,21 @@ from classes.instance_loader import InstanceLoader
 import argparse
 
 
+def parse_k_value(k_str):
+    if k_str.lower() == 'full':
+        return -1  # Sentinel value for subtree-full
+    
+    try:
+        k_value = int(k_str)
+        if k_value < 1:
+            raise ValueError("k must be at least 1")
+        return k_value
+    except ValueError as e:
+        if "invalid literal" in str(e):
+            raise ValueError(f"k must be a positive integer or 'full', got '{k_str}'")
+        raise
+
+
 def get_args():
     parser = argparse.ArgumentParser(
         description="Build and optimize a guessing-game decision tree."
@@ -13,10 +28,8 @@ def get_args():
     parser.add_argument('--game', type=str, default='wordle',
                         help='Game instance to solve (e.g., wordle, wordle_hard, mastermind, zoo)')
     parser.add_argument('--cpu', action='store_true', help='Run on CPU only (disable GPU)')
-    parser.add_argument('--metric', type=int, default=1, choices=[0, 1, 2],
-                        help='Optimization metric: 0=Avg. Size, 1=Subtree-k, 2=Subtree-Full')
-    parser.add_argument('--k', type=int, default=15,
-                        help='Top-k candidates to evaluate (for metric 1)')
+    parser.add_argument('--k', type=str, default='15',
+                        help='Number of candidates to evaluate: 1=greedy, N=subtree-N, full=subtree-full (default: 15)')
     parser.add_argument('--score', type=str, default='PC', choices=['PC', 'WA', 'H'],
                         help='Score rule: PC=Partition Count, WA=Weighted Average, H=Entropy (default: PC)')
 
@@ -40,8 +53,7 @@ def main():
     configs = {
         'GPU': not args.cpu,
         'game': args.game,
-        'metric': args.metric,
-        'k': args.k,
+        'k': parse_k_value(args.k),
         'score': args.score
     }
 

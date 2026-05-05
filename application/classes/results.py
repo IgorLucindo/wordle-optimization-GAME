@@ -9,8 +9,9 @@ class Results:
         self.configs = configs
 
         # Result Containers
-        self.tree = {'root': 0, 'vertices': [], 'successors': {}}
+        self.tree = {'root': 0, 'vertices': [], 'successors': {}, 'score_rule': ''}
         self.stats = {
+            'score_rule': '',
             'exp_guesses': 0, 'std_guesses': 0, 'max_guesses': 0,
             'distribution': None, 'build_runtime': 0, '#vertices': 0
         }
@@ -21,6 +22,7 @@ class Results:
         Ingests the raw data from the solver
         """
         self.tree = tree
+        self.stats['score_rule'] = tree['score_rule']
         self.stats['build_runtime'] = runtime
         self.stats['#vertices'] = len(tree['vertices'])
 
@@ -30,14 +32,15 @@ class Results:
         Evaluates the tree by collecting depths from terminal vertices.
         No simulation needed - depths are pre-recorded during tree building!
         """
-        D = []
+        depth_offset = 0 if self.configs['guesses_include_targets'] else 1
 
         # Collect depths from all terminal vertices
-        for v_id, guess, is_terminal, depth in self.tree['vertices']:
-            if is_terminal:
-                D.append(depth)
+        D = np.array([
+            depth - depth_offset
+            for _, _, is_terminal, depth in self.tree['vertices'] 
+            if is_terminal
+        ])
 
-        D = np.array(D)
         self.stats['exp_guesses'] = D.mean()
         self.stats['std_guesses'] = D.std()
         self.stats['max_guesses'] = D.max()
@@ -53,6 +56,7 @@ class Results:
 
         print(
             f"\n\n"
+            f"Score Rule: {self.stats['score_rule']}\n"
             f"Exp. guesses: {self.stats['exp_guesses']:.3f}\n"
             f"Std. guesses: {self.stats['std_guesses']:.3f}\n"
             f"Max. guesses: {self.stats['max_guesses']}\n"
@@ -71,6 +75,7 @@ class Results:
 
         # Convert tree to JSON-serializable format
         serializable_tree = {
+            'score_rule': self.tree['score_rule'],
             'root': self.tree['root'],
             'vertices': [(int(v), int(g) if g is not None else None, bool(term), int(d) if d is not None else None)
                         for v, g, term, d in self.tree['vertices']],

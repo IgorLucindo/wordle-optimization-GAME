@@ -1,3 +1,5 @@
 check if zoo.csv is handling attributes correctly when calculating feedbacks. bc attributes ahve different basis, some are binary, others have other basis. are we unifying all in a single unique compact feedback number?
 
+I feel like if we only use data['is_target'] in guess_tree, we don't need to make instance_loader get it and pass to config, and finally use in guess_tree. this approach is terrible and not appropriate at all. guess_tree should be the one to handle that array. fix that
+
 complete validate_trees.py

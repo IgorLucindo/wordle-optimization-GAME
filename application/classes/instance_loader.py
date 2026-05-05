@@ -53,8 +53,8 @@ class InstanceLoader:
         # Base is now returned by the feedback engine
         self.base = data['base']
         rules = data['rules']
-        self.guesses_include_targets = rules.get('guesses_include_targets', True)
-        self.constrained_guessing = rules.get('constrained_guessing', False)
+        self.guesses_include_targets = rules['guesses_include_targets']
+        self.constrained_guessing = rules['constrained_guessing']
 
         # Convert is_target to GPU if needed
         self.F = data['F']
@@ -259,6 +259,7 @@ class InstanceLoader:
             successors[(v_parent, feedback)] = child_v
 
         return {
+            'score_rule': data['score_rule'],
             'root': data['root'],
             'vertices': vertices,
             'successors': successors
@@ -279,7 +280,7 @@ class InstanceLoader:
 
         Args:
             flags: Runtime flags dict (print_diagnosis, evaluate, save_tree)
-            configs: Runtime configs dict (metric, k, score)
+            configs: Runtime configs dict (k, score, GPU, game)
 
         Returns:
             Complete instance tuple:

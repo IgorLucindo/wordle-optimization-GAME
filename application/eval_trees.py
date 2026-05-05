@@ -54,20 +54,16 @@ def main():
         print(f"Tree: {tree_path}")
         print(f"{'='*60}")
 
-        try:
-            configs['game'] = instance_name
+        configs['game'] = instance_name
 
-            # Load tree using InstanceLoader
-            tree = InstanceLoader.load_tree(str(tree_path))
+        # Load tree using InstanceLoader
+        tree = InstanceLoader.load_tree(str(tree_path))
 
-            # Evaluate tree (no instance needed!)
-            results = Results(flags, configs)
-            results.set_data(tree, runtime=0)
-            results.evaluate()
-            results.print()
-
-        except Exception as e:
-            print(f"Error evaluating {instance_name}: {e}\n")
+        # Evaluate tree (no instance needed!)
+        results = Results(flags, configs)
+        results.set_data(tree, runtime=0)
+        results.evaluate()
+        results.print()
 
 
 if __name__ == "__main__":

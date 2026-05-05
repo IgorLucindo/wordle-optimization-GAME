@@ -42,10 +42,16 @@ class DeviceOptimizer:
             self.F_cpu = cp.asnumpy(F)
             self.C_cpu = cp.asnumpy(C) if C is not None else None
             
-            # Unique key based on metric AND the specific solver function being used
-            k = f"_k{self.configs['k']}" if self.configs['metric'] == 1 else ""
+            # Unique key based on k value AND the specific solver function being used
+            k_val = self.configs.get('k', 1)
+            if k_val == 1:
+                k_suffix = "_greedy"
+            elif k_val == -1:
+                k_suffix = "_full"
+            else:
+                k_suffix = f"_k{k_val}"
             solver_name = self.solvers_cpu[0].__name__
-            self.calibration_key = f"metric_{self.configs['metric']}{k}_{solver_name}"
+            self.calibration_key = f"{k_suffix}_{solver_name}"
             self.calibration_file = "application/results/calibration.json"
 
             cached_val = self._load_calibration()

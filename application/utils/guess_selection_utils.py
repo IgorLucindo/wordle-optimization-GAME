@@ -10,9 +10,9 @@ def best_guess_functions(instance_data, flags, configs):
     ``is_target`` is a boolean array of shape (n_G,) indicating which guesses
     are also valid terminal identification actions.
     """
-    score_rule = configs.get('score', 'PC')
-    guesses_include_targets = bool(configs.get('guesses_include_targets', True))
-    base = configs.get('base', 243)
+    score_rule = configs['score']
+    guesses_include_targets = configs['guesses_include_targets']
+    base = configs['base']
 
     def _get_best_guess_CPU(T, G, F):
         return _get_best_guess_CPU_impl(
@@ -28,7 +28,9 @@ def best_guess_functions(instance_data, flags, configs):
     _best_guesses_functions = best_guesses_functions(configs)
 
     # Subtree look-ahead wraps the avg-size rule.
-    if configs['metric']:
+    # k=1 means greedy (no subtree), k>1 or k=-1 means use subtree
+    k = configs.get('k', 1)
+    if k != 1:
         instance = instance_data + (_best_guess_functions, _best_guesses_functions)
         subtree = Guess_Tree(instance, flags, configs)
 
@@ -229,11 +231,12 @@ def _get_best_guess_subtree(T, G, F, subtree, guesses_include_targets):
 
     T, G, xp, F, _, _, get_best_guesses = subtree.optimizer.get_context(T, G)
 
-    if subtree.configs['metric'] == 1:
+    k = subtree.configs.get('k', 1)
+    if k > 1:
         # Subtree-k: evaluate top-k candidates
         G_prime, candidates_in_T = get_best_guesses(T, G, F)
     else:
-        # Subtree-full: evaluate all guesses
+        # Subtree-full (k == -1): evaluate all guesses
         if guesses_include_targets:
             candidates_in_T = xp.isin(G, T).tolist()
         else:

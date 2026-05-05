@@ -28,11 +28,11 @@ The choice of the first word significantly impacts the game's trajectory. Our so
 
 > **Note:** Our result of **3.421** guesses for normal mode matches the theoretical optimum reported by exact dynamic programming approaches (Bertsimas et al., 2025), but is achieved using a significantly faster polynomial-time heuristic.
 
-### 2) Performance by Metric
+### 2) Performance by Strategy
 
-We compared the baseline greedy strategy (**Avg. Size**) against our optimized look-ahead strategies (**Subtree-$k$**). As shown below, the look-ahead approaches ($k=10$ and $k=15$) yield results virtually identical to an exhaustive search (**Subtree-Full**), but with drastically lower computational cost—reducing build times from days to minutes.
+We compared the baseline greedy strategy (k=1) against our optimized lookahead strategies (Subtree-k). As shown below, the lookahead approaches (k=10 and k=15) yield results virtually identical to an exhaustive search (Subtree-Full), but with drastically lower computational cost—reducing build times from days to minutes.
 
-| Mode | Statistic | Avg. Size | Subtree-10 | Subtree-15 | Subtree-Full |
+| Mode | Statistic | Greedy | Subtree-10 | Subtree-15 | Subtree-Full |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **Normal** | Exp. Guesses | 3.435 | **3.421** | **3.421** | **3.421** |
 | | Max. Guesses | 6 | **5** | **5** | **5** |
@@ -102,11 +102,10 @@ python application/build_tree.py
   (default: `wordle`). Use `wordle_hard` for constrained guessing mode. Mastermind and Zoo run on CPU only.
 * `--cpu`: Run strictly on the CPU (disables GPU acceleration).
 * `--save_tree`: Save the resulting tree to a JSON file in the instance directory (e.g., `data/wordle/decision_tree.json`).
-* `--metric {0,1,2}`: Choose the optimization metric (default: 1).
-   * `0`: Average Size (Greedy)
-   * `1`: Subtree-k (Look-ahead)
-   * `2`: Subtree-Full (Exhaustive)
-* `--k {int}`: Number of candidates to evaluate when using Metric 1 (default: 15).
+* `--k {1,K,full}`: Number of candidates to evaluate with lookahead (default: 15).
+   * `1`: Greedy (no lookahead) - fastest, picks best candidate by average partition size
+   * `K` (integer > 1): Subtree-K - evaluates top K candidates with 1-step lookahead
+   * `full`: Subtree-Full - evaluates all candidates with 1-step lookahead (exhaustive)
 * `--score {PC,WA,H}`: Choose the score rule (default: PC).
    * `PC`: Partition Count - minimizes average partition size
    * `WA`: Weighted Average - minimizes sum of squared partition sizes
@@ -118,14 +117,17 @@ python application/build_tree.py
 # Build for constrained guessing mode (hard mode) and save the tree
 python application/build_tree.py --game wordle_hard --save_tree
 
-# Run on CPU with a greedy strategy (faster build, slightly less optimal)
-python application/build_tree.py --cpu --metric 0
+# Run on CPU with greedy strategy (fastest build, slightly less optimal)
+python application/build_tree.py --cpu --k 1
 
 # Use Weighted Average (WA) score rule instead of Partition Count (PC)
 python application/build_tree.py --score WA
 
-# Use Entropy (H) score rule with Subtree-10 look-ahead
+# Use Entropy (H) score rule with Subtree-10 lookahead
 python application/build_tree.py --score H --k 10
+
+# Use exhaustive lookahead (evaluates all candidates)
+python application/build_tree.py --k full
 ```
 
 ### Evaluate Saved Trees:
@@ -157,20 +159,20 @@ sequential testing games used in the accompanying paper:
 The `--game` flag switches instances. Both use CPU only and disable Hard Mode.
 
 ```bash
-# Greedy (PC / Avg. Size) on Mastermind 4x6
-python application/build_tree.py --game mastermind --metric 0
+# Greedy (no lookahead) on Mastermind 4x6
+python application/build_tree.py --game mastermind --k 1
 
-# Subtree-10 look-ahead on UCI Zoo
-python application/build_tree.py --game zoo --metric 1 --k 10
+# Subtree-10 lookahead on UCI Zoo
+python application/build_tree.py --game zoo --k 10
 ```
 
 ### Reference results
 
-| Game        | Metric        | Exp. Guesses | Max. | First action |
+| Game        | Strategy      | Exp. Guesses | Max. | First action |
 |:------------|:--------------|:------------:|:----:|:-------------|
-| Mastermind  | Avg. Size     | 4.373     | 6     | `0012`       |
+| Mastermind  | Greedy        | 4.373     | 6     | `0012`       |
 | Mastermind  | Subtree-10    | **4.355** | **5** | `0015`       |
-| Zoo         | Avg. Size     | 5.559     | 8     | `legs`      |
+| Zoo         | Greedy        | 5.559     | 8     | `legs`      |
 | Zoo         | Subtree-10    | **5.034** | **6** | `aquatic`    |
 
 The Zoo greedy number reproduces the paper's 5.5593/max 8 exactly. The

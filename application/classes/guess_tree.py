@@ -6,6 +6,18 @@ import time
 import sys
 
 
+def _get_score_rule(configs):
+    k, score = configs['k'], configs['score']
+    if k == 1:
+        strategy = "greedy"
+    elif k == -1:
+        strategy = "subtree-full"
+    else:
+        strategy = f"subtree-{k}"
+    
+    return f"{strategy} | {score}"
+
+
 class Guess_Tree:
     def __init__(self, instance, flags, configs):
         # Optimizer (Hardware)
@@ -24,7 +36,12 @@ class Guess_Tree:
         self.is_target = configs.get('is_target')
 
         # Tree Building State
-        self.tree = {'root': 0, 'vertices': [], 'successors': {}}
+        self.tree = {
+            'root': 0,
+            'vertices': [],
+            'successors': {},
+            'score_rule': _get_score_rule(configs)
+        }
         self._stop_diagnosis = False
         self._diagnosis_thread = None
         self.v_curr = -1
@@ -54,7 +71,7 @@ class Guess_Tree:
             g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
             # Append to tree with terminal flag and depth
-            self.append2Tree(g_star, self.v_curr, v_parent, p_parent,
+            self._append2Tree(g_star, self.v_curr, v_parent, p_parent,
                            is_terminal=is_target_flag, depth=depth)
 
             # Stop if we just guessed the last target
@@ -70,7 +87,7 @@ class Guess_Tree:
             # Expand children
             for i, p in enumerate(unique_feedbacks):
                 T_p = T_curr[inverse_indices == i]
-                G_p = self.get_next_guesses_hardmode(T_p, G_curr, p, g_star, F, C)
+                G_p = self._get_constrained_guesses(T_p, G_curr, p, g_star, F, C)
                 queue.append((T_p, G_p, self.v_curr, p.item(), depth + 1))
 
         self.stop_diagnosis()
@@ -121,13 +138,13 @@ class Guess_Tree:
             # Expand children
             for i, p in enumerate(unique_feedbacks):
                 T_p = T_curr[inverse_indices == i]
-                G_p = self.get_next_guesses_hardmode(T_p, G_curr, p, g_star, F, C)
+                G_p = self._get_constrained_guesses(T_p, G_curr, p, g_star, F, C)
                 queue.append((T_p, G_p, self.v_curr, p.item(), depth + 1))
 
         return np.array(depths)
 
 
-    def append2Tree(self, g_star, v_curr, v_parent, p_parent, is_terminal=False, depth=None):
+    def _append2Tree(self, g_star, v_curr, v_parent, p_parent, is_terminal=False, depth=None):
         """
         Append vertex and edge to tree
 
@@ -144,7 +161,7 @@ class Guess_Tree:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
 
 
-    def get_next_guesses_hardmode(self, T, G, feedback, g_star, F, C):
+    def _get_constrained_guesses(self, T, G, feedback, g_star, F, C):
         """
         Vectorized constrained-guessing filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
