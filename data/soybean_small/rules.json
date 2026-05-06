@@ -7,5 +7,5 @@
     "dataset": "attributes.csv",
     "has_header": true
   },
-  "description": "UCI Zoo 59 animals with 16 attribute queries"
+  "description": "UCI Soybean Small dataset with 35 attribute queries"
 }

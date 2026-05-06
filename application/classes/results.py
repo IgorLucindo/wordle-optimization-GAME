@@ -83,7 +83,7 @@ class Results:
         }
 
         # Save to instance-specific directory
-        instance_name = self.configs.get('game', 'wordle')
+        instance_name = self.configs.get('data', 'wordle')
         filepath = f"data/{instance_name}/decision_tree.json"
 
         with open(filepath, "w") as f:

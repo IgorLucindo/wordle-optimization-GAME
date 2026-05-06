@@ -54,7 +54,7 @@ def main():
         print(f"Tree: {tree_path}")
         print(f"{'='*60}")
 
-        configs['game'] = instance_name
+        configs['data'] = instance_name
 
         # Load tree using InstanceLoader
         tree = InstanceLoader.load_tree(str(tree_path))

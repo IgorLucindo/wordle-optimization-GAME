@@ -98,8 +98,9 @@ python application/build_tree.py
 
 ### Common Options:
 
-* `--game {wordle,wordle_hard,mastermind,zoo}`: Select the guessing game instance
-  (default: `wordle`). Use `wordle_hard` for constrained guessing mode. Mastermind and Zoo run on CPU only.
+* `--data {wordle,wordle_hard,mastermind,zoo,...}`: Select the instance folder under `data/`.
+  If omitted, the script prompts you to choose from discovered `data/*/rules.json` instances.
+  Use `wordle_hard` for constrained guessing mode. Mastermind and Zoo run on CPU only.
 * `--cpu`: Run strictly on the CPU (disables GPU acceleration).
 * `--save_tree`: Save the resulting tree to a JSON file in the instance directory (e.g., `data/wordle/decision_tree.json`).
 * `--k {1,K,full}`: Number of candidates to evaluate with lookahead (default: 15).
@@ -115,7 +116,7 @@ python application/build_tree.py
 
 ```bash
 # Build for constrained guessing mode (hard mode) and save the tree
-python application/build_tree.py --game wordle_hard --save_tree
+python application/build_tree.py --data wordle_hard --save_tree
 
 # Run on CPU with greedy strategy (fastest build, slightly less optimal)
 python application/build_tree.py --cpu --k 1
@@ -156,14 +157,14 @@ sequential testing games used in the accompanying paper:
   attribute queries; identification occurs by arrival at a singleton
   leaf (no terminal "self-id" action).
 
-The `--game` flag switches instances. Both use CPU only and disable Hard Mode.
+The `--data` flag switches instances. Both use CPU only and disable Hard Mode.
 
 ```bash
 # Greedy (no lookahead) on Mastermind 4x6
-python application/build_tree.py --game mastermind --k 1
+python application/build_tree.py --data mastermind --k 1
 
 # Subtree-10 lookahead on UCI Zoo
-python application/build_tree.py --game zoo --k 10
+python application/build_tree.py --data zoo --k 10
 ```
 
 ### Reference results

@@ -280,7 +280,7 @@ class InstanceLoader:
 
         Args:
             flags: Runtime flags dict (print_diagnosis, evaluate, save_tree)
-            configs: Runtime configs dict (k, score, GPU, game)
+            configs: Runtime configs dict (k, score, GPU, data)
 
         Returns:
             Complete instance tuple:
