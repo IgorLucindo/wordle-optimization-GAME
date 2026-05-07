@@ -1,1 +1,3 @@
+Implement gpu for other approaches, not only wordle. Also, I feel like we can merge _build_wordle_feedback_matrix_CPU and _build_wordle_feedback_matrix_GPU into one and use xp to be cp or np.
+
 complete validate_trees.py

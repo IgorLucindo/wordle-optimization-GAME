@@ -2,7 +2,7 @@
 
 This directory contains the preprocessing pipeline to import and format classification datasets from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/) for use with the solver.
 
-## Why Use UCI Datasets? (Near-Optimal Policy)
+## Why Use UCI Datasets? (Near-Optimal Policies)
 
 Standard Machine Learning decision trees aim to predict a general label and actively avoid overfitting. This solver does the exact opposite: it treats every single dataset row as a unique target and rapidly finds a close-to-optimal, highly minimized path to identify *that exact row*.
 
@@ -13,7 +13,7 @@ The best datasets for this solver share two characteristics:
 2. **High-Cost Questions:** Scenarios where minimizing the number of questions asked is highly valuable in the real world (e.g., medical tests, time-consuming mechanical checks, or user friction).
 
 **Ideal Use Cases & Recommended Datasets:**
-* **Biological/Taxonomic Keys** (`zoo`, `soybean_large`): Generates a near optimal sequence of observations a biologist should make to identify a species or plant disease in the field.
+* **Biological/Taxonomic Keys** (`zoo`, `soybean_large`): Generates a highly efficient sequence of observations a biologist should make to identify a species or plant disease in the field.
 * **Medical Diagnosis** (`breast-cancer`, `dermatology`): Finds a streamlined flowchart that requires a near-minimum number of clinical tests to reach a specific diagnosis.
 * **Fault Isolation** (`car`): Acts as a troubleshooting tree, minimizing the number of sensor checks needed to identify a mechanical state.
 * **Preference Routing/20 Questions** (`mushroom`, `lenses`): Interactive recommendation engines that narrow down a massive space of possibilities with very few user prompts.
@@ -22,7 +22,7 @@ The best datasets for this solver share two characteristics:
 
 The solver is built around a **Feedback Matrix** `F[target, guess]`: a 2D table of integers where each cell holds the discrete response returned when guess `j` is applied to target `i`. For rule-based games like Wordle or Mastermind, this matrix is computed on-the-fly from compact rules (ternary comparison, peg counting). For tabular datasets, the data *is* the feedback matrix — no computation needed.
 
-This converter bridges the two worlds. It takes a raw UCI dataset and produces `attributes.csv`, which the solver loads directly as its feedback matrix. The columns are guesses (attributes/questions), the rows are targets (individual instances), and the cells are the integer responses.
+This converter bridges the two worlds. It takes a raw UCI dataset and automatically produces both `attributes.csv` (the feedback matrix) and `rules.json` (the solver configuration). The columns are guesses (attributes/questions), the rows are targets (individual instances), and the cells are the integer responses.
 
 ## Terminology
 
@@ -42,7 +42,7 @@ If targets A and B return identical responses for every available guess, no sequ
 
 ## Adding a New Dataset
 
-Adding a new dataset is highly automated. The converter handles missing values (mapping them to an `"unknown"` category), encodes string categories to integers, and drops unresolvable duplicates.
+Adding a new dataset is highly automated. The converter handles missing values (mapping them to an `"unknown"` category), encodes string categories to integers, drops unresolvable duplicates, and auto-generates the solver's configuration file.
 
 **Example: Adding the `mushroom` dataset**
 
@@ -56,8 +56,7 @@ Adding a new dataset is highly automated. The converter handles missing values (
    }
    ```
    *(Note: You can also pass a `"guesses"` list with exact column names, otherwise it auto-generates `attr_0`, `attr_1`, etc.)*
-3. **Set Rules:** Add a `rules.json` to `data/mushroom/` specifying `"format": "csv"` and `"feedback_engine": "attribute_matrix"`.
-4. **Run the Converter:** The output `attributes.csv` is immediately usable by the solver. No changes to the solver itself are needed!
+3. **Run the Converter:** The script automatically generates `attributes.csv` and `rules.json` inside `data/mushroom/`. It is immediately usable by the solver!
 
 ## Setup & Usage
 
@@ -81,10 +80,10 @@ python data_converter/main.py
 
 ### 3. Output
 
-Each dataset is written to `data/<name>/attributes.csv`. Missing values are assigned an `"unknown"` category; duplicate rows are dropped. Example output:
+Each dataset is written to `data/<name>/`. Missing values are assigned an `"unknown"` category; duplicate rows are dropped. Example output:
 
 ```text
-Converted mushroom: Saved to data/mushroom/attributes.csv
+Converted mushroom: Saved to data\mushroom (attributes.csv & rules.json)
 ```
 
 Once converted, run the solver as usual:
