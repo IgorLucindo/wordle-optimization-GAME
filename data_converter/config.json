@@ -1,4 +1,14 @@
 {
+    "breast_cancer": {
+        "file": "breast+cancer+wisconsin+original/breast-cancer-wisconsin.data",
+        "missing_val": "?",
+        "label_col": -1,
+        "guesses": [
+            "id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape", 
+            "marginal_adhesion", "single_epithelial_cell_size", "bare_nuclei", 
+            "bland_chromatin", "normal_nucleoli", "mitoses"
+        ]
+    },
     "car": {
         "file": "car+evaluation/car.data",
         "missing_val": null,
@@ -16,10 +26,57 @@
             "education-spending", "superfund-right-to-sue", "crime", "duty-free", "south-africa"
         ]
     },
-    "soybean_small": {
-        "file": "soybean+small/soybean-small.data",
+    "dermatology": {
+        "file": "dermatology/dermatology.data",
+        "missing_val": "?",
+        "label_col": -1,
+        "guesses": [
+            "erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon", 
+            "polygonal_papules", "follicular_papules", "oral_mucosal_involvement", 
+            "knee_elbow_involvement", "scalp_involvement", "family_history", 
+            "melanin_incontinence", "eosinophils_in_infiltrate", "pnl_infiltrate", 
+            "fibrosis_papillary_dermis", "exocytosis", "acanthosis", "hyperkeratosis", 
+            "parakeratosis", "clubbing_rete_ridges", "elongation_rete_ridges", 
+            "thinning_suprapapillary_epidermis", "spongiform_pustule", "munro_microabscess", 
+            "focal_hypergranulosis", "disappearance_granular_layer", "vacuolisation_basal_layer", 
+            "spongiosis", "saw_tooth_rete_ridges", "follicular_horn_plug", 
+            "perifollicular_parakeratosis", "inflammatory_mononuclear_infiltrate", 
+            "band_like_infiltrate", "age"
+        ]
+    },
+    "lenses": {
+        "file": "lenses/lenses.data",
         "missing_val": null,
         "label_col": -1,
-        "guesses": null
+        "sep": "\\s+",
+        "guesses": ["id", "age", "spectacle_rx", "astigmatism", "tear_production"]
+    },
+    "mushroom": {
+        "file": "mushroom/agaricus-lepiota.data",
+        "missing_val": "?",
+        "label_col": 0,
+        "guesses": [
+            "cap-shape", "cap-surface", "cap-color", "bruises", "odor",
+            "gill-attachment", "gill-spacing", "gill-size", "gill-color",
+            "stalk-shape", "stalk-root", "stalk-surface-above-ring",
+            "stalk-surface-below-ring", "stalk-color-above-ring",
+            "stalk-color-below-ring", "veil-type", "veil-color",
+            "ring-number", "ring-type", "spore-print-color",
+            "population", "habitat"
+        ]
+    },
+    "soybean_large": {
+        "file": "soybean+large/soybean-large.data",
+        "missing_val": "?",
+        "label_col": 0,
+        "guesses": [
+            "date", "plant-stand", "precip", "temp", "hail", "crop-hist", 
+            "area-damaged", "severity", "seed-tmt", "germination", "plant-growth", 
+            "leaves", "leafspots-halo", "leafspots-marg", "leafspot-size", 
+            "leaf-shread", "leaf-malf", "leaf-mild", "stem", "lodging", 
+            "stem-cankers", "canker-lesion", "fruiting-bodies", "external-decay", 
+            "mycelium", "int-discolor", "sclerotia", "fruit-pods", "fruit-spots", 
+            "seed", "mold-growth", "seed-discolor", "seed-size", "shriveling", "roots"
+        ]
     }
 }

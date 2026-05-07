@@ -18,7 +18,8 @@ def convert_uci_to_game_format(config_path: str, input_base_dir: str, output_bas
             continue
 
         # 1. Read the raw data
-        df = pd.read_csv(file_path, header=None, na_values=conf.get("missing_val"))
+        separator = conf.get("sep", ",")
+        df = pd.read_csv(file_path, header=None, na_values=conf.get("missing_val"), sep=separator, engine="python")
 
         # 2. Split label column from features
         n_cols = len(df.columns)
@@ -58,7 +59,23 @@ def convert_uci_to_game_format(config_path: str, input_base_dir: str, output_bas
         output_file = dataset_dir / "attributes.csv"
         features.to_csv(output_file, index=False)
 
-        print(f"Converted {name}: Saved to {output_file}")
+        rules = {
+            "format": "csv",
+            "feedback_engine": "attribute_matrix",
+            "guesses_include_targets": False,
+            "constrained_guessing": False,
+            "data_files": {
+                "dataset": "attributes.csv",
+                "has_header": True
+            },
+            "description": f"Auto-converted UCI {name.replace('_', ' ').title()} dataset"
+        }
+        
+        rules_file = dataset_dir / "rules.json"
+        with open(rules_file, "w") as f:
+            json.dump(rules, f, indent=2)
+
+        print(f"Converted {name}: Saved to {dataset_dir} (attributes.csv & rules.json)")
         if dropped_count > 0:
             print(f"  -> Dropped {dropped_count} duplicate feature combinations.")
 

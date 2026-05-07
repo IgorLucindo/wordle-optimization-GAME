@@ -7,5 +7,5 @@
     "dataset": "attributes.csv",
     "has_header": true
   },
-  "description": "UCI Soybean Small dataset with 35 attribute queries"
+  "description": "Auto-converted UCI Soybean Large dataset"
 }

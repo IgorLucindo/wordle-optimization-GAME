@@ -7,5 +7,5 @@
     "dataset": "attributes.csv",
     "has_header": true
   },
-  "description": "UCI House Votes dataset with 16 attribute queries"
+  "description": "Auto-converted UCI House Votes 84 dataset"
 }

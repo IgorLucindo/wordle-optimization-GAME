@@ -7,5 +7,5 @@
     "dataset": "attributes.csv",
     "has_header": true
   },
-  "description": "Auto-converted UCI Car dataset"
+  "description": "Auto-converted UCI Breast Cancer dataset"
 }
