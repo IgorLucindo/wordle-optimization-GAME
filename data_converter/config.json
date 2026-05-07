@@ -1,0 +1,25 @@
+{
+    "car": {
+        "file": "car+evaluation/car.data",
+        "missing_val": null,
+        "label_col": -1,
+        "guesses": ["buying", "maint", "doors", "persons", "lug_boot", "safety"]
+    },
+    "house_votes_84": {
+        "file": "congressional+voting+records/house-votes-84.data",
+        "missing_val": "?",
+        "label_col": 0,
+        "guesses": [
+            "handicapped-infants", "water-project", "budget-resolution",
+            "physician-fee", "el-salvador-aid", "religious-groups", "anti-satellite",
+            "nicaraguan-contras", "mx-missile", "immigration", "synfuels-cutback",
+            "education-spending", "superfund-right-to-sue", "crime", "duty-free", "south-africa"
+        ]
+    },
+    "soybean_small": {
+        "file": "soybean+small/soybean-small.data",
+        "missing_val": null,
+        "label_col": -1,
+        "guesses": null
+    }
+}

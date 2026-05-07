@@ -1,0 +1,797 @@
+{
+  "score_rule": "subtree-10 | WA",
+  "vertices": [
+    [
+      0,
+      "legs",
+      false,
+      null
+    ],
+    [
+      1,
+      "fins",
+      false,
+      null
+    ],
+    [
+      2,
+      "predator",
+      false,
+      null
+    ],
+    [
+      3,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      4,
+      "starfish",
+      true,
+      1
+    ],
+    [
+      5,
+      "hair",
+      false,
+      null
+    ],
+    [
+      6,
+      "eggs",
+      false,
+      null
+    ],
+    [
+      7,
+      "toothed",
+      false,
+      null
+    ],
+    [
+      8,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      9,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      10,
+      "airborne",
+      false,
+      null
+    ],
+    [
+      11,
+      "predator",
+      false,
+      null
+    ],
+    [
+      12,
+      "tail",
+      false,
+      null
+    ],
+    [
+      13,
+      "airborne",
+      false,
+      null
+    ],
+    [
+      14,
+      "venomous",
+      false,
+      null
+    ],
+    [
+      15,
+      "scorpion",
+      true,
+      2
+    ],
+    [
+      16,
+      "octopus",
+      true,
+      2
+    ],
+    [
+      17,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      18,
+      "eggs",
+      false,
+      null
+    ],
+    [
+      19,
+      "predator",
+      false,
+      null
+    ],
+    [
+      20,
+      "eggs",
+      false,
+      null
+    ],
+    [
+      21,
+      "hair",
+      false,
+      null
+    ],
+    [
+      22,
+      "hair",
+      false,
+      null
+    ],
+    [
+      23,
+      "feathers",
+      false,
+      null
+    ],
+    [
+      24,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      25,
+      "domestic",
+      false,
+      null
+    ],
+    [
+      26,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      27,
+      "predator",
+      false,
+      null
+    ],
+    [
+      28,
+      "hair",
+      false,
+      null
+    ],
+    [
+      29,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      30,
+      "predator",
+      false,
+      null
+    ],
+    [
+      31,
+      "housefly",
+      true,
+      3
+    ],
+    [
+      32,
+      "domestic",
+      false,
+      null
+    ],
+    [
+      33,
+      "predator",
+      false,
+      null
+    ],
+    [
+      34,
+      "seawasp",
+      true,
+      4
+    ],
+    [
+      35,
+      "seasnake",
+      true,
+      4
+    ],
+    [
+      36,
+      "venomous",
+      false,
+      null
+    ],
+    [
+      37,
+      "domestic",
+      false,
+      null
+    ],
+    [
+      38,
+      "bass",
+      true,
+      4
+    ],
+    [
+      39,
+      "hair",
+      false,
+      null
+    ],
+    [
+      40,
+      "venomous",
+      false,
+      null
+    ],
+    [
+      41,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      42,
+      "airborne",
+      false,
+      null
+    ],
+    [
+      43,
+      "airborne",
+      false,
+      null
+    ],
+    [
+      44,
+      "tail",
+      false,
+      null
+    ],
+    [
+      45,
+      "hair",
+      false,
+      null
+    ],
+    [
+      46,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      47,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      48,
+      "gull",
+      true,
+      4
+    ],
+    [
+      49,
+      "hair",
+      false,
+      null
+    ],
+    [
+      50,
+      "tail",
+      false,
+      null
+    ],
+    [
+      51,
+      "hair",
+      false,
+      null
+    ],
+    [
+      52,
+      "tail",
+      false,
+      null
+    ],
+    [
+      53,
+      "toad",
+      true,
+      4
+    ],
+    [
+      54,
+      "toothed",
+      false,
+      null
+    ],
+    [
+      55,
+      "newt",
+      true,
+      4
+    ],
+    [
+      56,
+      "eggs",
+      false,
+      null
+    ],
+    [
+      57,
+      "flea",
+      true,
+      4
+    ],
+    [
+      58,
+      "crayfish",
+      true,
+      4
+    ],
+    [
+      59,
+      "gnat",
+      true,
+      4
+    ],
+    [
+      60,
+      "ladybird",
+      true,
+      4
+    ],
+    [
+      61,
+      "wasp",
+      true,
+      4
+    ],
+    [
+      62,
+      "honeybee",
+      true,
+      4
+    ],
+    [
+      63,
+      "slug",
+      true,
+      5
+    ],
+    [
+      64,
+      "clam",
+      true,
+      5
+    ],
+    [
+      65,
+      "slowworm",
+      true,
+      5
+    ],
+    [
+      66,
+      "pitviper",
+      true,
+      5
+    ],
+    [
+      67,
+      "haddock",
+      true,
+      5
+    ],
+    [
+      68,
+      "carp",
+      true,
+      5
+    ],
+    [
+      69,
+      "dolphin",
+      true,
+      5
+    ],
+    [
+      70,
+      "seal",
+      true,
+      5
+    ],
+    [
+      71,
+      "dogfish",
+      true,
+      5
+    ],
+    [
+      72,
+      "stingray",
+      true,
+      5
+    ],
+    [
+      73,
+      "domestic",
+      false,
+      null
+    ],
+    [
+      74,
+      "duck",
+      true,
+      5
+    ],
+    [
+      75,
+      "squirrel",
+      true,
+      5
+    ],
+    [
+      76,
+      "fruitbat",
+      true,
+      5
+    ],
+    [
+      77,
+      "ostrich",
+      true,
+      5
+    ],
+    [
+      78,
+      "aquatic",
+      false,
+      null
+    ],
+    [
+      79,
+      "gorilla",
+      true,
+      5
+    ],
+    [
+      80,
+      "wallaby",
+      true,
+      5
+    ],
+    [
+      81,
+      "girl",
+      true,
+      5
+    ],
+    [
+      82,
+      "sealion",
+      true,
+      5
+    ],
+    [
+      83,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      84,
+      "penguin",
+      true,
+      5
+    ],
+    [
+      85,
+      "crow",
+      true,
+      5
+    ],
+    [
+      86,
+      "vulture",
+      true,
+      5
+    ],
+    [
+      87,
+      "tortoise",
+      true,
+      5
+    ],
+    [
+      88,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      89,
+      "cavy",
+      true,
+      5
+    ],
+    [
+      90,
+      "catsize",
+      false,
+      null
+    ],
+    [
+      91,
+      "tuatara",
+      true,
+      5
+    ],
+    [
+      92,
+      "mole",
+      true,
+      5
+    ],
+    [
+      93,
+      "aardvark",
+      true,
+      5
+    ],
+    [
+      94,
+      "domestic",
+      false,
+      null
+    ],
+    [
+      95,
+      "crab",
+      true,
+      5
+    ],
+    [
+      96,
+      "venomous",
+      false,
+      null
+    ],
+    [
+      97,
+      "mink",
+      true,
+      5
+    ],
+    [
+      98,
+      "platypus",
+      true,
+      5
+    ],
+    [
+      99,
+      "lark",
+      true,
+      6
+    ],
+    [
+      100,
+      "chicken",
+      true,
+      6
+    ],
+    [
+      101,
+      "flamingo",
+      true,
+      6
+    ],
+    [
+      102,
+      "swan",
+      true,
+      6
+    ],
+    [
+      103,
+      "kiwi",
+      true,
+      6
+    ],
+    [
+      104,
+      "rhea",
+      true,
+      6
+    ],
+    [
+      105,
+      "hare",
+      true,
+      6
+    ],
+    [
+      106,
+      "antelope",
+      true,
+      6
+    ],
+    [
+      107,
+      "hamster",
+      true,
+      6
+    ],
+    [
+      108,
+      "calf",
+      true,
+      6
+    ],
+    [
+      109,
+      "boar",
+      true,
+      6
+    ],
+    [
+      110,
+      "pussycat",
+      true,
+      6
+    ],
+    [
+      111,
+      "frog",
+      true,
+      6
+    ],
+    [
+      112,
+      "frog2",
+      true,
+      6
+    ]
+  ],
+  "successors": {
+    "0_0": 1,
+    "0_2": 2,
+    "0_4": 3,
+    "0_5": 4,
+    "0_6": 5,
+    "0_8": 6,
+    "1_0": 7,
+    "1_1": 8,
+    "2_0": 9,
+    "2_1": 10,
+    "3_0": 11,
+    "3_1": 12,
+    "5_0": 13,
+    "5_1": 14,
+    "6_0": 15,
+    "6_1": 16,
+    "7_0": 17,
+    "7_1": 18,
+    "8_0": 19,
+    "8_1": 20,
+    "9_0": 21,
+    "9_1": 22,
+    "10_0": 23,
+    "10_1": 24,
+    "11_0": 25,
+    "11_1": 26,
+    "12_0": 27,
+    "12_1": 28,
+    "13_0": 29,
+    "13_1": 30,
+    "14_0": 31,
+    "14_1": 32,
+    "17_0": 33,
+    "17_1": 34,
+    "18_0": 35,
+    "18_1": 36,
+    "19_0": 37,
+    "19_1": 38,
+    "20_0": 39,
+    "20_1": 40,
+    "21_0": 41,
+    "21_1": 42,
+    "22_0": 43,
+    "22_1": 44,
+    "23_0": 45,
+    "23_1": 46,
+    "24_0": 47,
+    "24_1": 48,
+    "25_0": 49,
+    "25_1": 50,
+    "26_0": 51,
+    "26_1": 52,
+    "27_0": 53,
+    "27_1": 54,
+    "28_0": 55,
+    "28_1": 56,
+    "29_0": 57,
+    "29_1": 58,
+    "30_0": 59,
+    "30_1": 60,
+    "32_0": 61,
+    "32_1": 62,
+    "33_0": 63,
+    "33_1": 64,
+    "36_0": 65,
+    "36_1": 66,
+    "37_0": 67,
+    "37_1": 68,
+    "39_0": 69,
+    "39_1": 70,
+    "40_0": 71,
+    "40_1": 72,
+    "41_0": 73,
+    "41_1": 74,
+    "42_0": 75,
+    "42_1": 76,
+    "43_0": 77,
+    "43_1": 78,
+    "44_0": 79,
+    "44_1": 80,
+    "45_0": 81,
+    "45_1": 82,
+    "46_0": 83,
+    "46_1": 84,
+    "47_0": 85,
+    "47_1": 86,
+    "49_0": 87,
+    "49_1": 88,
+    "50_0": 89,
+    "50_1": 90,
+    "51_0": 91,
+    "51_1": 92,
+    "52_0": 93,
+    "52_1": 94,
+    "54_0": 95,
+    "54_1": 96,
+    "56_0": 97,
+    "56_1": 98,
+    "73_0": 99,
+    "73_1": 100,
+    "78_0": 101,
+    "78_1": 102,
+    "83_0": 103,
+    "83_1": 104,
+    "88_0": 105,
+    "88_1": 106,
+    "90_0": 107,
+    "90_1": 108,
+    "94_0": 109,
+    "94_1": 110,
+    "96_0": 111,
+    "96_1": 112
+  }
+}

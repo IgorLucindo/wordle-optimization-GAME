@@ -32,8 +32,9 @@ class Guess_Tree:
         self.C = C
         self.flags = flags
         self.configs = configs
-        # Extract is_target array from configs
-        self.is_target = configs.get('is_target')
+
+        self._constrained_guessing = configs['constrained_guessing']
+        self._guesses_include_targets = configs['guesses_include_targets']
 
         # Tree Building State
         self.G_names = G
@@ -56,7 +57,7 @@ class Guess_Tree:
         start_time = time.time()
 
         # Queue: (T_curr, G_curr, v_parent, p_parent, depth)
-        G_curr = self.G if self.configs['constrained_guessing'] else None
+        G_curr = self.G if self._constrained_guessing else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.v_curr = -1
 
@@ -68,12 +69,12 @@ class Guess_Tree:
             T_curr, G_curr, xp, F, C, get_best_guess, _ = self.optimizer.get_context(T_curr, G_curr)
 
             # Pick best guess
-            G_arg = G_curr if self.configs['constrained_guessing'] else self.G
+            G_arg = G_curr if self._constrained_guessing else self.G
             g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
             # Append to tree with terminal flag and depth
-            self._append2Tree(g_star, self.v_curr, v_parent, p_parent,
-                           is_terminal=is_target_flag, depth=depth)
+            self._append2Tree(g_star, self.v_curr, v_parent, p_parent, depth,
+                              is_terminal=is_target_flag)
 
             # Stop if we just guessed the last target
             if len(T_curr) == 1:
@@ -103,7 +104,7 @@ class Guess_Tree:
         Used by the optimization strategy to evaluate candidates
         """
         # Queue: (T_curr, G_curr, v_parent, p_parent, depth)
-        G_curr = self.G if self.configs['constrained_guessing'] else None
+        G_curr = self.G if self._constrained_guessing else None
         queue = deque([(self.T, G_curr, -1, None, 1)])
         self.v_curr = -1
         depths = []
@@ -120,7 +121,7 @@ class Guess_Tree:
                 g_star, is_target_flag = g_start, g_start_in_T
                 g_start = None
             else:
-                G_arg = G_curr if self.configs['constrained_guessing'] else self.G
+                G_arg = G_curr if self._constrained_guessing else self.G
                 g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
             if is_target_flag:
@@ -145,7 +146,7 @@ class Guess_Tree:
         return np.array(depths)
 
 
-    def _append2Tree(self, g_star, v_curr, v_parent, p_parent, is_terminal=False, depth=None):
+    def _append2Tree(self, g_star, v_curr, v_parent, p_parent, depth, is_terminal=False):
         """
         Append vertex and edge to tree
 
@@ -157,12 +158,15 @@ class Guess_Tree:
             is_terminal: True if this vertex identifies a target
             depth: depth of this vertex (recorded for terminal vertices)
         """
-        names = self.T_names if (not self.configs['guesses_include_targets'] and is_terminal) else self.G_names
+        is_target_offset = not self._guesses_include_targets and is_terminal
+        names = self.T_names if is_target_offset else self.G_names
+        depth_offset = int(is_target_offset)
+        
         self.tree['vertices'].append((
             v_curr,
             names[g_star.item()],
             is_terminal,
-            depth if is_terminal else None
+            (depth - depth_offset) if is_terminal else None
         ))
         if v_curr != 0:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
@@ -173,7 +177,7 @@ class Guess_Tree:
         Vectorized constrained-guessing filtering using precomputed LUT and feedback matrix
         Returns subset of allowed guess indices
         """
-        if not self.configs['constrained_guessing'] or len(T) <= 2:
+        if not self._constrained_guessing or len(T) <= 2:
             return None
         
         # Feedbacks that each candidate (col) would produce w.r.t. previous guess (row)

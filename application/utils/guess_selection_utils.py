@@ -7,8 +7,8 @@ def best_guess_functions(instance_data, flags, configs):
     """
     Selects the appropriate best guess functions.
 
-    ``is_target`` is a boolean array of shape (n_G,) indicating which guesses
-    are also valid terminal identification actions.
+    Whether a guess is also a valid target is determined dynamically
+    by checking membership in T using np.isin(G, T).
     """
     score_rule = configs['score']
     guesses_include_targets = configs['guesses_include_targets']

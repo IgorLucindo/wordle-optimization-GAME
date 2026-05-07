@@ -32,11 +32,9 @@ class Results:
         Evaluates the tree by collecting depths from terminal vertices.
         No simulation needed - depths are pre-recorded during tree building!
         """
-        depth_offset = 0 if self.configs['guesses_include_targets'] else 1
-
         # Collect depths from all terminal vertices
         D = np.array([
-            depth - depth_offset
+            depth
             for _, _, is_terminal, depth in self.tree['vertices'] 
             if is_terminal
         ])

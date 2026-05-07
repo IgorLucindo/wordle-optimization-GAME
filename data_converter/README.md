@@ -1,44 +1,52 @@
-# 🛠️ UCI Data Converter
+# UCI Data Converter
 
-This directory contains the preprocessing pipeline to import and format classification datasets from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/) for use with our optimal decision tree approximation.
+This directory contains the preprocessing pipeline to import and format classification datasets from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/) for use with the solver.
 
-By converting these tabular datasets into our generalized **Feedback Matrix** format (`feedbacks.csv`), we can use the same optimization engine built for Wordle to solve a wide variety of Active Sequential Testing and identification problems.
+## How It Fits Into the Architecture
 
-## 📖 Terminology: From Features to Feedbacks
+The solver is built around a **Feedback Matrix** `F[target, guess]`: a 2D table of integers where each cell holds the discrete response returned when guess `j` is applied to target `i`. For rule-based games like Wordle or Mastermind, this matrix is computed on-the-fly from compact rules (ternary comparison, peg counting). For tabular datasets, the data *is* the feedback matrix — no computation needed.
 
-Our solver does not look at static "features" in the traditional machine learning sense. Instead, it evaluates the results of **probes** applied to hidden **targets** using a discrete **feedback function**. To bridge the gap between UCI datasets and our game solver, this converter maps the data as follows:
+This converter bridges the two worlds. It takes a raw UCI dataset and produces `attributes.csv`, which the solver loads directly as its feedback matrix. The columns are guesses (attributes/questions), the rows are targets (individual instances), and the cells are the integer responses.
 
-* **Targets (Rows):** The hidden entities we are trying to identify (e.g., a specific instance of a car or a specific voting record).
-* **Probes (Columns):** The questions we are allowed to ask or the tests we can perform (e.g., "How many doors?" or "How did they vote on the budget?").
-* **Feedbacks (Cells):** The discrete integer result returned when applying that Probe to that Target.
+## Terminology
 
-## 🧩 What Makes a Valid Instance?
+| UCI / ML term | Solver term |
+|---|---|
+| Dataset row / instance | **Target** — the hidden entity being identified |
+| Feature / column | **Guess** — a question that can be asked about any target |
+| Feature value | **Feedback** — the discrete integer response |
 
-Our framework is designed to find a path to a **single, uniquely identifiable target** at every terminal leaf. Because of this, not all standard machine learning datasets work out-of-the-box. 
+## What Makes a Valid Instance
 
-For a problem instance to be valid for our solver, it must satisfy the rule of **Resolvability**:
-> **No two distinct targets can share the exact same feedback vector.**
+The solver must be able to reach a **unique** target at every leaf. This requires **Resolvability**:
 
-If `Target A` and `Target B` return identical values for every single available probe, the decision tree will never be able to fully separate them, creating an unsolvable contradiction. 
+> No two distinct targets may share the exact same feedback vector.
 
-To ensure valid instances, this converter automatically:
-1. Translates string categories into integer feedback codes.
-2. Scans for duplicate feedback vectors across the dataset.
-3. Drops redundant rows to guarantee that every target in the final `feedbacks.csv` is uniquely identifiable.
+If targets A and B return identical responses for every available guess, no sequence of questions can distinguish them. The converter enforces this automatically by dropping duplicate rows before writing output.
 
-## 📦 Supported Datasets
+## Supported Datasets
 
-The `main.py` script is currently configured to process the following UCI datasets:
+| Name | Source | Targets | Guesses |
+|---|---|---|---|
+| `car` | Car Evaluation | car configurations | buying price, safety, etc. |
+| `house_votes_84` | Congressional Voting Records 1984 | voting records | 16 bill votes |
+| `soybean_small` | Soybean (Small) | disease instances | 35 symptom attributes |
 
-* **Car Evaluation** (`car`)
-* **Congressional Voting Records 1984** (`house_votes_84`)
-* **Soybean Small** (`soybean_small`)
+## Adding a New Dataset
 
-## ⚙️ Setup & Execution
+1. Add an entry to `data_converter/config.json` with the file path, `label_col` (index of the class label column), and `guesses` (list of column names, or `null` to auto-generate `attr_0`, `attr_1`, ...).
+2. Add a `rules.json` to `data/<name>/` specifying `"format": "csv"` and `"feedback_engine": "attribute_matrix"`.
+3. Run the converter. The output `attributes.csv` is immediately usable by the solver.
 
-### 1) Prepare the Raw Data
-Ensure the raw UCI dataset folders are placed inside the `data_converter/raw_uci_data/` directory. For example:
-```text
+No changes to the solver itself are needed.
+
+## Setup & Usage
+
+### 1. Prepare raw data
+
+Place the raw UCI dataset folders inside `data_converter/raw_uci_data/`:
+
+```
 data_converter/raw_uci_data/
 ├── car+evaluation/
 │   └── car.data
@@ -48,21 +56,27 @@ data_converter/raw_uci_data/
     └── soybean-small.data
 ```
 
-### 2) Run the Converter
-Execute the Python script from the root of the repository:
+### 2. Run the converter
+
+From the repository root:
+
 ```bash
 python data_converter/main.py
 ```
 
-### 3) Output
-The script will process the data, handle missing values (replacing them with an `"unknown"` category to be converted to an integer code), drop unresolvable duplicate rows, and output the clean instances to the main `data/` directory.
+### 3. Output
 
-You will see output similar to this:
-```plaintext
-✅ Converted car: Saved to data/car/feedbacks.csv
-   -> Dropped X duplicate feedback vectors.
+Each dataset is written to `data/<name>/attributes.csv`. Missing values are assigned an `"unknown"` category; duplicate rows are dropped. Example output:
+
 ```
-Once converted, you can optimize these datasets using the main solver:
+Converted car: Saved to data/car/attributes.csv
+Converted house_votes_84: Saved to data/house_votes_84/attributes.csv
+  -> Dropped 3 duplicate feature combinations.
+Converted soybean_small: Saved to data/soybean_small/attributes.csv
+```
+
+Once converted, run the solver as usual:
+
 ```bash
 python application/build_tree.py --data car --k 10
 ```

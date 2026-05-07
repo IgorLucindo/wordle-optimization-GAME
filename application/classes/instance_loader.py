@@ -56,9 +56,8 @@ class InstanceLoader:
         self.guesses_include_targets = rules['guesses_include_targets']
         self.constrained_guessing = rules['constrained_guessing']
 
-        # Convert is_target to GPU if needed
+        # Convert feedback matrix to GPU if needed
         self.F = data['F']
-        self.is_target = cp.array(data['is_target']) if self.use_gpu else data['is_target']
 
         # Build compatibility matrix for constrained guessing
         self.C = self._build_compatibility_matrix() if self.constrained_guessing else None
@@ -68,7 +67,7 @@ class InstanceLoader:
         Load instance from disk based on rules.json configuration.
 
         Returns dict with standardized keys:
-            G_names, T_names, F, base, is_target, decode_feedback, rules
+            G_names, T_names, F, base, decode_feedback, rules
         """
         instance_path = Path(dataset_dir) / self.instance_name
         rules_path = instance_path / 'rules.json'
@@ -114,16 +113,11 @@ class InstanceLoader:
         else:
             F, base = self.feedback_engine.build_matrix(T, G, rules)
 
-        # First n_T guesses are targets
-        is_target = np.zeros(n_G, dtype=bool)
-        is_target[:n_T] = True
-
         return {
             'G_names': G,
             'T_names': T,
             'F': F,
             'base': base,
-            'is_target': is_target,
             'decode_feedback': self.feedback_engine.get_decode_function(rules['feedback_engine']),
             'rules': rules
         }
@@ -150,15 +144,11 @@ class InstanceLoader:
         # Build feedback matrix using attribute engine
         F, base = self.feedback_engine.build_matrix(list(uniq_animals), list(attr_names), rules, raw_data=feats_arr)
 
-        # Attributes are NOT targets (no self-identification)
-        is_target = np.zeros(n_attrs, dtype=bool)
-
         return {
             'G_names': list(attr_names),
             'T_names': list(uniq_animals),
             'F': F,
             'base': base,
-            'is_target': is_target,
             'decode_feedback': self.feedback_engine.get_decode_function(rules['feedback_engine']),
             'rules': rules
         }
@@ -176,9 +166,6 @@ class InstanceLoader:
         # Build feedback matrix using mastermind engine
         F, base = self.feedback_engine.build_matrix(names, names, rules)
 
-        # All codes can be targets (self-identifying)
-        is_target = np.ones(n, dtype=bool)
-
         # Mastermind decode function needs pegs parameter
         def decode_feedback(code):
             code = int(code)
@@ -190,7 +177,6 @@ class InstanceLoader:
             'T_names': names[:],
             'F': F,
             'base': base,
-            'is_target': is_target,
             'decode_feedback': decode_feedback,
             'rules': rules
         }
@@ -287,7 +273,6 @@ class InstanceLoader:
         """
         # Merge instance properties into configs
         configs['base'] = self.base
-        configs['is_target'] = self.is_target
         configs['guesses_include_targets'] = self.guesses_include_targets
         configs['constrained_guessing'] = self.constrained_guessing
         configs['GPU'] = self.use_gpu
