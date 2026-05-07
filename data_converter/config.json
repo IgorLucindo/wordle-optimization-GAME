@@ -3,9 +3,10 @@
         "file": "breast+cancer+wisconsin+original/breast-cancer-wisconsin.data",
         "missing_val": "?",
         "label_col": -1,
+        "skip_cols": [0],
         "guesses": [
-            "id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape", 
-            "marginal_adhesion", "single_epithelial_cell_size", "bare_nuclei", 
+            "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape",
+            "marginal_adhesion", "single_epithelial_cell_size", "bare_nuclei",
             "bland_chromatin", "normal_nucleoli", "mitoses"
         ]
     },
@@ -48,8 +49,9 @@
         "file": "lenses/lenses.data",
         "missing_val": null,
         "label_col": -1,
+        "skip_cols": [0],
         "sep": "\\s+",
-        "guesses": ["id", "age", "spectacle_rx", "astigmatism", "tear_production"]
+        "guesses": ["age", "spectacle_rx", "astigmatism", "tear_production"]
     },
     "mushroom": {
         "file": "mushroom/agaricus-lepiota.data",
