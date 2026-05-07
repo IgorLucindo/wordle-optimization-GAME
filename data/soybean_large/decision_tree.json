@@ -1,0 +1,3240 @@
+{
+  "score_rule": "subtree-15 | PC",
+  "vertices": [
+    [
+      0,
+      "germination",
+      false,
+      null
+    ],
+    [
+      1,
+      "date",
+      false,
+      null
+    ],
+    [
+      2,
+      "date",
+      false,
+      null
+    ],
+    [
+      3,
+      "date",
+      false,
+      null
+    ],
+    [
+      4,
+      "date",
+      false,
+      null
+    ],
+    [
+      5,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      6,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      7,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      8,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      9,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      10,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      11,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      12,
+      "fruit-spots",
+      false,
+      null
+    ],
+    [
+      13,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      14,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      15,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      16,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      17,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      18,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      19,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      20,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      21,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      22,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      23,
+      "severity",
+      false,
+      null
+    ],
+    [
+      24,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      25,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      26,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      27,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      28,
+      "diaporthe-pod-&-stem-blight_291",
+      true,
+      2
+    ],
+    [
+      29,
+      "leafspots-halo",
+      false,
+      null
+    ],
+    [
+      30,
+      "herbicide-injury_300",
+      true,
+      2
+    ],
+    [
+      31,
+      "stem-cankers",
+      false,
+      null
+    ],
+    [
+      32,
+      "2-4-d-injury_298",
+      true,
+      2
+    ],
+    [
+      33,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      34,
+      "fruit-spots",
+      false,
+      null
+    ],
+    [
+      35,
+      "precip",
+      false,
+      null
+    ],
+    [
+      36,
+      "charcoal-rot_16",
+      true,
+      3
+    ],
+    [
+      37,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      38,
+      "precip",
+      false,
+      null
+    ],
+    [
+      39,
+      "precip",
+      false,
+      null
+    ],
+    [
+      40,
+      "frog-eye-leaf-spot_278",
+      true,
+      3
+    ],
+    [
+      41,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      42,
+      "precip",
+      false,
+      null
+    ],
+    [
+      43,
+      "severity",
+      false,
+      null
+    ],
+    [
+      44,
+      "int-discolor",
+      false,
+      null
+    ],
+    [
+      45,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      46,
+      "fruit-spots",
+      false,
+      null
+    ],
+    [
+      47,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      48,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      49,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      50,
+      "brown-spot_133",
+      true,
+      3
+    ],
+    [
+      51,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      52,
+      "phytophthora-rot_65",
+      true,
+      3
+    ],
+    [
+      53,
+      "precip",
+      false,
+      null
+    ],
+    [
+      54,
+      "phytophthora-rot_43",
+      true,
+      3
+    ],
+    [
+      55,
+      "phytophthora-rot_42",
+      true,
+      3
+    ],
+    [
+      56,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      57,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      58,
+      "precip",
+      false,
+      null
+    ],
+    [
+      59,
+      "temp",
+      false,
+      null
+    ],
+    [
+      60,
+      "precip",
+      false,
+      null
+    ],
+    [
+      61,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      62,
+      "temp",
+      false,
+      null
+    ],
+    [
+      63,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      64,
+      "precip",
+      false,
+      null
+    ],
+    [
+      65,
+      "leafspot-size",
+      false,
+      null
+    ],
+    [
+      66,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      67,
+      "leafspots-halo",
+      false,
+      null
+    ],
+    [
+      68,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      69,
+      "precip",
+      false,
+      null
+    ],
+    [
+      70,
+      "severity",
+      false,
+      null
+    ],
+    [
+      71,
+      "precip",
+      false,
+      null
+    ],
+    [
+      72,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      73,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      74,
+      "fruit-spots",
+      false,
+      null
+    ],
+    [
+      75,
+      "frog-eye-leaf-spot_257",
+      true,
+      3
+    ],
+    [
+      76,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      77,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      78,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      79,
+      "stem-cankers",
+      false,
+      null
+    ],
+    [
+      80,
+      "phytophthora-rot_46",
+      true,
+      3
+    ],
+    [
+      81,
+      "brown-spot_115",
+      true,
+      3
+    ],
+    [
+      82,
+      "brown-spot_126",
+      true,
+      3
+    ],
+    [
+      83,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      84,
+      "temp",
+      false,
+      null
+    ],
+    [
+      85,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      86,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      87,
+      "temp",
+      false,
+      null
+    ],
+    [
+      88,
+      "temp",
+      false,
+      null
+    ],
+    [
+      89,
+      "frog-eye-leaf-spot_251",
+      true,
+      3
+    ],
+    [
+      90,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      91,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      92,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      93,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      94,
+      "precip",
+      false,
+      null
+    ],
+    [
+      95,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      96,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      97,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      98,
+      "precip",
+      false,
+      null
+    ],
+    [
+      99,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      100,
+      "precip",
+      false,
+      null
+    ],
+    [
+      101,
+      "fruit-spots",
+      false,
+      null
+    ],
+    [
+      102,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      103,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      104,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      105,
+      "diaporthe-pod-&-stem-blight_290",
+      true,
+      3
+    ],
+    [
+      106,
+      "brown-spot_127",
+      true,
+      3
+    ],
+    [
+      107,
+      "rhizoctonia-root-rot_24",
+      true,
+      3
+    ],
+    [
+      108,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      109,
+      "rhizoctonia-root-rot_23",
+      true,
+      3
+    ],
+    [
+      110,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      111,
+      "precip",
+      false,
+      null
+    ],
+    [
+      112,
+      "severity",
+      false,
+      null
+    ],
+    [
+      113,
+      "phyllosticta-leaf-spot_203",
+      true,
+      3
+    ],
+    [
+      114,
+      "cyst-nematode_297",
+      true,
+      3
+    ],
+    [
+      115,
+      "cyst-nematode_295",
+      true,
+      3
+    ],
+    [
+      116,
+      "precip",
+      false,
+      null
+    ],
+    [
+      117,
+      "temp",
+      false,
+      null
+    ],
+    [
+      118,
+      "precip",
+      false,
+      null
+    ],
+    [
+      119,
+      "phytophthora-rot_61",
+      true,
+      3
+    ],
+    [
+      120,
+      "stem-cankers",
+      false,
+      null
+    ],
+    [
+      121,
+      "temp",
+      false,
+      null
+    ],
+    [
+      122,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      123,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      124,
+      "phytophthora-rot_64",
+      true,
+      3
+    ],
+    [
+      125,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      126,
+      "cyst-nematode_293",
+      true,
+      3
+    ],
+    [
+      127,
+      "diaporthe-stem-canker_0",
+      true,
+      4
+    ],
+    [
+      128,
+      "alternarialeaf-spot_219",
+      true,
+      4
+    ],
+    [
+      129,
+      "charcoal-rot_10",
+      true,
+      4
+    ],
+    [
+      130,
+      "brown-stem-rot_76",
+      true,
+      4
+    ],
+    [
+      131,
+      "alternarialeaf-spot_230",
+      true,
+      4
+    ],
+    [
+      132,
+      "purple-seed-stain_168",
+      true,
+      4
+    ],
+    [
+      133,
+      "anthracnose_190",
+      true,
+      4
+    ],
+    [
+      134,
+      "severity",
+      false,
+      null
+    ],
+    [
+      135,
+      "charcoal-rot_13",
+      true,
+      4
+    ],
+    [
+      136,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      137,
+      "frog-eye-leaf-spot_259",
+      true,
+      4
+    ],
+    [
+      138,
+      "frog-eye-leaf-spot_275",
+      true,
+      4
+    ],
+    [
+      139,
+      "temp",
+      false,
+      null
+    ],
+    [
+      140,
+      "precip",
+      false,
+      null
+    ],
+    [
+      141,
+      "frog-eye-leaf-spot_258",
+      true,
+      4
+    ],
+    [
+      142,
+      "brown-stem-rot_81",
+      true,
+      4
+    ],
+    [
+      143,
+      "powdery-mildew_93",
+      true,
+      4
+    ],
+    [
+      144,
+      "alternarialeaf-spot_234",
+      true,
+      4
+    ],
+    [
+      145,
+      "brown-stem-rot_84",
+      true,
+      4
+    ],
+    [
+      146,
+      "frog-eye-leaf-spot_252",
+      true,
+      4
+    ],
+    [
+      147,
+      "phytophthora-rot_44",
+      true,
+      4
+    ],
+    [
+      148,
+      "bacterial-blight_153",
+      true,
+      4
+    ],
+    [
+      149,
+      "brown-spot_144",
+      true,
+      4
+    ],
+    [
+      150,
+      "alternarialeaf-spot_236",
+      true,
+      4
+    ],
+    [
+      151,
+      "phyllosticta-leaf-spot_201",
+      true,
+      4
+    ],
+    [
+      152,
+      "phyllosticta-leaf-spot_200",
+      true,
+      4
+    ],
+    [
+      153,
+      "anthracnose_182",
+      true,
+      4
+    ],
+    [
+      154,
+      "brown-spot_142",
+      true,
+      4
+    ],
+    [
+      155,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      156,
+      "charcoal-rot_12",
+      true,
+      4
+    ],
+    [
+      157,
+      "brown-stem-rot_88",
+      true,
+      4
+    ],
+    [
+      158,
+      "frog-eye-leaf-spot_249",
+      true,
+      4
+    ],
+    [
+      159,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      160,
+      "purple-seed-stain_176",
+      true,
+      4
+    ],
+    [
+      161,
+      "temp",
+      false,
+      null
+    ],
+    [
+      162,
+      "diaporthe-stem-canker_6",
+      true,
+      4
+    ],
+    [
+      163,
+      "alternarialeaf-spot_245",
+      true,
+      4
+    ],
+    [
+      164,
+      "frog-eye-leaf-spot_266",
+      true,
+      4
+    ],
+    [
+      165,
+      "precip",
+      false,
+      null
+    ],
+    [
+      166,
+      "diaporthe-pod-&-stem-blight_292",
+      true,
+      4
+    ],
+    [
+      167,
+      "hail",
+      false,
+      null
+    ],
+    [
+      168,
+      "alternarialeaf-spot_242",
+      true,
+      4
+    ],
+    [
+      169,
+      "frog-eye-leaf-spot_270",
+      true,
+      4
+    ],
+    [
+      170,
+      "temp",
+      false,
+      null
+    ],
+    [
+      171,
+      "brown-stem-rot_77",
+      true,
+      4
+    ],
+    [
+      172,
+      "frog-eye-leaf-spot_284",
+      true,
+      4
+    ],
+    [
+      173,
+      "brown-spot_129",
+      true,
+      4
+    ],
+    [
+      174,
+      "powdery-mildew_98",
+      true,
+      4
+    ],
+    [
+      175,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      176,
+      "powdery-mildew_91",
+      true,
+      4
+    ],
+    [
+      177,
+      "phytophthora-rot_30",
+      true,
+      4
+    ],
+    [
+      178,
+      "phytophthora-rot_36",
+      true,
+      4
+    ],
+    [
+      179,
+      "brown-spot_112",
+      true,
+      4
+    ],
+    [
+      180,
+      "phytophthora-rot_62",
+      true,
+      4
+    ],
+    [
+      181,
+      "brown-spot_116",
+      true,
+      4
+    ],
+    [
+      182,
+      "brown-spot_111",
+      true,
+      4
+    ],
+    [
+      183,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      184,
+      "phyllosticta-leaf-spot_206",
+      true,
+      4
+    ],
+    [
+      185,
+      "bacterial-blight_156",
+      true,
+      4
+    ],
+    [
+      186,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      187,
+      "anthracnose_181",
+      true,
+      4
+    ],
+    [
+      188,
+      "bacterial-pustule_160",
+      true,
+      4
+    ],
+    [
+      189,
+      "diaporthe-stem-canker_8",
+      true,
+      4
+    ],
+    [
+      190,
+      "charcoal-rot_14",
+      true,
+      4
+    ],
+    [
+      191,
+      "alternarialeaf-spot_246",
+      true,
+      4
+    ],
+    [
+      192,
+      "alternarialeaf-spot_241",
+      true,
+      4
+    ],
+    [
+      193,
+      "precip",
+      false,
+      null
+    ],
+    [
+      194,
+      "alternarialeaf-spot_243",
+      true,
+      4
+    ],
+    [
+      195,
+      "purple-seed-stain_173",
+      true,
+      4
+    ],
+    [
+      196,
+      "purple-seed-stain_169",
+      true,
+      4
+    ],
+    [
+      197,
+      "anthracnose_180",
+      true,
+      4
+    ],
+    [
+      198,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      199,
+      "anthracnose_195",
+      true,
+      4
+    ],
+    [
+      200,
+      "anthracnose_193",
+      true,
+      4
+    ],
+    [
+      201,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      202,
+      "frog-eye-leaf-spot_248",
+      true,
+      4
+    ],
+    [
+      203,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      204,
+      "frog-eye-leaf-spot_281",
+      true,
+      4
+    ],
+    [
+      205,
+      "purple-seed-stain_171",
+      true,
+      4
+    ],
+    [
+      206,
+      "precip",
+      false,
+      null
+    ],
+    [
+      207,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      208,
+      "alternarialeaf-spot_209",
+      true,
+      4
+    ],
+    [
+      209,
+      "bacterial-blight_155",
+      true,
+      4
+    ],
+    [
+      210,
+      "canker-lesion",
+      false,
+      null
+    ],
+    [
+      211,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      212,
+      "downy-mildew_102",
+      true,
+      4
+    ],
+    [
+      213,
+      "bacterial-pustule_162",
+      true,
+      4
+    ],
+    [
+      214,
+      "phytophthora-rot_37",
+      true,
+      4
+    ],
+    [
+      215,
+      "rhizoctonia-root-rot_22",
+      true,
+      4
+    ],
+    [
+      216,
+      "severity",
+      false,
+      null
+    ],
+    [
+      217,
+      "brown-stem-rot_82",
+      true,
+      4
+    ],
+    [
+      218,
+      "bacterial-blight_154",
+      true,
+      4
+    ],
+    [
+      219,
+      "bacterial-pustule_159",
+      true,
+      4
+    ],
+    [
+      220,
+      "brown-spot_131",
+      true,
+      4
+    ],
+    [
+      221,
+      "leafspots-halo",
+      false,
+      null
+    ],
+    [
+      222,
+      "frog-eye-leaf-spot_267",
+      true,
+      4
+    ],
+    [
+      223,
+      "phyllosticta-leaf-spot_199",
+      true,
+      4
+    ],
+    [
+      224,
+      "phyllosticta-leaf-spot_202",
+      true,
+      4
+    ],
+    [
+      225,
+      "alternarialeaf-spot_238",
+      true,
+      4
+    ],
+    [
+      226,
+      "precip",
+      false,
+      null
+    ],
+    [
+      227,
+      "brown-spot_119",
+      true,
+      4
+    ],
+    [
+      228,
+      "precip",
+      false,
+      null
+    ],
+    [
+      229,
+      "area-damaged",
+      false,
+      null
+    ],
+    [
+      230,
+      "diaporthe-stem-canker_5",
+      true,
+      4
+    ],
+    [
+      231,
+      "leafspots-halo",
+      false,
+      null
+    ],
+    [
+      232,
+      "frog-eye-leaf-spot_262",
+      true,
+      4
+    ],
+    [
+      233,
+      "anthracnose_196",
+      true,
+      4
+    ],
+    [
+      234,
+      "anthracnose_185",
+      true,
+      4
+    ],
+    [
+      235,
+      "rhizoctonia-root-rot_21",
+      true,
+      4
+    ],
+    [
+      236,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      237,
+      "phytophthora-rot_33",
+      true,
+      4
+    ],
+    [
+      238,
+      "phytophthora-rot_55",
+      true,
+      4
+    ],
+    [
+      239,
+      "brown-spot_113",
+      true,
+      4
+    ],
+    [
+      240,
+      "precip",
+      false,
+      null
+    ],
+    [
+      241,
+      "downy-mildew_103",
+      true,
+      4
+    ],
+    [
+      242,
+      "rhizoctonia-root-rot_26",
+      true,
+      4
+    ],
+    [
+      243,
+      "phytophthora-rot_50",
+      true,
+      4
+    ],
+    [
+      244,
+      "phytophthora-rot_39",
+      true,
+      4
+    ],
+    [
+      245,
+      "rhizoctonia-root-rot_27",
+      true,
+      4
+    ],
+    [
+      246,
+      "downy-mildew_105",
+      true,
+      4
+    ],
+    [
+      247,
+      "downy-mildew_104",
+      true,
+      4
+    ],
+    [
+      248,
+      "brown-spot_110",
+      true,
+      4
+    ],
+    [
+      249,
+      "brown-spot_130",
+      true,
+      4
+    ],
+    [
+      250,
+      "brown-spot_143",
+      true,
+      4
+    ],
+    [
+      251,
+      "temp",
+      false,
+      null
+    ],
+    [
+      252,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      253,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      254,
+      "downy-mildew_99",
+      true,
+      4
+    ],
+    [
+      255,
+      "diaporthe-stem-canker_4",
+      true,
+      4
+    ],
+    [
+      256,
+      "frog-eye-leaf-spot_276",
+      true,
+      4
+    ],
+    [
+      257,
+      "powdery-mildew_90",
+      true,
+      4
+    ],
+    [
+      258,
+      "alternarialeaf-spot_212",
+      true,
+      4
+    ],
+    [
+      259,
+      "powdery-mildew_92",
+      true,
+      4
+    ],
+    [
+      260,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      261,
+      "leafspots-halo",
+      false,
+      null
+    ],
+    [
+      262,
+      "frog-eye-leaf-spot_280",
+      true,
+      4
+    ],
+    [
+      263,
+      "diaporthe-stem-canker_7",
+      true,
+      4
+    ],
+    [
+      264,
+      "diaporthe-stem-canker_9",
+      true,
+      4
+    ],
+    [
+      265,
+      "seed-tmt",
+      false,
+      null
+    ],
+    [
+      266,
+      "purple-seed-stain_172",
+      true,
+      4
+    ],
+    [
+      267,
+      "brown-stem-rot_70",
+      true,
+      4
+    ],
+    [
+      268,
+      "brown-stem-rot_79",
+      true,
+      4
+    ],
+    [
+      269,
+      "brown-spot_124",
+      true,
+      4
+    ],
+    [
+      270,
+      "alternarialeaf-spot_233",
+      true,
+      4
+    ],
+    [
+      271,
+      "alternarialeaf-spot_231",
+      true,
+      4
+    ],
+    [
+      272,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      273,
+      "brown-spot_135",
+      true,
+      4
+    ],
+    [
+      274,
+      "diaporthe-stem-canker_2",
+      true,
+      4
+    ],
+    [
+      275,
+      "brown-spot_136",
+      true,
+      4
+    ],
+    [
+      276,
+      "phytophthora-rot_68",
+      true,
+      4
+    ],
+    [
+      277,
+      "bacterial-pustule_163",
+      true,
+      4
+    ],
+    [
+      278,
+      "charcoal-rot_18",
+      true,
+      4
+    ],
+    [
+      279,
+      "leaf-shread",
+      false,
+      null
+    ],
+    [
+      280,
+      "frog-eye-leaf-spot_272",
+      true,
+      4
+    ],
+    [
+      281,
+      "brown-stem-rot_71",
+      true,
+      4
+    ],
+    [
+      282,
+      "frog-eye-leaf-spot_261",
+      true,
+      4
+    ],
+    [
+      283,
+      "bacterial-pustule_165",
+      true,
+      4
+    ],
+    [
+      284,
+      "phyllosticta-leaf-spot_198",
+      true,
+      4
+    ],
+    [
+      285,
+      "anthracnose_187",
+      true,
+      4
+    ],
+    [
+      286,
+      "alternarialeaf-spot_244",
+      true,
+      4
+    ],
+    [
+      287,
+      "severity",
+      false,
+      null
+    ],
+    [
+      288,
+      "alternarialeaf-spot_221",
+      true,
+      4
+    ],
+    [
+      289,
+      "bacterial-pustule_167",
+      true,
+      4
+    ],
+    [
+      290,
+      "temp",
+      false,
+      null
+    ],
+    [
+      291,
+      "severity",
+      false,
+      null
+    ],
+    [
+      292,
+      "temp",
+      false,
+      null
+    ],
+    [
+      293,
+      "anthracnose_188",
+      true,
+      4
+    ],
+    [
+      294,
+      "anthracnose_179",
+      true,
+      4
+    ],
+    [
+      295,
+      "crop-hist",
+      false,
+      null
+    ],
+    [
+      296,
+      "charcoal-rot_19",
+      true,
+      4
+    ],
+    [
+      297,
+      "anthracnose_192",
+      true,
+      4
+    ],
+    [
+      298,
+      "brown-spot_128",
+      true,
+      4
+    ],
+    [
+      299,
+      "brown-spot_114",
+      true,
+      4
+    ],
+    [
+      300,
+      "temp",
+      false,
+      null
+    ],
+    [
+      301,
+      "rhizoctonia-root-rot_28",
+      true,
+      4
+    ],
+    [
+      302,
+      "rhizoctonia-root-rot_20",
+      true,
+      4
+    ],
+    [
+      303,
+      "rhizoctonia-root-rot_25",
+      true,
+      4
+    ],
+    [
+      304,
+      "anthracnose_189",
+      true,
+      4
+    ],
+    [
+      305,
+      "phytophthora-rot_49",
+      true,
+      4
+    ],
+    [
+      306,
+      "rhizoctonia-root-rot_29",
+      true,
+      4
+    ],
+    [
+      307,
+      "downy-mildew_100",
+      true,
+      4
+    ],
+    [
+      308,
+      "phytophthora-rot_48",
+      true,
+      4
+    ],
+    [
+      309,
+      "brown-spot_139",
+      true,
+      4
+    ],
+    [
+      310,
+      "bacterial-pustule_158",
+      true,
+      4
+    ],
+    [
+      311,
+      "brown-spot_118",
+      true,
+      4
+    ],
+    [
+      312,
+      "brown-spot_146",
+      true,
+      4
+    ],
+    [
+      313,
+      "phyllosticta-leaf-spot_207",
+      true,
+      4
+    ],
+    [
+      314,
+      "phytophthora-rot_52",
+      true,
+      4
+    ],
+    [
+      315,
+      "phytophthora-rot_63",
+      true,
+      4
+    ],
+    [
+      316,
+      "stem-cankers",
+      false,
+      null
+    ],
+    [
+      317,
+      "precip",
+      false,
+      null
+    ],
+    [
+      318,
+      "cyst-nematode_296",
+      true,
+      4
+    ],
+    [
+      319,
+      "phytophthora-rot_67",
+      true,
+      4
+    ],
+    [
+      320,
+      "phytophthora-rot_56",
+      true,
+      4
+    ],
+    [
+      321,
+      "cyst-nematode_294",
+      true,
+      4
+    ],
+    [
+      322,
+      "phytophthora-rot_51",
+      true,
+      4
+    ],
+    [
+      323,
+      "phytophthora-rot_31",
+      true,
+      4
+    ],
+    [
+      324,
+      "herbicide-injury_301",
+      true,
+      4
+    ],
+    [
+      325,
+      "phytophthora-rot_41",
+      true,
+      4
+    ],
+    [
+      326,
+      "phytophthora-rot_59",
+      true,
+      4
+    ],
+    [
+      327,
+      "herbicide-injury_299",
+      true,
+      4
+    ],
+    [
+      328,
+      "herbicide-injury_302",
+      true,
+      4
+    ],
+    [
+      329,
+      "phytophthora-rot_53",
+      true,
+      4
+    ],
+    [
+      330,
+      "phytophthora-rot_32",
+      true,
+      4
+    ],
+    [
+      331,
+      "phytophthora-rot_45",
+      true,
+      4
+    ],
+    [
+      332,
+      "temp",
+      false,
+      null
+    ],
+    [
+      333,
+      "precip",
+      false,
+      null
+    ],
+    [
+      334,
+      "phytophthora-rot_60",
+      true,
+      4
+    ],
+    [
+      335,
+      "phytophthora-rot_38",
+      true,
+      4
+    ],
+    [
+      336,
+      "alternarialeaf-spot_216",
+      true,
+      5
+    ],
+    [
+      337,
+      "alternarialeaf-spot_225",
+      true,
+      5
+    ],
+    [
+      338,
+      "frog-eye-leaf-spot_247",
+      true,
+      5
+    ],
+    [
+      339,
+      "frog-eye-leaf-spot_268",
+      true,
+      5
+    ],
+    [
+      340,
+      "brown-spot_122",
+      true,
+      5
+    ],
+    [
+      341,
+      "frog-eye-leaf-spot_283",
+      true,
+      5
+    ],
+    [
+      342,
+      "frog-eye-leaf-spot_264",
+      true,
+      5
+    ],
+    [
+      343,
+      "brown-stem-rot_87",
+      true,
+      5
+    ],
+    [
+      344,
+      "bacterial-blight_151",
+      true,
+      5
+    ],
+    [
+      345,
+      "bacterial-blight_152",
+      true,
+      5
+    ],
+    [
+      346,
+      "frog-eye-leaf-spot_255",
+      true,
+      5
+    ],
+    [
+      347,
+      "alternarialeaf-spot_224",
+      true,
+      5
+    ],
+    [
+      348,
+      "anthracnose_194",
+      true,
+      5
+    ],
+    [
+      349,
+      "frog-eye-leaf-spot_263",
+      true,
+      5
+    ],
+    [
+      350,
+      "brown-spot_134",
+      true,
+      5
+    ],
+    [
+      351,
+      "brown-stem-rot_78",
+      true,
+      5
+    ],
+    [
+      352,
+      "frog-eye-leaf-spot_269",
+      true,
+      5
+    ],
+    [
+      353,
+      "anthracnose_178",
+      true,
+      5
+    ],
+    [
+      354,
+      "bacterial-blight_148",
+      true,
+      5
+    ],
+    [
+      355,
+      "seed",
+      false,
+      null
+    ],
+    [
+      356,
+      "alternarialeaf-spot_237",
+      true,
+      5
+    ],
+    [
+      357,
+      "alternarialeaf-spot_220",
+      true,
+      5
+    ],
+    [
+      358,
+      "brown-spot_137",
+      true,
+      5
+    ],
+    [
+      359,
+      "brown-spot_121",
+      true,
+      5
+    ],
+    [
+      360,
+      "brown-spot_125",
+      true,
+      5
+    ],
+    [
+      361,
+      "brown-spot_132",
+      true,
+      5
+    ],
+    [
+      362,
+      "bacterial-blight_150",
+      true,
+      5
+    ],
+    [
+      363,
+      "brown-spot_140",
+      true,
+      5
+    ],
+    [
+      364,
+      "alternarialeaf-spot_211",
+      true,
+      5
+    ],
+    [
+      365,
+      "alternarialeaf-spot_214",
+      true,
+      5
+    ],
+    [
+      366,
+      "anthracnose_184",
+      true,
+      5
+    ],
+    [
+      367,
+      "anthracnose_186",
+      true,
+      5
+    ],
+    [
+      368,
+      "diaporthe-pod-&-stem-blight_288",
+      true,
+      5
+    ],
+    [
+      369,
+      "alternarialeaf-spot_223",
+      true,
+      5
+    ],
+    [
+      370,
+      "frog-eye-leaf-spot_260",
+      true,
+      5
+    ],
+    [
+      371,
+      "diaporthe-stem-canker_1",
+      true,
+      5
+    ],
+    [
+      372,
+      "purple-seed-stain_177",
+      true,
+      5
+    ],
+    [
+      373,
+      "charcoal-rot_11",
+      true,
+      5
+    ],
+    [
+      374,
+      "bacterial-pustule_166",
+      true,
+      5
+    ],
+    [
+      375,
+      "frog-eye-leaf-spot_279",
+      true,
+      5
+    ],
+    [
+      376,
+      "bacterial-blight_149",
+      true,
+      5
+    ],
+    [
+      377,
+      "brown-spot_138",
+      true,
+      5
+    ],
+    [
+      378,
+      "anthracnose_183",
+      true,
+      5
+    ],
+    [
+      379,
+      "brown-stem-rot_74",
+      true,
+      5
+    ],
+    [
+      380,
+      "charcoal-rot_17",
+      true,
+      5
+    ],
+    [
+      381,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      382,
+      "alternarialeaf-spot_222",
+      true,
+      5
+    ],
+    [
+      383,
+      "brown-stem-rot_80",
+      true,
+      5
+    ],
+    [
+      384,
+      "alternarialeaf-spot_210",
+      true,
+      5
+    ],
+    [
+      385,
+      "diaporthe-stem-canker_3",
+      true,
+      5
+    ],
+    [
+      386,
+      "purple-seed-stain_174",
+      true,
+      5
+    ],
+    [
+      387,
+      "purple-seed-stain_175",
+      true,
+      5
+    ],
+    [
+      388,
+      "frog-eye-leaf-spot_253",
+      true,
+      5
+    ],
+    [
+      389,
+      "bacterial-pustule_164",
+      true,
+      5
+    ],
+    [
+      390,
+      "anthracnose_191",
+      true,
+      5
+    ],
+    [
+      391,
+      "powdery-mildew_97",
+      true,
+      5
+    ],
+    [
+      392,
+      "severity",
+      false,
+      null
+    ],
+    [
+      393,
+      "brown-stem-rot_73",
+      true,
+      5
+    ],
+    [
+      394,
+      "frog-eye-leaf-spot_265",
+      true,
+      5
+    ],
+    [
+      395,
+      "frog-eye-leaf-spot_285",
+      true,
+      5
+    ],
+    [
+      396,
+      "frog-eye-leaf-spot_256",
+      true,
+      5
+    ],
+    [
+      397,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      398,
+      "hail",
+      false,
+      null
+    ],
+    [
+      399,
+      "plant-stand",
+      false,
+      null
+    ],
+    [
+      400,
+      "downy-mildew_108",
+      true,
+      5
+    ],
+    [
+      401,
+      "brown-spot_123",
+      true,
+      5
+    ],
+    [
+      402,
+      "brown-spot_117",
+      true,
+      5
+    ],
+    [
+      403,
+      "downy-mildew_101",
+      true,
+      5
+    ],
+    [
+      404,
+      "phyllosticta-leaf-spot_204",
+      true,
+      5
+    ],
+    [
+      405,
+      "phyllosticta-leaf-spot_205",
+      true,
+      5
+    ],
+    [
+      406,
+      "powdery-mildew_95",
+      true,
+      5
+    ],
+    [
+      407,
+      "powdery-mildew_94",
+      true,
+      5
+    ],
+    [
+      408,
+      "powdery-mildew_96",
+      true,
+      5
+    ],
+    [
+      409,
+      "alternarialeaf-spot_226",
+      true,
+      5
+    ],
+    [
+      410,
+      "alternarialeaf-spot_232",
+      true,
+      5
+    ],
+    [
+      411,
+      "frog-eye-leaf-spot_273",
+      true,
+      5
+    ],
+    [
+      412,
+      "alternarialeaf-spot_239",
+      true,
+      5
+    ],
+    [
+      413,
+      "alternarialeaf-spot_229",
+      true,
+      5
+    ],
+    [
+      414,
+      "purple-seed-stain_170",
+      true,
+      5
+    ],
+    [
+      415,
+      "temp",
+      false,
+      null
+    ],
+    [
+      416,
+      "downy-mildew_106",
+      true,
+      5
+    ],
+    [
+      417,
+      "bacterial-pustule_161",
+      true,
+      5
+    ],
+    [
+      418,
+      "alternarialeaf-spot_218",
+      true,
+      5
+    ],
+    [
+      419,
+      "brown-stem-rot_86",
+      true,
+      5
+    ],
+    [
+      420,
+      "brown-stem-rot_85",
+      true,
+      5
+    ],
+    [
+      421,
+      "brown-spot_141",
+      true,
+      5
+    ],
+    [
+      422,
+      "brown-spot_145",
+      true,
+      5
+    ],
+    [
+      423,
+      "alternarialeaf-spot_227",
+      true,
+      5
+    ],
+    [
+      424,
+      "alternarialeaf-spot_215",
+      true,
+      5
+    ],
+    [
+      425,
+      "brown-stem-rot_75",
+      true,
+      5
+    ],
+    [
+      426,
+      "charcoal-rot_15",
+      true,
+      5
+    ],
+    [
+      427,
+      "brown-stem-rot_72",
+      true,
+      5
+    ],
+    [
+      428,
+      "brown-spot_147",
+      true,
+      5
+    ],
+    [
+      429,
+      "leaf-shread",
+      false,
+      null
+    ],
+    [
+      430,
+      "frog-eye-leaf-spot_286",
+      true,
+      5
+    ],
+    [
+      431,
+      "frog-eye-leaf-spot_277",
+      true,
+      5
+    ],
+    [
+      432,
+      "frog-eye-leaf-spot_282",
+      true,
+      5
+    ],
+    [
+      433,
+      "frog-eye-leaf-spot_250",
+      true,
+      5
+    ],
+    [
+      434,
+      "brown-spot_120",
+      true,
+      5
+    ],
+    [
+      435,
+      "brown-spot_109",
+      true,
+      5
+    ],
+    [
+      436,
+      "phytophthora-rot_35",
+      true,
+      5
+    ],
+    [
+      437,
+      "phytophthora-rot_66",
+      true,
+      5
+    ],
+    [
+      438,
+      "stem-cankers",
+      false,
+      null
+    ],
+    [
+      439,
+      "phytophthora-rot_58",
+      true,
+      5
+    ],
+    [
+      440,
+      "phytophthora-rot_40",
+      true,
+      5
+    ],
+    [
+      441,
+      "phytophthora-rot_57",
+      true,
+      5
+    ],
+    [
+      442,
+      "phytophthora-rot_34",
+      true,
+      5
+    ],
+    [
+      443,
+      "phytophthora-rot_47",
+      true,
+      5
+    ],
+    [
+      444,
+      "diaporthe-pod-&-stem-blight_287",
+      true,
+      6
+    ],
+    [
+      445,
+      "diaporthe-pod-&-stem-blight_289",
+      true,
+      6
+    ],
+    [
+      446,
+      "frog-eye-leaf-spot_274",
+      true,
+      6
+    ],
+    [
+      447,
+      "downy-mildew_107",
+      true,
+      6
+    ],
+    [
+      448,
+      "alternarialeaf-spot_235",
+      true,
+      6
+    ],
+    [
+      449,
+      "alternarialeaf-spot_217",
+      true,
+      6
+    ],
+    [
+      450,
+      "frog-eye-leaf-spot_254",
+      true,
+      6
+    ],
+    [
+      451,
+      "anthracnose_197",
+      true,
+      6
+    ],
+    [
+      452,
+      "brown-stem-rot_83",
+      true,
+      6
+    ],
+    [
+      453,
+      "powdery-mildew_89",
+      true,
+      6
+    ],
+    [
+      454,
+      "alternarialeaf-spot_213",
+      true,
+      6
+    ],
+    [
+      455,
+      "alternarialeaf-spot_228",
+      true,
+      6
+    ],
+    [
+      456,
+      "alternarialeaf-spot_208",
+      true,
+      6
+    ],
+    [
+      457,
+      "bacterial-blight_157",
+      true,
+      6
+    ],
+    [
+      458,
+      "frog-eye-leaf-spot_271",
+      true,
+      6
+    ],
+    [
+      459,
+      "alternarialeaf-spot_240",
+      true,
+      6
+    ],
+    [
+      460,
+      "phytophthora-rot_69",
+      true,
+      6
+    ],
+    [
+      461,
+      "phytophthora-rot_54",
+      true,
+      6
+    ]
+  ],
+  "successors": {
+    "0_0": 1,
+    "0_1": 2,
+    "0_2": 3,
+    "0_3": 4,
+    "1_0": 5,
+    "1_1": 6,
+    "1_2": 7,
+    "1_3": 8,
+    "1_4": 9,
+    "1_5": 10,
+    "1_6": 11,
+    "2_0": 12,
+    "2_1": 13,
+    "2_2": 14,
+    "2_3": 15,
+    "2_4": 16,
+    "2_5": 17,
+    "2_6": 18,
+    "3_0": 19,
+    "3_1": 20,
+    "3_2": 21,
+    "3_3": 22,
+    "3_4": 23,
+    "3_5": 24,
+    "3_6": 25,
+    "4_1": 26,
+    "4_2": 27,
+    "4_3": 28,
+    "4_4": 29,
+    "4_5": 30,
+    "4_6": 31,
+    "4_7": 32,
+    "5_0": 33,
+    "5_1": 34,
+    "5_2": 35,
+    "5_3": 36,
+    "6_0": 37,
+    "6_1": 38,
+    "6_2": 39,
+    "6_3": 40,
+    "7_0": 41,
+    "7_1": 42,
+    "7_2": 43,
+    "7_3": 44,
+    "8_0": 45,
+    "8_1": 46,
+    "8_2": 47,
+    "8_3": 48,
+    "9_0": 49,
+    "9_1": 50,
+    "9_2": 51,
+    "9_3": 52,
+    "10_0": 53,
+    "10_1": 54,
+    "10_2": 55,
+    "11_0": 56,
+    "11_1": 57,
+    "11_2": 58,
+    "11_3": 59,
+    "12_0": 60,
+    "12_2": 61,
+    "12_3": 62,
+    "12_4": 63,
+    "13_0": 64,
+    "13_1": 65,
+    "13_2": 66,
+    "13_3": 67,
+    "14_0": 68,
+    "14_1": 69,
+    "14_2": 70,
+    "14_3": 71,
+    "15_0": 72,
+    "15_1": 73,
+    "15_2": 74,
+    "15_3": 75,
+    "16_0": 76,
+    "16_1": 77,
+    "16_2": 78,
+    "16_3": 79,
+    "17_0": 80,
+    "17_2": 81,
+    "17_3": 82,
+    "18_0": 83,
+    "18_1": 84,
+    "18_2": 85,
+    "18_3": 86,
+    "19_0": 87,
+    "19_1": 88,
+    "19_2": 89,
+    "19_3": 90,
+    "20_0": 91,
+    "20_1": 92,
+    "20_2": 93,
+    "20_3": 94,
+    "21_0": 95,
+    "21_1": 96,
+    "21_2": 97,
+    "21_3": 98,
+    "22_0": 99,
+    "22_1": 100,
+    "22_2": 101,
+    "22_3": 102,
+    "23_0": 103,
+    "23_1": 104,
+    "23_2": 105,
+    "23_3": 106,
+    "24_0": 107,
+    "24_2": 108,
+    "24_3": 109,
+    "25_0": 110,
+    "25_1": 111,
+    "25_2": 112,
+    "25_3": 113,
+    "26_1": 114,
+    "26_2": 115,
+    "27_0": 116,
+    "27_1": 117,
+    "27_2": 118,
+    "27_3": 119,
+    "29_0": 120,
+    "29_1": 121,
+    "29_2": 122,
+    "31_0": 123,
+    "31_2": 124,
+    "31_3": 125,
+    "31_4": 126,
+    "33_0": 127,
+    "33_1": 128,
+    "33_2": 129,
+    "34_0": 130,
+    "34_2": 131,
+    "34_3": 132,
+    "34_4": 133,
+    "35_0": 134,
+    "35_1": 135,
+    "35_2": 136,
+    "37_0": 137,
+    "37_1": 138,
+    "37_2": 139,
+    "37_3": 140,
+    "38_0": 141,
+    "38_1": 142,
+    "38_2": 143,
+    "39_0": 144,
+    "39_1": 145,
+    "39_2": 146,
+    "41_0": 147,
+    "41_1": 148,
+    "41_2": 149,
+    "42_0": 150,
+    "42_1": 151,
+    "42_2": 152,
+    "43_0": 153,
+    "43_1": 154,
+    "44_0": 155,
+    "44_1": 156,
+    "44_2": 157,
+    "45_0": 158,
+    "45_1": 159,
+    "45_2": 160,
+    "45_3": 161,
+    "46_0": 162,
+    "46_2": 163,
+    "46_3": 164,
+    "47_0": 165,
+    "47_1": 166,
+    "47_2": 167,
+    "47_3": 168,
+    "48_0": 169,
+    "48_1": 170,
+    "48_2": 171,
+    "48_3": 172,
+    "49_0": 173,
+    "49_1": 174,
+    "51_0": 175,
+    "51_1": 176,
+    "53_0": 177,
+    "53_2": 178,
+    "56_0": 179,
+    "56_1": 180,
+    "57_0": 181,
+    "57_1": 182,
+    "58_0": 183,
+    "58_1": 184,
+    "58_2": 185,
+    "59_0": 186,
+    "59_1": 187,
+    "59_2": 188,
+    "60_0": 189,
+    "60_1": 190,
+    "61_0": 191,
+    "61_1": 192,
+    "61_2": 193,
+    "61_3": 194,
+    "62_1": 195,
+    "62_2": 196,
+    "63_0": 197,
+    "63_1": 198,
+    "63_2": 199,
+    "63_3": 200,
+    "64_0": 201,
+    "64_2": 202,
+    "65_0": 203,
+    "65_2": 204,
+    "65_3": 205,
+    "66_0": 206,
+    "66_1": 207,
+    "66_2": 208,
+    "66_3": 209,
+    "67_0": 210,
+    "67_2": 211,
+    "67_3": 212,
+    "68_0": 213,
+    "68_1": 214,
+    "68_2": 215,
+    "69_0": 216,
+    "69_1": 217,
+    "69_2": 218,
+    "70_0": 219,
+    "70_1": 220,
+    "70_3": 221,
+    "71_0": 222,
+    "71_1": 223,
+    "71_2": 224,
+    "72_0": 225,
+    "72_1": 226,
+    "73_0": 227,
+    "73_1": 228,
+    "73_3": 229,
+    "74_0": 230,
+    "74_2": 231,
+    "74_3": 232,
+    "74_4": 233,
+    "76_0": 234,
+    "76_1": 235,
+    "77_0": 236,
+    "77_1": 237,
+    "78_0": 238,
+    "78_2": 239,
+    "78_3": 240,
+    "79_1": 241,
+    "79_2": 242,
+    "79_3": 243,
+    "83_0": 244,
+    "83_1": 245,
+    "84_0": 246,
+    "84_2": 247,
+    "85_1": 248,
+    "85_2": 249,
+    "86_0": 250,
+    "86_1": 251,
+    "87_0": 252,
+    "87_1": 253,
+    "87_2": 254,
+    "88_0": 255,
+    "88_1": 256,
+    "88_2": 257,
+    "90_0": 258,
+    "90_1": 259,
+    "91_0": 260,
+    "91_1": 261,
+    "91_3": 262,
+    "92_0": 263,
+    "92_1": 264,
+    "92_2": 265,
+    "92_3": 266,
+    "93_0": 267,
+    "93_1": 268,
+    "93_2": 269,
+    "93_3": 270,
+    "94_0": 271,
+    "94_1": 272,
+    "94_2": 273,
+    "95_0": 274,
+    "95_1": 275,
+    "96_0": 276,
+    "96_1": 277,
+    "96_3": 278,
+    "97_0": 279,
+    "97_1": 280,
+    "97_2": 281,
+    "97_3": 282,
+    "98_0": 283,
+    "98_2": 284,
+    "99_0": 285,
+    "99_1": 286,
+    "99_2": 287,
+    "100_0": 288,
+    "100_2": 289,
+    "101_0": 290,
+    "101_2": 291,
+    "101_3": 292,
+    "101_4": 293,
+    "102_0": 294,
+    "102_1": 295,
+    "102_2": 296,
+    "102_3": 297,
+    "103_0": 298,
+    "103_1": 299,
+    "103_2": 300,
+    "104_0": 301,
+    "104_1": 302,
+    "104_2": 303,
+    "108_0": 304,
+    "108_1": 305,
+    "110_0": 306,
+    "110_1": 307,
+    "110_3": 308,
+    "111_0": 309,
+    "111_2": 310,
+    "112_0": 311,
+    "112_1": 312,
+    "112_3": 313,
+    "116_0": 314,
+    "116_2": 315,
+    "117_0": 316,
+    "117_1": 317,
+    "117_3": 318,
+    "118_0": 319,
+    "118_2": 320,
+    "118_3": 321,
+    "120_2": 322,
+    "120_3": 323,
+    "120_4": 324,
+    "121_0": 325,
+    "121_1": 326,
+    "122_1": 327,
+    "122_2": 328,
+    "123_0": 329,
+    "123_1": 330,
+    "123_2": 331,
+    "125_0": 332,
+    "125_1": 333,
+    "125_2": 334,
+    "125_3": 335,
+    "134_0": 336,
+    "134_3": 337,
+    "136_0": 338,
+    "136_1": 339,
+    "139_0": 340,
+    "139_1": 341,
+    "140_0": 342,
+    "140_1": 343,
+    "155_0": 344,
+    "155_2": 345,
+    "159_0": 346,
+    "159_1": 347,
+    "161_0": 348,
+    "161_1": 349,
+    "165_0": 350,
+    "165_1": 351,
+    "165_2": 352,
+    "167_0": 353,
+    "167_1": 354,
+    "167_2": 355,
+    "170_0": 356,
+    "170_1": 357,
+    "175_0": 358,
+    "175_3": 359,
+    "183_0": 360,
+    "183_1": 361,
+    "186_0": 362,
+    "186_1": 363,
+    "193_0": 364,
+    "193_2": 365,
+    "198_0": 366,
+    "198_1": 367,
+    "198_2": 368,
+    "201_0": 369,
+    "201_1": 370,
+    "203_1": 371,
+    "203_3": 372,
+    "206_1": 373,
+    "206_2": 374,
+    "207_0": 375,
+    "207_1": 376,
+    "207_2": 377,
+    "210_0": 378,
+    "210_1": 379,
+    "210_2": 380,
+    "211_0": 381,
+    "211_1": 382,
+    "211_2": 383,
+    "216_0": 384,
+    "216_1": 385,
+    "216_3": 386,
+    "221_0": 387,
+    "221_2": 388,
+    "221_3": 389,
+    "226_0": 390,
+    "226_1": 391,
+    "228_0": 392,
+    "228_1": 393,
+    "229_0": 394,
+    "229_1": 395,
+    "229_2": 396,
+    "229_3": 397,
+    "231_0": 398,
+    "231_2": 399,
+    "231_3": 400,
+    "236_0": 401,
+    "236_1": 402,
+    "240_0": 403,
+    "240_1": 404,
+    "251_0": 405,
+    "251_2": 406,
+    "252_0": 407,
+    "252_1": 408,
+    "253_0": 409,
+    "253_1": 410,
+    "253_2": 411,
+    "260_0": 412,
+    "260_1": 413,
+    "261_0": 414,
+    "261_2": 415,
+    "261_3": 416,
+    "265_0": 417,
+    "265_1": 418,
+    "272_0": 419,
+    "272_2": 420,
+    "279_0": 421,
+    "279_2": 422,
+    "287_0": 423,
+    "287_3": 424,
+    "290_0": 425,
+    "290_1": 426,
+    "291_0": 427,
+    "291_1": 428,
+    "291_3": 429,
+    "292_0": 430,
+    "292_1": 431,
+    "295_0": 432,
+    "295_2": 433,
+    "300_0": 434,
+    "300_1": 435,
+    "316_0": 436,
+    "316_3": 437,
+    "317_0": 438,
+    "317_2": 439,
+    "332_0": 440,
+    "332_1": 441,
+    "333_0": 442,
+    "333_2": 443,
+    "355_0": 444,
+    "355_2": 445,
+    "381_0": 446,
+    "381_1": 447,
+    "392_0": 448,
+    "392_3": 449,
+    "397_0": 450,
+    "397_1": 451,
+    "398_0": 452,
+    "398_1": 453,
+    "399_0": 454,
+    "399_1": 455,
+    "415_0": 456,
+    "415_1": 457,
+    "429_0": 458,
+    "429_2": 459,
+    "438_0": 460,
+    "438_3": 461
+  }
+}
