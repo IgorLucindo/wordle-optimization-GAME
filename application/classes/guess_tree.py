@@ -25,7 +25,6 @@ class Guess_Tree:
 
         # Solver State
         G, T, F, C, _, _, _ = instance
-        print(f"{len(G)}     {len(T)}")
         self.xp = self.optimizer.xp
         self.G = self.xp.arange(len(G))
         self.T = self.xp.arange(len(T))
