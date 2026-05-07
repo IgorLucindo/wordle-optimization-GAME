@@ -36,11 +36,12 @@ class Guess_Tree:
         self.is_target = configs.get('is_target')
 
         # Tree Building State
+        self.G_names = G
+        self.T_names = T
         self.tree = {
-            'root': 0,
             'vertices': [],
             'successors': {},
-            'score_rule': _get_score_rule(configs)
+            'score_rule': _get_score_rule(configs),
         }
         self._stop_diagnosis = False
         self._diagnosis_thread = None
@@ -108,7 +109,7 @@ class Guess_Tree:
         depths = []
 
         while queue:
-            T_curr, G_curr, v_parent, p_parent, depth = queue.popleft()
+            T_curr, G_curr, _, _, depth = queue.popleft()
             self.v_curr += 1
 
             # Ask optimizer for context
@@ -156,7 +157,13 @@ class Guess_Tree:
             is_terminal: True if this vertex identifies a target
             depth: depth of this vertex (recorded for terminal vertices)
         """
-        self.tree['vertices'].append((v_curr, g_star, is_terminal, depth if is_terminal else None))
+        names = self.T_names if (not self.configs['guesses_include_targets'] and is_terminal) else self.G_names
+        self.tree['vertices'].append((
+            v_curr,
+            names[g_star.item()],
+            is_terminal,
+            depth if is_terminal else None
+        ))
         if v_curr != 0:
             self.tree['successors'][(v_parent, p_parent)] = v_curr
 

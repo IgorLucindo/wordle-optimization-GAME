@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
+
 # Configuration for the specific UCI datasets
 CONFIG = {
     "car": {
@@ -8,7 +9,7 @@ CONFIG = {
         "missing_val": None,
         "columns": ["buying", "maint", "doors", "persons", "lug_boot", "safety", "class_label"]
     },
-    "house-votes-84": {
+    "house_votes_84": {
         "file": "congressional+voting+records/house-votes-84.data",
         "missing_val": "?",
         "columns": ["class_label", "handicapped-infants", "water-project", "budget-resolution",
@@ -16,12 +17,13 @@ CONFIG = {
                     "nicaraguan-contras", "mx-missile", "immigration", "synfuels-cutback",
                     "education-spending", "superfund-right-to-sue", "crime", "duty-free", "south-africa"]
     },
-    "soybean-small": {
+    "soybean_small": {
         "file": "soybean+small/soybean-small.data",
         "missing_val": None,
         "columns": [f"attr_{i}" for i in range(1, 36)] + ["class_label"]
     }
 }
+
 
 def convert_uci_to_game_format(input_base_dir: str, output_base_dir: str):
     input_base = Path(input_base_dir)
@@ -74,9 +76,9 @@ def convert_uci_to_game_format(input_base_dir: str, output_base_dir: str):
         if dropped_count > 0:
             print(f"   -> Dropped {dropped_count} duplicate feature combinations.")
 
+
 if __name__ == "__main__":
-    # Adjust paths if running from inside the 'data' folder
-    INPUT_DIR = "data/raw_uci_instances"
+    INPUT_DIR = "data_converter/raw_uci_data/"
     OUTPUT_DIR = "data/"
     
     convert_uci_to_game_format(INPUT_DIR, OUTPUT_DIR)

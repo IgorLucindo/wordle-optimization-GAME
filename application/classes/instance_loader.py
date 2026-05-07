@@ -260,7 +260,6 @@ class InstanceLoader:
 
         return {
             'score_rule': data['score_rule'],
-            'root': data['root'],
             'vertices': vertices,
             'successors': successors
         }

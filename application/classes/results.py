@@ -9,7 +9,7 @@ class Results:
         self.configs = configs
 
         # Result Containers
-        self.tree = {'root': 0, 'vertices': [], 'successors': {}, 'score_rule': ''}
+        self.tree = {'vertices': [], 'successors': {}, 'score_rule': ''}
         self.stats = {
             'score_rule': '',
             'exp_guesses': 0, 'std_guesses': 0, 'max_guesses': 0,
@@ -57,6 +57,7 @@ class Results:
         print(
             f"\n\n"
             f"Score Rule: {self.stats['score_rule']}\n"
+            f"Start guess: {self.tree['vertices'][0][1]}\n"
             f"Exp. guesses: {self.stats['exp_guesses']:.3f}\n"
             f"Std. guesses: {self.stats['std_guesses']:.3f}\n"
             f"Max. guesses: {self.stats['max_guesses']}\n"
@@ -76,8 +77,7 @@ class Results:
         # Convert tree to JSON-serializable format
         serializable_tree = {
             'score_rule': self.tree['score_rule'],
-            'root': self.tree['root'],
-            'vertices': [(int(v), int(g) if g is not None else None, bool(term), int(d) if d is not None else None)
+            'vertices': [(int(v), g, bool(term), int(d) if d is not None else None)
                         for v, g, term, d in self.tree['vertices']],
             'successors': {f"{k[0]}_{k[1]}": int(v) for k, v in self.tree['successors'].items()}
         }

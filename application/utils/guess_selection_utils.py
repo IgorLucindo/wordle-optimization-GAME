@@ -43,9 +43,9 @@ def best_guess_functions(instance_data, flags, configs):
 
 def best_guesses_functions(configs):
     """Top-k candidate generators for Subtree-k."""
-    score_rule = configs.get('score', 'PC')
-    guesses_include_targets = bool(configs.get('guesses_include_targets', True))
-    base = configs.get('base', 243)
+    score_rule = configs['score']
+    guesses_include_targets = configs['guesses_include_targets']
+    base = configs['base']
     num_of_guesses = configs['k']
 
     def get_best_guesses_CPU(T, G, F):
