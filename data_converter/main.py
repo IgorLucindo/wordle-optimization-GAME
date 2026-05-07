@@ -21,6 +21,12 @@ def convert_uci_to_game_format(config_path: str, input_base_dir: str, output_bas
         separator = conf.get("sep", ",")
         df = pd.read_csv(file_path, header=None, na_values=conf.get("missing_val"), sep=separator, engine="python")
 
+        ignore_cols = conf.get("ignore_cols", [])
+        if ignore_cols:
+            df = df.drop(columns=ignore_cols)
+            # Reset column indices so they are continuous 0, 1, 2...
+            df.columns = range(df.shape)
+
         # 2. Split label column from features
         n_cols = len(df.columns)
         label_idx = conf["label_col"] % n_cols
