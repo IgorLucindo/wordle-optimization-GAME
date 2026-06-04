@@ -83,8 +83,6 @@ To address the computational cost of look-ahead search (Normal Mode), we impleme
 
    Please follow the instructions in the [Official CuPy Installation Guide](https://docs.cupy.dev/en/stable/install.html).
 
----
-
 ## 🚀 Execution
 
 You can run the solver using the default settings (GPU, Normal Mode) or customize the execution using command-line arguments.
@@ -98,7 +96,8 @@ python application/build_tree.py
 
 ### Common Options:
 
-* `--data {wordle,wordle_hard,mastermind,zoo,...}`: Select the instance folder under `data/`.
+* `--data {wordle,wordle_hard,mastermind,zoo,...,all}`: Select the instance folder under `data/`.
+  Use `all` to run the solver sequentially on **every** discovered instance.
   If omitted, the script prompts you to choose from discovered `data/*/rules.json` instances.
   Use `wordle_hard` for constrained guessing mode. Mastermind and Zoo run on CPU only.
 * `--cpu`: Run strictly on the CPU (disables GPU acceleration).
@@ -111,6 +110,18 @@ python application/build_tree.py
    * `PC`: Partition Count - minimizes average partition size
    * `WA`: Weighted Average - minimizes sum of squared partition sizes
    * `H`: Entropy - maximizes information-theoretic entropy
+
+### Run All Experiments
+
+To run all instances at once (GPU-accelerated where supported):
+```bash
+python application/build_tree.py --data all --save_tree
+```
+
+To run all instances strictly on CPU:
+```bash
+python application/build_tree.py --data all --cpu --save_tree
+```
 
 ### Example:
 
@@ -140,8 +151,6 @@ python application/eval_trees.py
 ```
 
 This automatically discovers and evaluates all `data/*/decision_tree.json` files, showing results for each instance found.
-
----
 
 ## 🧩 Other Guessing Games (Mastermind & UCI Zoo)
 
@@ -178,6 +187,10 @@ The Zoo greedy number reproduces the paper's 5.5593/max 8 exactly. The
 Subtree-10 numbers in this codebase are *better* than the paper's reference
 figures because this implementation applies Subtree-k at *every* internal
 node, whereas the paper's ablation uses it only at the root.
+
+## 🗂️ Adding Custom Datasets
+
+See the [data_converter/README.md](data_converter/README.md) tutorial for instructions on importing and formatting new classification datasets from the UCI Machine Learning Repository.
 
 ## 🎮 Interactive Game
 
