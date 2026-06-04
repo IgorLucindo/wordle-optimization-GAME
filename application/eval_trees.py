@@ -41,10 +41,10 @@ def evaluate_tree(tree):
     return {
         'n_G':         metadata['n_G'],
         'n_T':         metadata['n_T'],
+        'n_vertices':  n_vertices,
         'exp_guesses': round(float(D.mean()), 3),
         'std_guesses': round(float(D.std()), 3),
         'max_guesses': int(D.max()),
-        'n_vertices':  n_vertices,
         'score_rule':  metadata['score_rule'],
         'cpu_runtime': metadata.get('cpu_runtime', ''),
         'gpu_runtime': metadata.get('gpu_runtime', ''),
@@ -66,10 +66,9 @@ def main():
     out_path = results_dir / 'eval_results.csv'
 
     columns = [
-        'instance', '|G|', '|T|',
+        'instance', '|G|', '|T|', '|V|',
         'exp_queries', 'std_queries', 'max_queries',
-        '|V|', 'score_rule',
-        'cpu_runtime_s', 'gpu_runtime_s',
+        'score_rule', 'cpu_runtime_s', 'gpu_runtime_s',
     ]
 
     rows = []
@@ -80,10 +79,10 @@ def main():
             'instance':       instance_name,
             '|G|':            stats['n_G'],
             '|T|':            stats['n_T'],
+            '|V|':            stats['n_vertices'],
             'exp_queries':    stats['exp_guesses'],
             'std_queries':    stats['std_guesses'],
             'max_queries':    stats['max_guesses'],
-            '|V|':            stats['n_vertices'],
             'score_rule':     stats['score_rule'],
             'cpu_runtime_s':  stats['cpu_runtime'],
             'gpu_runtime_s':  stats['gpu_runtime'],

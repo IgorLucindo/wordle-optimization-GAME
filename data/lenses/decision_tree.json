@@ -1,0 +1,333 @@
+{
+  "metadata": {
+    "score_rule": "subtree-15 | PC",
+    "gpu_runtime": 1.001,
+    "n_G": 4,
+    "n_T": 24
+  },
+  "vertices": [
+    [
+      0,
+      "age",
+      false,
+      null
+    ],
+    [
+      1,
+      "spectacle_rx",
+      false,
+      null
+    ],
+    [
+      2,
+      "spectacle_rx",
+      false,
+      null
+    ],
+    [
+      3,
+      "spectacle_rx",
+      false,
+      null
+    ],
+    [
+      4,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      5,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      6,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      7,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      8,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      9,
+      "astigmatism",
+      false,
+      null
+    ],
+    [
+      10,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      11,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      12,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      13,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      14,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      15,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      16,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      17,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      18,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      19,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      20,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      21,
+      "tear_production",
+      false,
+      null
+    ],
+    [
+      22,
+      "3_0",
+      true,
+      4
+    ],
+    [
+      23,
+      "2_1",
+      true,
+      4
+    ],
+    [
+      24,
+      "3_2",
+      true,
+      4
+    ],
+    [
+      25,
+      "1_3",
+      true,
+      4
+    ],
+    [
+      26,
+      "3_4",
+      true,
+      4
+    ],
+    [
+      27,
+      "2_5",
+      true,
+      4
+    ],
+    [
+      28,
+      "3_6",
+      true,
+      4
+    ],
+    [
+      29,
+      "1_7",
+      true,
+      4
+    ],
+    [
+      30,
+      "3_8",
+      true,
+      4
+    ],
+    [
+      31,
+      "2_9",
+      true,
+      4
+    ],
+    [
+      32,
+      "3_10",
+      true,
+      4
+    ],
+    [
+      33,
+      "1_11",
+      true,
+      4
+    ],
+    [
+      34,
+      "3_12",
+      true,
+      4
+    ],
+    [
+      35,
+      "2_13",
+      true,
+      4
+    ],
+    [
+      36,
+      "3_14",
+      true,
+      4
+    ],
+    [
+      37,
+      "3_15",
+      true,
+      4
+    ],
+    [
+      38,
+      "3_16",
+      true,
+      4
+    ],
+    [
+      39,
+      "3_17",
+      true,
+      4
+    ],
+    [
+      40,
+      "3_18",
+      true,
+      4
+    ],
+    [
+      41,
+      "1_19",
+      true,
+      4
+    ],
+    [
+      42,
+      "3_20",
+      true,
+      4
+    ],
+    [
+      43,
+      "2_21",
+      true,
+      4
+    ],
+    [
+      44,
+      "3_22",
+      true,
+      4
+    ],
+    [
+      45,
+      "3_23",
+      true,
+      4
+    ]
+  ],
+  "successors": {
+    "0_0": 1,
+    "0_1": 2,
+    "0_2": 3,
+    "1_0": 4,
+    "1_1": 5,
+    "2_0": 6,
+    "2_1": 7,
+    "3_0": 8,
+    "3_1": 9,
+    "4_0": 10,
+    "4_1": 11,
+    "5_0": 12,
+    "5_1": 13,
+    "6_0": 14,
+    "6_1": 15,
+    "7_0": 16,
+    "7_1": 17,
+    "8_0": 18,
+    "8_1": 19,
+    "9_0": 20,
+    "9_1": 21,
+    "10_0": 22,
+    "10_1": 23,
+    "11_0": 24,
+    "11_1": 25,
+    "12_0": 26,
+    "12_1": 27,
+    "13_0": 28,
+    "13_1": 29,
+    "14_0": 30,
+    "14_1": 31,
+    "15_0": 32,
+    "15_1": 33,
+    "16_0": 34,
+    "16_1": 35,
+    "17_0": 36,
+    "17_1": 37,
+    "18_0": 38,
+    "18_1": 39,
+    "19_0": 40,
+    "19_1": 41,
+    "20_0": 42,
+    "20_1": 43,
+    "21_0": 44,
+    "21_1": 45
+  }
+}

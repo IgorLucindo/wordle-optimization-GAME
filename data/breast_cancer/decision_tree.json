@@ -1,0 +1,4624 @@
+{
+  "metadata": {
+    "score_rule": "subtree-15 | PC",
+    "gpu_runtime": 1.001,
+    "n_G": 9,
+    "n_T": 463
+  },
+  "vertices": [
+    [
+      0,
+      "uniformity_cell_shape",
+      false,
+      null
+    ],
+    [
+      1,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      2,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      3,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      4,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      5,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      6,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      7,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      8,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      9,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      10,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      11,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      12,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      13,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      14,
+      "2_391",
+      true,
+      2
+    ],
+    [
+      15,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      16,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      17,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      18,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      19,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      20,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      21,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      22,
+      "2_71",
+      true,
+      2
+    ],
+    [
+      23,
+      "4_89",
+      true,
+      2
+    ],
+    [
+      24,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      25,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      26,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      27,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      28,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      29,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      30,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      31,
+      "4_164",
+      true,
+      2
+    ],
+    [
+      32,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      33,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      34,
+      "4_406",
+      true,
+      2
+    ],
+    [
+      35,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      36,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      37,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      38,
+      "4_325",
+      true,
+      2
+    ],
+    [
+      39,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      40,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      41,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      42,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      43,
+      "4_364",
+      true,
+      2
+    ],
+    [
+      44,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      45,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      46,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      47,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      48,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      49,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      50,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      51,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      52,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      53,
+      "4_234",
+      true,
+      2
+    ],
+    [
+      54,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      55,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      56,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      57,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      58,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      59,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      60,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      61,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      62,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      63,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      64,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      65,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      66,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      67,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      68,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      69,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      70,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      71,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      72,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      73,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      74,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      75,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      76,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      77,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      78,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      79,
+      "2_38",
+      true,
+      2
+    ],
+    [
+      80,
+      "4_112",
+      true,
+      2
+    ],
+    [
+      81,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      82,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      83,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      84,
+      "4_353",
+      true,
+      2
+    ],
+    [
+      85,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      86,
+      "4_408",
+      true,
+      2
+    ],
+    [
+      87,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      88,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      89,
+      "4_163",
+      true,
+      2
+    ],
+    [
+      90,
+      "4_181",
+      true,
+      2
+    ],
+    [
+      91,
+      "4_166",
+      true,
+      2
+    ],
+    [
+      92,
+      "4_333",
+      true,
+      2
+    ],
+    [
+      93,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      94,
+      "4_340",
+      true,
+      2
+    ],
+    [
+      95,
+      "4_86",
+      true,
+      2
+    ],
+    [
+      96,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      97,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      98,
+      "2_19",
+      true,
+      3
+    ],
+    [
+      99,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      100,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      101,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      102,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      103,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      104,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      105,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      106,
+      "2_233",
+      true,
+      3
+    ],
+    [
+      107,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      108,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      109,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      110,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      111,
+      "2_284",
+      true,
+      3
+    ],
+    [
+      112,
+      "2_332",
+      true,
+      3
+    ],
+    [
+      113,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      114,
+      "2_129",
+      true,
+      3
+    ],
+    [
+      115,
+      "4_251",
+      true,
+      3
+    ],
+    [
+      116,
+      "2_98",
+      true,
+      3
+    ],
+    [
+      117,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      118,
+      "2_78",
+      true,
+      3
+    ],
+    [
+      119,
+      "2_35",
+      true,
+      3
+    ],
+    [
+      120,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      121,
+      "2_1",
+      true,
+      3
+    ],
+    [
+      122,
+      "2_412",
+      true,
+      3
+    ],
+    [
+      123,
+      "4_446",
+      true,
+      3
+    ],
+    [
+      124,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      125,
+      "4_157",
+      true,
+      3
+    ],
+    [
+      126,
+      "4_62",
+      true,
+      3
+    ],
+    [
+      127,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      128,
+      "4_265",
+      true,
+      3
+    ],
+    [
+      129,
+      "4_360",
+      true,
+      3
+    ],
+    [
+      130,
+      "4_60",
+      true,
+      3
+    ],
+    [
+      131,
+      "4_97",
+      true,
+      3
+    ],
+    [
+      132,
+      "2_451",
+      true,
+      3
+    ],
+    [
+      133,
+      "2_435",
+      true,
+      3
+    ],
+    [
+      134,
+      "2_247",
+      true,
+      3
+    ],
+    [
+      135,
+      "2_278",
+      true,
+      3
+    ],
+    [
+      136,
+      "4_371",
+      true,
+      3
+    ],
+    [
+      137,
+      "4_198",
+      true,
+      3
+    ],
+    [
+      138,
+      "4_237",
+      true,
+      3
+    ],
+    [
+      139,
+      "4_396",
+      true,
+      3
+    ],
+    [
+      140,
+      "2_161",
+      true,
+      3
+    ],
+    [
+      141,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      142,
+      "4_398",
+      true,
+      3
+    ],
+    [
+      143,
+      "4_241",
+      true,
+      3
+    ],
+    [
+      144,
+      "4_379",
+      true,
+      3
+    ],
+    [
+      145,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      146,
+      "4_93",
+      true,
+      3
+    ],
+    [
+      147,
+      "4_262",
+      true,
+      3
+    ],
+    [
+      148,
+      "4_210",
+      true,
+      3
+    ],
+    [
+      149,
+      "4_69",
+      true,
+      3
+    ],
+    [
+      150,
+      "4_409",
+      true,
+      3
+    ],
+    [
+      151,
+      "4_176",
+      true,
+      3
+    ],
+    [
+      152,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      153,
+      "4_238",
+      true,
+      3
+    ],
+    [
+      154,
+      "4_228",
+      true,
+      3
+    ],
+    [
+      155,
+      "2_3",
+      true,
+      3
+    ],
+    [
+      156,
+      "4_227",
+      true,
+      3
+    ],
+    [
+      157,
+      "4_47",
+      true,
+      3
+    ],
+    [
+      158,
+      "4_190",
+      true,
+      3
+    ],
+    [
+      159,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      160,
+      "4_357",
+      true,
+      3
+    ],
+    [
+      161,
+      "4_310",
+      true,
+      3
+    ],
+    [
+      162,
+      "4_373",
+      true,
+      3
+    ],
+    [
+      163,
+      "4_63",
+      true,
+      3
+    ],
+    [
+      164,
+      "4_152",
+      true,
+      3
+    ],
+    [
+      165,
+      "4_169",
+      true,
+      3
+    ],
+    [
+      166,
+      "4_206",
+      true,
+      3
+    ],
+    [
+      167,
+      "4_95",
+      true,
+      3
+    ],
+    [
+      168,
+      "4_397",
+      true,
+      3
+    ],
+    [
+      169,
+      "4_280",
+      true,
+      3
+    ],
+    [
+      170,
+      "4_117",
+      true,
+      3
+    ],
+    [
+      171,
+      "4_155",
+      true,
+      3
+    ],
+    [
+      172,
+      "4_132",
+      true,
+      3
+    ],
+    [
+      173,
+      "4_214",
+      true,
+      3
+    ],
+    [
+      174,
+      "4_318",
+      true,
+      3
+    ],
+    [
+      175,
+      "4_189",
+      true,
+      3
+    ],
+    [
+      176,
+      "4_300",
+      true,
+      3
+    ],
+    [
+      177,
+      "4_172",
+      true,
+      3
+    ],
+    [
+      178,
+      "4_442",
+      true,
+      3
+    ],
+    [
+      179,
+      "4_346",
+      true,
+      3
+    ],
+    [
+      180,
+      "4_145",
+      true,
+      3
+    ],
+    [
+      181,
+      "4_191",
+      true,
+      3
+    ],
+    [
+      182,
+      "4_59",
+      true,
+      3
+    ],
+    [
+      183,
+      "4_53",
+      true,
+      3
+    ],
+    [
+      184,
+      "4_5",
+      true,
+      3
+    ],
+    [
+      185,
+      "4_399",
+      true,
+      3
+    ],
+    [
+      186,
+      "4_182",
+      true,
+      3
+    ],
+    [
+      187,
+      "4_457",
+      true,
+      3
+    ],
+    [
+      188,
+      "4_368",
+      true,
+      3
+    ],
+    [
+      189,
+      "4_269",
+      true,
+      3
+    ],
+    [
+      190,
+      "4_160",
+      true,
+      3
+    ],
+    [
+      191,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      192,
+      "4_324",
+      true,
+      3
+    ],
+    [
+      193,
+      "4_150",
+      true,
+      3
+    ],
+    [
+      194,
+      "4_453",
+      true,
+      3
+    ],
+    [
+      195,
+      "4_110",
+      true,
+      3
+    ],
+    [
+      196,
+      "4_235",
+      true,
+      3
+    ],
+    [
+      197,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      198,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      199,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      200,
+      "4_402",
+      true,
+      3
+    ],
+    [
+      201,
+      "4_40",
+      true,
+      3
+    ],
+    [
+      202,
+      "4_165",
+      true,
+      3
+    ],
+    [
+      203,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      204,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      205,
+      "4_359",
+      true,
+      3
+    ],
+    [
+      206,
+      "4_460",
+      true,
+      3
+    ],
+    [
+      207,
+      "4_275",
+      true,
+      3
+    ],
+    [
+      208,
+      "4_92",
+      true,
+      3
+    ],
+    [
+      209,
+      "4_168",
+      true,
+      3
+    ],
+    [
+      210,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      211,
+      "4_207",
+      true,
+      3
+    ],
+    [
+      212,
+      "4_223",
+      true,
+      3
+    ],
+    [
+      213,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      214,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      215,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      216,
+      "4_414",
+      true,
+      3
+    ],
+    [
+      217,
+      "2_365",
+      true,
+      3
+    ],
+    [
+      218,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      219,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      220,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      221,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      222,
+      "2_309",
+      true,
+      3
+    ],
+    [
+      223,
+      "2_250",
+      true,
+      3
+    ],
+    [
+      224,
+      "2_187",
+      true,
+      3
+    ],
+    [
+      225,
+      "4_66",
+      true,
+      3
+    ],
+    [
+      226,
+      "4_361",
+      true,
+      3
+    ],
+    [
+      227,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      228,
+      "2_390",
+      true,
+      3
+    ],
+    [
+      229,
+      "2_304",
+      true,
+      3
+    ],
+    [
+      230,
+      "2_282",
+      true,
+      3
+    ],
+    [
+      231,
+      "2_108",
+      true,
+      3
+    ],
+    [
+      232,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      233,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      234,
+      "2_70",
+      true,
+      3
+    ],
+    [
+      235,
+      "2_7",
+      true,
+      3
+    ],
+    [
+      236,
+      "2_75",
+      true,
+      3
+    ],
+    [
+      237,
+      "2_305",
+      true,
+      3
+    ],
+    [
+      238,
+      "2_426",
+      true,
+      3
+    ],
+    [
+      239,
+      "4_20",
+      true,
+      3
+    ],
+    [
+      240,
+      "4_61",
+      true,
+      3
+    ],
+    [
+      241,
+      "4_338",
+      true,
+      3
+    ],
+    [
+      242,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      243,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      244,
+      "2_193",
+      true,
+      3
+    ],
+    [
+      245,
+      "4_48",
+      true,
+      3
+    ],
+    [
+      246,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      247,
+      "4_25",
+      true,
+      3
+    ],
+    [
+      248,
+      "2_232",
+      true,
+      3
+    ],
+    [
+      249,
+      "2_218",
+      true,
+      3
+    ],
+    [
+      250,
+      "2_428",
+      true,
+      3
+    ],
+    [
+      251,
+      "4_276",
+      true,
+      3
+    ],
+    [
+      252,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      253,
+      "2_203",
+      true,
+      3
+    ],
+    [
+      254,
+      "2_425",
+      true,
+      3
+    ],
+    [
+      255,
+      "2_378",
+      true,
+      3
+    ],
+    [
+      256,
+      "2_315",
+      true,
+      3
+    ],
+    [
+      257,
+      "2_326",
+      true,
+      3
+    ],
+    [
+      258,
+      "2_423",
+      true,
+      3
+    ],
+    [
+      259,
+      "4_266",
+      true,
+      3
+    ],
+    [
+      260,
+      "4_252",
+      true,
+      3
+    ],
+    [
+      261,
+      "4_91",
+      true,
+      3
+    ],
+    [
+      262,
+      "2_104",
+      true,
+      3
+    ],
+    [
+      263,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      264,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      265,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      266,
+      "4_220",
+      true,
+      3
+    ],
+    [
+      267,
+      "2_67",
+      true,
+      3
+    ],
+    [
+      268,
+      "2_384",
+      true,
+      3
+    ],
+    [
+      269,
+      "4_37",
+      true,
+      3
+    ],
+    [
+      270,
+      "4_388",
+      true,
+      3
+    ],
+    [
+      271,
+      "4_113",
+      true,
+      3
+    ],
+    [
+      272,
+      "4_248",
+      true,
+      3
+    ],
+    [
+      273,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      274,
+      "4_39",
+      true,
+      3
+    ],
+    [
+      275,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      276,
+      "4_261",
+      true,
+      3
+    ],
+    [
+      277,
+      "4_286",
+      true,
+      3
+    ],
+    [
+      278,
+      "2_441",
+      true,
+      3
+    ],
+    [
+      279,
+      "4_111",
+      true,
+      3
+    ],
+    [
+      280,
+      "4_23",
+      true,
+      3
+    ],
+    [
+      281,
+      "4_88",
+      true,
+      3
+    ],
+    [
+      282,
+      "4_57",
+      true,
+      3
+    ],
+    [
+      283,
+      "4_403",
+      true,
+      3
+    ],
+    [
+      284,
+      "4_260",
+      true,
+      3
+    ],
+    [
+      285,
+      "4_186",
+      true,
+      3
+    ],
+    [
+      286,
+      "2_268",
+      true,
+      3
+    ],
+    [
+      287,
+      "4_273",
+      true,
+      3
+    ],
+    [
+      288,
+      "4_21",
+      true,
+      3
+    ],
+    [
+      289,
+      "4_50",
+      true,
+      3
+    ],
+    [
+      290,
+      "4_259",
+      true,
+      3
+    ],
+    [
+      291,
+      "4_336",
+      true,
+      3
+    ],
+    [
+      292,
+      "4_339",
+      true,
+      3
+    ],
+    [
+      293,
+      "4_105",
+      true,
+      3
+    ],
+    [
+      294,
+      "4_14",
+      true,
+      3
+    ],
+    [
+      295,
+      "4_222",
+      true,
+      3
+    ],
+    [
+      296,
+      "4_68",
+      true,
+      3
+    ],
+    [
+      297,
+      "4_274",
+      true,
+      3
+    ],
+    [
+      298,
+      "4_115",
+      true,
+      3
+    ],
+    [
+      299,
+      "4_125",
+      true,
+      3
+    ],
+    [
+      300,
+      "4_376",
+      true,
+      3
+    ],
+    [
+      301,
+      "4_148",
+      true,
+      3
+    ],
+    [
+      302,
+      "2_243",
+      true,
+      3
+    ],
+    [
+      303,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      304,
+      "4_51",
+      true,
+      3
+    ],
+    [
+      305,
+      "4_41",
+      true,
+      3
+    ],
+    [
+      306,
+      "4_56",
+      true,
+      3
+    ],
+    [
+      307,
+      "4_213",
+      true,
+      3
+    ],
+    [
+      308,
+      "4_127",
+      true,
+      3
+    ],
+    [
+      309,
+      "4_244",
+      true,
+      3
+    ],
+    [
+      310,
+      "4_221",
+      true,
+      3
+    ],
+    [
+      311,
+      "4_80",
+      true,
+      3
+    ],
+    [
+      312,
+      "2_317",
+      true,
+      3
+    ],
+    [
+      313,
+      "4_348",
+      true,
+      3
+    ],
+    [
+      314,
+      "4_429",
+      true,
+      3
+    ],
+    [
+      315,
+      "2_185",
+      true,
+      3
+    ],
+    [
+      316,
+      "4_410",
+      true,
+      3
+    ],
+    [
+      317,
+      "4_212",
+      true,
+      3
+    ],
+    [
+      318,
+      "4_178",
+      true,
+      3
+    ],
+    [
+      319,
+      "clump_thickness",
+      false,
+      null
+    ],
+    [
+      320,
+      "4_413",
+      true,
+      3
+    ],
+    [
+      321,
+      "4_226",
+      true,
+      3
+    ],
+    [
+      322,
+      "4_249",
+      true,
+      3
+    ],
+    [
+      323,
+      "4_156",
+      true,
+      3
+    ],
+    [
+      324,
+      "4_377",
+      true,
+      3
+    ],
+    [
+      325,
+      "4_87",
+      true,
+      3
+    ],
+    [
+      326,
+      "4_81",
+      true,
+      3
+    ],
+    [
+      327,
+      "4_461",
+      true,
+      3
+    ],
+    [
+      328,
+      "4_153",
+      true,
+      3
+    ],
+    [
+      329,
+      "4_15",
+      true,
+      3
+    ],
+    [
+      330,
+      "4_253",
+      true,
+      3
+    ],
+    [
+      331,
+      "4_257",
+      true,
+      3
+    ],
+    [
+      332,
+      "4_82",
+      true,
+      3
+    ],
+    [
+      333,
+      "4_204",
+      true,
+      3
+    ],
+    [
+      334,
+      "4_347",
+      true,
+      3
+    ],
+    [
+      335,
+      "4_49",
+      true,
+      3
+    ],
+    [
+      336,
+      "4_308",
+      true,
+      3
+    ],
+    [
+      337,
+      "4_149",
+      true,
+      3
+    ],
+    [
+      338,
+      "2_205",
+      true,
+      3
+    ],
+    [
+      339,
+      "4_230",
+      true,
+      3
+    ],
+    [
+      340,
+      "4_144",
+      true,
+      3
+    ],
+    [
+      341,
+      "4_448",
+      true,
+      3
+    ],
+    [
+      342,
+      "4_44",
+      true,
+      3
+    ],
+    [
+      343,
+      "4_79",
+      true,
+      3
+    ],
+    [
+      344,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      345,
+      "4_173",
+      true,
+      3
+    ],
+    [
+      346,
+      "4_370",
+      true,
+      3
+    ],
+    [
+      347,
+      "2_323",
+      true,
+      3
+    ],
+    [
+      348,
+      "4_215",
+      true,
+      3
+    ],
+    [
+      349,
+      "4_130",
+      true,
+      3
+    ],
+    [
+      350,
+      "4_258",
+      true,
+      3
+    ],
+    [
+      351,
+      "4_183",
+      true,
+      3
+    ],
+    [
+      352,
+      "4_239",
+      true,
+      3
+    ],
+    [
+      353,
+      "4_46",
+      true,
+      3
+    ],
+    [
+      354,
+      "4_219",
+      true,
+      3
+    ],
+    [
+      355,
+      "4_18",
+      true,
+      3
+    ],
+    [
+      356,
+      "4_139",
+      true,
+      3
+    ],
+    [
+      357,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      358,
+      "4_180",
+      true,
+      3
+    ],
+    [
+      359,
+      "4_254",
+      true,
+      3
+    ],
+    [
+      360,
+      "4_434",
+      true,
+      3
+    ],
+    [
+      361,
+      "4_362",
+      true,
+      3
+    ],
+    [
+      362,
+      "4_208",
+      true,
+      3
+    ],
+    [
+      363,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      364,
+      "2_320",
+      true,
+      4
+    ],
+    [
+      365,
+      "2_162",
+      true,
+      4
+    ],
+    [
+      366,
+      "2_196",
+      true,
+      4
+    ],
+    [
+      367,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      368,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      369,
+      "2_73",
+      true,
+      4
+    ],
+    [
+      370,
+      "2_200",
+      true,
+      4
+    ],
+    [
+      371,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      372,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      373,
+      "2_199",
+      true,
+      4
+    ],
+    [
+      374,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      375,
+      "2_10",
+      true,
+      4
+    ],
+    [
+      376,
+      "2_246",
+      true,
+      4
+    ],
+    [
+      377,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      378,
+      "2_32",
+      true,
+      4
+    ],
+    [
+      379,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      380,
+      "2_352",
+      true,
+      4
+    ],
+    [
+      381,
+      "2_383",
+      true,
+      4
+    ],
+    [
+      382,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      383,
+      "2_459",
+      true,
+      4
+    ],
+    [
+      384,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      385,
+      "2_343",
+      true,
+      4
+    ],
+    [
+      386,
+      "2_350",
+      true,
+      4
+    ],
+    [
+      387,
+      "2_344",
+      true,
+      4
+    ],
+    [
+      388,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      389,
+      "2_436",
+      true,
+      4
+    ],
+    [
+      390,
+      "2_416",
+      true,
+      4
+    ],
+    [
+      391,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      392,
+      "2_331",
+      true,
+      4
+    ],
+    [
+      393,
+      "2_369",
+      true,
+      4
+    ],
+    [
+      394,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      395,
+      "2_424",
+      true,
+      4
+    ],
+    [
+      396,
+      "2_103",
+      true,
+      4
+    ],
+    [
+      397,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      398,
+      "2_337",
+      true,
+      4
+    ],
+    [
+      399,
+      "2_386",
+      true,
+      4
+    ],
+    [
+      400,
+      "2_312",
+      true,
+      4
+    ],
+    [
+      401,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      402,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      403,
+      "2_381",
+      true,
+      4
+    ],
+    [
+      404,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      405,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      406,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      407,
+      "2_444",
+      true,
+      4
+    ],
+    [
+      408,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      409,
+      "2_440",
+      true,
+      4
+    ],
+    [
+      410,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      411,
+      "2_76",
+      true,
+      4
+    ],
+    [
+      412,
+      "2_293",
+      true,
+      4
+    ],
+    [
+      413,
+      "2_83",
+      true,
+      4
+    ],
+    [
+      414,
+      "2_240",
+      true,
+      4
+    ],
+    [
+      415,
+      "2_195",
+      true,
+      4
+    ],
+    [
+      416,
+      "2_211",
+      true,
+      4
+    ],
+    [
+      417,
+      "4_36",
+      true,
+      4
+    ],
+    [
+      418,
+      "2_285",
+      true,
+      4
+    ],
+    [
+      419,
+      "2_231",
+      true,
+      4
+    ],
+    [
+      420,
+      "2_433",
+      true,
+      4
+    ],
+    [
+      421,
+      "2_188",
+      true,
+      4
+    ],
+    [
+      422,
+      "4_54",
+      true,
+      4
+    ],
+    [
+      423,
+      "4_432",
+      true,
+      4
+    ],
+    [
+      424,
+      "4_99",
+      true,
+      4
+    ],
+    [
+      425,
+      "4_216",
+      true,
+      4
+    ],
+    [
+      426,
+      "4_131",
+      true,
+      4
+    ],
+    [
+      427,
+      "4_202",
+      true,
+      4
+    ],
+    [
+      428,
+      "4_209",
+      true,
+      4
+    ],
+    [
+      429,
+      "4_462",
+      true,
+      4
+    ],
+    [
+      430,
+      "4_407",
+      true,
+      4
+    ],
+    [
+      431,
+      "4_94",
+      true,
+      4
+    ],
+    [
+      432,
+      "4_224",
+      true,
+      4
+    ],
+    [
+      433,
+      "4_415",
+      true,
+      4
+    ],
+    [
+      434,
+      "4_138",
+      true,
+      4
+    ],
+    [
+      435,
+      "4_447",
+      true,
+      4
+    ],
+    [
+      436,
+      "4_197",
+      true,
+      4
+    ],
+    [
+      437,
+      "4_159",
+      true,
+      4
+    ],
+    [
+      438,
+      "4_170",
+      true,
+      4
+    ],
+    [
+      439,
+      "4_385",
+      true,
+      4
+    ],
+    [
+      440,
+      "4_279",
+      true,
+      4
+    ],
+    [
+      441,
+      "4_272",
+      true,
+      4
+    ],
+    [
+      442,
+      "4_236",
+      true,
+      4
+    ],
+    [
+      443,
+      "4_101",
+      true,
+      4
+    ],
+    [
+      444,
+      "4_34",
+      true,
+      4
+    ],
+    [
+      445,
+      "4_419",
+      true,
+      4
+    ],
+    [
+      446,
+      "4_42",
+      true,
+      4
+    ],
+    [
+      447,
+      "4_306",
+      true,
+      4
+    ],
+    [
+      448,
+      "4_314",
+      true,
+      4
+    ],
+    [
+      449,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      450,
+      "4_405",
+      true,
+      4
+    ],
+    [
+      451,
+      "4_171",
+      true,
+      4
+    ],
+    [
+      452,
+      "4_316",
+      true,
+      4
+    ],
+    [
+      453,
+      "4_147",
+      true,
+      4
+    ],
+    [
+      454,
+      "4_452",
+      true,
+      4
+    ],
+    [
+      455,
+      "4_438",
+      true,
+      4
+    ],
+    [
+      456,
+      "4_420",
+      true,
+      4
+    ],
+    [
+      457,
+      "4_356",
+      true,
+      4
+    ],
+    [
+      458,
+      "2_307",
+      true,
+      4
+    ],
+    [
+      459,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      460,
+      "2_401",
+      true,
+      4
+    ],
+    [
+      461,
+      "2_329",
+      true,
+      4
+    ],
+    [
+      462,
+      "2_355",
+      true,
+      4
+    ],
+    [
+      463,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      464,
+      "2_263",
+      true,
+      4
+    ],
+    [
+      465,
+      "2_392",
+      true,
+      4
+    ],
+    [
+      466,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      467,
+      "bland_chromatin",
+      false,
+      null
+    ],
+    [
+      468,
+      "2_102",
+      true,
+      4
+    ],
+    [
+      469,
+      "2_287",
+      true,
+      4
+    ],
+    [
+      470,
+      "2_288",
+      true,
+      4
+    ],
+    [
+      471,
+      "2_389",
+      true,
+      4
+    ],
+    [
+      472,
+      "2_90",
+      true,
+      4
+    ],
+    [
+      473,
+      "2_351",
+      true,
+      4
+    ],
+    [
+      474,
+      "2_122",
+      true,
+      4
+    ],
+    [
+      475,
+      "2_137",
+      true,
+      4
+    ],
+    [
+      476,
+      "2_201",
+      true,
+      4
+    ],
+    [
+      477,
+      "2_349",
+      true,
+      4
+    ],
+    [
+      478,
+      "2_136",
+      true,
+      4
+    ],
+    [
+      479,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      480,
+      "2_342",
+      true,
+      4
+    ],
+    [
+      481,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      482,
+      "4_55",
+      true,
+      4
+    ],
+    [
+      483,
+      "4_151",
+      true,
+      4
+    ],
+    [
+      484,
+      "4_271",
+      true,
+      4
+    ],
+    [
+      485,
+      "4_12",
+      true,
+      4
+    ],
+    [
+      486,
+      "2_174",
+      true,
+      4
+    ],
+    [
+      487,
+      "2_431",
+      true,
+      4
+    ],
+    [
+      488,
+      "4_225",
+      true,
+      4
+    ],
+    [
+      489,
+      "2_380",
+      true,
+      4
+    ],
+    [
+      490,
+      "2_158",
+      true,
+      4
+    ],
+    [
+      491,
+      "2_28",
+      true,
+      4
+    ],
+    [
+      492,
+      "2_299",
+      true,
+      4
+    ],
+    [
+      493,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      494,
+      "2_296",
+      true,
+      4
+    ],
+    [
+      495,
+      "4_418",
+      true,
+      4
+    ],
+    [
+      496,
+      "4_328",
+      true,
+      4
+    ],
+    [
+      497,
+      "4_192",
+      true,
+      4
+    ],
+    [
+      498,
+      "4_100",
+      true,
+      4
+    ],
+    [
+      499,
+      "4_135",
+      true,
+      4
+    ],
+    [
+      500,
+      "4_179",
+      true,
+      4
+    ],
+    [
+      501,
+      "4_289",
+      true,
+      4
+    ],
+    [
+      502,
+      "4_52",
+      true,
+      4
+    ],
+    [
+      503,
+      "4_184",
+      true,
+      4
+    ],
+    [
+      504,
+      "4_245",
+      true,
+      4
+    ],
+    [
+      505,
+      "4_294",
+      true,
+      4
+    ],
+    [
+      506,
+      "4_31",
+      true,
+      4
+    ],
+    [
+      507,
+      "4_400",
+      true,
+      4
+    ],
+    [
+      508,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      509,
+      "2_120",
+      true,
+      5
+    ],
+    [
+      510,
+      "2_142",
+      true,
+      5
+    ],
+    [
+      511,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      512,
+      "2_194",
+      true,
+      5
+    ],
+    [
+      513,
+      "2_449",
+      true,
+      5
+    ],
+    [
+      514,
+      "2_2",
+      true,
+      5
+    ],
+    [
+      515,
+      "2_107",
+      true,
+      5
+    ],
+    [
+      516,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      517,
+      "2_109",
+      true,
+      5
+    ],
+    [
+      518,
+      "2_140",
+      true,
+      5
+    ],
+    [
+      519,
+      "2_143",
+      true,
+      5
+    ],
+    [
+      520,
+      "marginal_adhesion",
+      false,
+      null
+    ],
+    [
+      521,
+      "2_6",
+      true,
+      5
+    ],
+    [
+      522,
+      "2_13",
+      true,
+      5
+    ],
+    [
+      523,
+      "2_30",
+      true,
+      5
+    ],
+    [
+      524,
+      "2_154",
+      true,
+      5
+    ],
+    [
+      525,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      526,
+      "2_267",
+      true,
+      5
+    ],
+    [
+      527,
+      "2_404",
+      true,
+      5
+    ],
+    [
+      528,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      529,
+      "2_335",
+      true,
+      5
+    ],
+    [
+      530,
+      "2_84",
+      true,
+      5
+    ],
+    [
+      531,
+      "2_302",
+      true,
+      5
+    ],
+    [
+      532,
+      "2_439",
+      true,
+      5
+    ],
+    [
+      533,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      534,
+      "2_366",
+      true,
+      5
+    ],
+    [
+      535,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      536,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      537,
+      "2_146",
+      true,
+      5
+    ],
+    [
+      538,
+      "2_106",
+      true,
+      5
+    ],
+    [
+      539,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      540,
+      "2_141",
+      true,
+      5
+    ],
+    [
+      541,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      542,
+      "2_85",
+      true,
+      5
+    ],
+    [
+      543,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      544,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      545,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      546,
+      "2_119",
+      true,
+      5
+    ],
+    [
+      547,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      548,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      549,
+      "2_270",
+      true,
+      5
+    ],
+    [
+      550,
+      "2_363",
+      true,
+      5
+    ],
+    [
+      551,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      552,
+      "2_128",
+      true,
+      5
+    ],
+    [
+      553,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      554,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      555,
+      "2_74",
+      true,
+      5
+    ],
+    [
+      556,
+      "2_422",
+      true,
+      5
+    ],
+    [
+      557,
+      "2_334",
+      true,
+      5
+    ],
+    [
+      558,
+      "4_177",
+      true,
+      5
+    ],
+    [
+      559,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      560,
+      "2_72",
+      true,
+      5
+    ],
+    [
+      561,
+      "4_417",
+      true,
+      5
+    ],
+    [
+      562,
+      "4_393",
+      true,
+      5
+    ],
+    [
+      563,
+      "2_341",
+      true,
+      5
+    ],
+    [
+      564,
+      "2_450",
+      true,
+      5
+    ],
+    [
+      565,
+      "2_311",
+      true,
+      5
+    ],
+    [
+      566,
+      "2_445",
+      true,
+      5
+    ],
+    [
+      567,
+      "2_256",
+      true,
+      5
+    ],
+    [
+      568,
+      "2_394",
+      true,
+      5
+    ],
+    [
+      569,
+      "2_372",
+      true,
+      5
+    ],
+    [
+      570,
+      "2_33",
+      true,
+      5
+    ],
+    [
+      571,
+      "2_313",
+      true,
+      5
+    ],
+    [
+      572,
+      "2_322",
+      true,
+      5
+    ],
+    [
+      573,
+      "2_277",
+      true,
+      5
+    ],
+    [
+      574,
+      "2_411",
+      true,
+      5
+    ],
+    [
+      575,
+      "2_290",
+      true,
+      5
+    ],
+    [
+      576,
+      "2_65",
+      true,
+      5
+    ],
+    [
+      577,
+      "2_301",
+      true,
+      5
+    ],
+    [
+      578,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      579,
+      "2_281",
+      true,
+      5
+    ],
+    [
+      580,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      581,
+      "2_77",
+      true,
+      6
+    ],
+    [
+      582,
+      "2_114",
+      true,
+      6
+    ],
+    [
+      583,
+      "2_217",
+      true,
+      6
+    ],
+    [
+      584,
+      "2_17",
+      true,
+      6
+    ],
+    [
+      585,
+      "2_4",
+      true,
+      6
+    ],
+    [
+      586,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      587,
+      "2_175",
+      true,
+      6
+    ],
+    [
+      588,
+      "2_327",
+      true,
+      6
+    ],
+    [
+      589,
+      "2_354",
+      true,
+      6
+    ],
+    [
+      590,
+      "single_epithelial_cell_size",
+      false,
+      null
+    ],
+    [
+      591,
+      "2_367",
+      true,
+      6
+    ],
+    [
+      592,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      593,
+      "2_375",
+      true,
+      6
+    ],
+    [
+      594,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      595,
+      "2_374",
+      true,
+      6
+    ],
+    [
+      596,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      597,
+      "2_116",
+      true,
+      6
+    ],
+    [
+      598,
+      "2_437",
+      true,
+      6
+    ],
+    [
+      599,
+      "2_303",
+      true,
+      6
+    ],
+    [
+      600,
+      "2_330",
+      true,
+      6
+    ],
+    [
+      601,
+      "2_358",
+      true,
+      6
+    ],
+    [
+      602,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      603,
+      "2_430",
+      true,
+      6
+    ],
+    [
+      604,
+      "2_27",
+      true,
+      6
+    ],
+    [
+      605,
+      "2_321",
+      true,
+      6
+    ],
+    [
+      606,
+      "2_382",
+      true,
+      6
+    ],
+    [
+      607,
+      "2_292",
+      true,
+      6
+    ],
+    [
+      608,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      609,
+      "uniformity_cell_size",
+      false,
+      null
+    ],
+    [
+      610,
+      "2_455",
+      true,
+      6
+    ],
+    [
+      611,
+      "2_29",
+      true,
+      6
+    ],
+    [
+      612,
+      "2_26",
+      true,
+      6
+    ],
+    [
+      613,
+      "bare_nuclei",
+      false,
+      null
+    ],
+    [
+      614,
+      "2_9",
+      true,
+      6
+    ],
+    [
+      615,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      616,
+      "2_58",
+      true,
+      6
+    ],
+    [
+      617,
+      "2_229",
+      true,
+      6
+    ],
+    [
+      618,
+      "2_242",
+      true,
+      6
+    ],
+    [
+      619,
+      "2_123",
+      true,
+      6
+    ],
+    [
+      620,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      621,
+      "2_421",
+      true,
+      6
+    ],
+    [
+      622,
+      "2_283",
+      true,
+      6
+    ],
+    [
+      623,
+      "2_427",
+      true,
+      6
+    ],
+    [
+      624,
+      "2_443",
+      true,
+      6
+    ],
+    [
+      625,
+      "2_126",
+      true,
+      6
+    ],
+    [
+      626,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      627,
+      "2_167",
+      true,
+      7
+    ],
+    [
+      628,
+      "2_24",
+      true,
+      7
+    ],
+    [
+      629,
+      "2_64",
+      true,
+      7
+    ],
+    [
+      630,
+      "2_121",
+      true,
+      7
+    ],
+    [
+      631,
+      "2_387",
+      true,
+      7
+    ],
+    [
+      632,
+      "normal_nucleoli",
+      false,
+      null
+    ],
+    [
+      633,
+      "2_133",
+      true,
+      7
+    ],
+    [
+      634,
+      "2_134",
+      true,
+      7
+    ],
+    [
+      635,
+      "2_456",
+      true,
+      7
+    ],
+    [
+      636,
+      "2_295",
+      true,
+      7
+    ],
+    [
+      637,
+      "2_264",
+      true,
+      7
+    ],
+    [
+      638,
+      "2_124",
+      true,
+      7
+    ],
+    [
+      639,
+      "2_8",
+      true,
+      7
+    ],
+    [
+      640,
+      "2_22",
+      true,
+      7
+    ],
+    [
+      641,
+      "2_458",
+      true,
+      7
+    ],
+    [
+      642,
+      "2_118",
+      true,
+      7
+    ],
+    [
+      643,
+      "2_298",
+      true,
+      7
+    ],
+    [
+      644,
+      "2_16",
+      true,
+      7
+    ],
+    [
+      645,
+      "2_395",
+      true,
+      7
+    ],
+    [
+      646,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      647,
+      "2_319",
+      true,
+      7
+    ],
+    [
+      648,
+      "2_96",
+      true,
+      7
+    ],
+    [
+      649,
+      "2_11",
+      true,
+      7
+    ],
+    [
+      650,
+      "2_291",
+      true,
+      7
+    ],
+    [
+      651,
+      "mitoses",
+      false,
+      null
+    ],
+    [
+      652,
+      "2_454",
+      true,
+      8
+    ],
+    [
+      653,
+      "2_297",
+      true,
+      8
+    ],
+    [
+      654,
+      "2_345",
+      true,
+      8
+    ],
+    [
+      655,
+      "2_45",
+      true,
+      8
+    ],
+    [
+      656,
+      "2_43",
+      true,
+      8
+    ],
+    [
+      657,
+      "2_0",
+      true,
+      9
+    ],
+    [
+      658,
+      "2_255",
+      true,
+      9
+    ]
+  ],
+  "successors": {
+    "0_0": 1,
+    "0_1": 2,
+    "0_2": 3,
+    "0_3": 4,
+    "0_4": 5,
+    "0_5": 6,
+    "0_6": 7,
+    "0_7": 8,
+    "0_8": 9,
+    "0_9": 10,
+    "1_0": 11,
+    "1_2": 12,
+    "1_3": 13,
+    "1_4": 14,
+    "1_5": 15,
+    "1_6": 16,
+    "2_0": 17,
+    "2_1": 18,
+    "2_2": 19,
+    "2_3": 20,
+    "2_4": 21,
+    "2_5": 22,
+    "2_6": 23,
+    "2_7": 24,
+    "2_8": 25,
+    "3_0": 26,
+    "3_1": 27,
+    "3_2": 28,
+    "3_3": 29,
+    "3_4": 30,
+    "3_5": 31,
+    "3_6": 32,
+    "3_7": 33,
+    "3_8": 34,
+    "3_9": 35,
+    "4_0": 36,
+    "4_1": 37,
+    "4_3": 38,
+    "4_4": 39,
+    "4_5": 40,
+    "4_6": 41,
+    "4_7": 42,
+    "4_8": 43,
+    "4_9": 44,
+    "5_0": 45,
+    "5_1": 46,
+    "5_2": 47,
+    "5_3": 48,
+    "5_5": 49,
+    "5_6": 50,
+    "5_7": 51,
+    "5_8": 52,
+    "5_9": 53,
+    "6_0": 54,
+    "6_1": 55,
+    "6_2": 56,
+    "6_3": 57,
+    "6_4": 58,
+    "6_5": 59,
+    "6_6": 60,
+    "6_7": 61,
+    "6_8": 62,
+    "7_0": 63,
+    "7_1": 64,
+    "7_2": 65,
+    "7_3": 66,
+    "7_4": 67,
+    "7_5": 68,
+    "7_6": 69,
+    "7_7": 70,
+    "8_0": 71,
+    "8_1": 72,
+    "8_2": 73,
+    "8_3": 74,
+    "8_4": 75,
+    "8_5": 76,
+    "8_6": 77,
+    "8_7": 78,
+    "8_8": 79,
+    "8_9": 80,
+    "9_0": 81,
+    "9_1": 82,
+    "9_2": 83,
+    "9_3": 84,
+    "9_4": 85,
+    "9_6": 86,
+    "9_7": 87,
+    "9_8": 88,
+    "9_9": 89,
+    "10_1": 90,
+    "10_2": 91,
+    "10_3": 92,
+    "10_5": 93,
+    "10_6": 94,
+    "10_7": 95,
+    "11_0": 96,
+    "11_1": 97,
+    "11_2": 98,
+    "11_3": 99,
+    "11_5": 100,
+    "11_6": 101,
+    "12_0": 102,
+    "12_1": 103,
+    "12_2": 104,
+    "12_3": 105,
+    "12_4": 106,
+    "12_5": 107,
+    "12_6": 108,
+    "13_0": 109,
+    "13_2": 110,
+    "13_5": 111,
+    "13_6": 112,
+    "13_7": 113,
+    "15_0": 114,
+    "15_1": 115,
+    "15_2": 116,
+    "15_8": 117,
+    "16_1": 118,
+    "16_2": 119,
+    "17_0": 120,
+    "17_1": 121,
+    "17_3": 122,
+    "17_4": 123,
+    "17_5": 124,
+    "17_6": 125,
+    "17_7": 126,
+    "18_0": 127,
+    "18_1": 128,
+    "18_8": 129,
+    "19_5": 130,
+    "19_7": 131,
+    "20_0": 132,
+    "20_2": 133,
+    "20_5": 134,
+    "20_7": 135,
+    "20_9": 136,
+    "21_0": 137,
+    "21_2": 138,
+    "21_4": 139,
+    "21_5": 140,
+    "21_6": 141,
+    "21_7": 142,
+    "21_8": 143,
+    "24_1": 144,
+    "24_4": 145,
+    "24_5": 146,
+    "24_8": 147,
+    "24_9": 148,
+    "25_0": 149,
+    "25_1": 150,
+    "25_2": 151,
+    "25_4": 152,
+    "25_5": 153,
+    "25_6": 154,
+    "26_2": 155,
+    "26_4": 156,
+    "26_9": 157,
+    "27_4": 158,
+    "27_5": 159,
+    "27_6": 160,
+    "27_8": 161,
+    "28_3": 162,
+    "28_4": 163,
+    "29_0": 164,
+    "29_4": 165,
+    "30_0": 166,
+    "30_2": 167,
+    "30_5": 168,
+    "30_6": 169,
+    "30_7": 170,
+    "32_5": 171,
+    "32_8": 172,
+    "33_2": 173,
+    "33_5": 174,
+    "33_7": 175,
+    "35_1": 176,
+    "35_4": 177,
+    "35_7": 178,
+    "35_8": 179,
+    "36_0": 180,
+    "36_5": 181,
+    "36_9": 182,
+    "36_10": 183,
+    "37_4": 184,
+    "37_7": 185,
+    "37_8": 186,
+    "39_0": 187,
+    "39_4": 188,
+    "39_6": 189,
+    "39_7": 190,
+    "39_8": 191,
+    "40_0": 192,
+    "40_2": 193,
+    "40_4": 194,
+    "40_7": 195,
+    "41_1": 196,
+    "41_2": 197,
+    "41_3": 198,
+    "41_4": 199,
+    "41_6": 200,
+    "41_7": 201,
+    "41_8": 202,
+    "41_9": 203,
+    "42_0": 204,
+    "42_1": 205,
+    "42_3": 206,
+    "42_6": 207,
+    "42_7": 208,
+    "42_8": 209,
+    "44_0": 210,
+    "44_1": 211,
+    "44_4": 212,
+    "44_5": 213,
+    "44_6": 214,
+    "45_0": 215,
+    "45_3": 216,
+    "45_4": 217,
+    "45_5": 218,
+    "45_7": 219,
+    "46_0": 220,
+    "46_1": 221,
+    "46_4": 222,
+    "46_5": 223,
+    "46_7": 224,
+    "47_3": 225,
+    "47_5": 226,
+    "48_0": 227,
+    "48_1": 228,
+    "48_4": 229,
+    "48_5": 230,
+    "49_0": 231,
+    "49_2": 232,
+    "49_3": 233,
+    "49_4": 234,
+    "50_0": 235,
+    "50_4": 236,
+    "50_5": 237,
+    "51_0": 238,
+    "51_5": 239,
+    "52_1": 240,
+    "52_4": 241,
+    "54_0": 242,
+    "54_1": 243,
+    "54_2": 244,
+    "54_3": 245,
+    "54_4": 246,
+    "54_6": 247,
+    "54_7": 248,
+    "55_0": 249,
+    "55_2": 250,
+    "55_4": 251,
+    "56_0": 252,
+    "56_1": 253,
+    "56_2": 254,
+    "56_7": 255,
+    "57_0": 256,
+    "57_2": 257,
+    "57_3": 258,
+    "57_6": 259,
+    "58_3": 260,
+    "58_4": 261,
+    "58_5": 262,
+    "59_0": 263,
+    "59_2": 264,
+    "59_3": 265,
+    "59_5": 266,
+    "59_6": 267,
+    "60_0": 268,
+    "60_7": 269,
+    "61_2": 270,
+    "61_7": 271,
+    "61_8": 272,
+    "62_0": 273,
+    "62_4": 274,
+    "62_5": 275,
+    "62_7": 276,
+    "62_9": 277,
+    "63_0": 278,
+    "63_1": 279,
+    "63_7": 280,
+    "63_8": 281,
+    "64_0": 282,
+    "64_2": 283,
+    "64_4": 284,
+    "64_8": 285,
+    "65_1": 286,
+    "65_4": 287,
+    "65_8": 288,
+    "66_0": 289,
+    "66_2": 290,
+    "66_3": 291,
+    "66_8": 292,
+    "67_3": 293,
+    "67_4": 294,
+    "67_7": 295,
+    "67_9": 296,
+    "68_0": 297,
+    "68_2": 298,
+    "68_4": 299,
+    "68_6": 300,
+    "68_8": 301,
+    "69_1": 302,
+    "69_2": 303,
+    "69_7": 304,
+    "69_8": 305,
+    "70_0": 306,
+    "70_2": 307,
+    "70_4": 308,
+    "70_6": 309,
+    "71_1": 310,
+    "71_3": 311,
+    "71_5": 312,
+    "72_2": 313,
+    "72_3": 314,
+    "73_1": 315,
+    "73_2": 316,
+    "73_3": 317,
+    "73_7": 318,
+    "73_8": 319,
+    "74_1": 320,
+    "74_8": 321,
+    "75_0": 322,
+    "75_4": 323,
+    "75_5": 324,
+    "75_6": 325,
+    "76_1": 326,
+    "76_3": 327,
+    "76_4": 328,
+    "76_7": 329,
+    "76_8": 330,
+    "77_0": 331,
+    "77_1": 332,
+    "78_0": 333,
+    "78_1": 334,
+    "78_4": 335,
+    "78_8": 336,
+    "81_2": 337,
+    "81_6": 338,
+    "81_7": 339,
+    "81_8": 340,
+    "82_3": 341,
+    "82_6": 342,
+    "82_7": 343,
+    "83_2": 344,
+    "83_3": 345,
+    "83_8": 346,
+    "83_9": 347,
+    "85_1": 348,
+    "85_2": 349,
+    "85_8": 350,
+    "87_5": 351,
+    "87_6": 352,
+    "87_7": 353,
+    "88_0": 354,
+    "88_4": 355,
+    "88_5": 356,
+    "88_6": 357,
+    "88_7": 358,
+    "88_8": 359,
+    "88_9": 360,
+    "93_0": 361,
+    "93_4": 362,
+    "96_0": 363,
+    "96_2": 364,
+    "96_5": 365,
+    "96_7": 366,
+    "97_0": 367,
+    "97_2": 368,
+    "97_4": 369,
+    "97_7": 370,
+    "99_0": 371,
+    "99_1": 372,
+    "99_7": 373,
+    "100_0": 374,
+    "100_3": 375,
+    "100_6": 376,
+    "101_0": 377,
+    "101_7": 378,
+    "102_0": 379,
+    "102_4": 380,
+    "102_5": 381,
+    "103_0": 382,
+    "103_2": 383,
+    "103_3": 384,
+    "103_8": 385,
+    "104_0": 386,
+    "104_2": 387,
+    "105_0": 388,
+    "105_2": 389,
+    "105_7": 390,
+    "107_0": 391,
+    "107_2": 392,
+    "107_3": 393,
+    "107_4": 394,
+    "107_7": 395,
+    "107_8": 396,
+    "108_0": 397,
+    "108_2": 398,
+    "108_3": 399,
+    "108_6": 400,
+    "109_0": 401,
+    "109_1": 402,
+    "109_2": 403,
+    "109_3": 404,
+    "109_5": 405,
+    "109_6": 406,
+    "110_1": 407,
+    "110_3": 408,
+    "110_5": 409,
+    "113_0": 410,
+    "113_3": 411,
+    "113_5": 412,
+    "113_6": 413,
+    "117_1": 414,
+    "117_5": 415,
+    "120_0": 416,
+    "120_1": 417,
+    "124_0": 418,
+    "124_2": 419,
+    "127_0": 420,
+    "127_7": 421,
+    "141_4": 422,
+    "141_6": 423,
+    "141_8": 424,
+    "145_2": 425,
+    "145_4": 426,
+    "152_0": 427,
+    "152_4": 428,
+    "159_2": 429,
+    "159_3": 430,
+    "191_3": 431,
+    "191_4": 432,
+    "197_8": 433,
+    "197_9": 434,
+    "198_0": 435,
+    "198_4": 436,
+    "198_8": 437,
+    "199_1": 438,
+    "199_5": 439,
+    "199_7": 440,
+    "203_4": 441,
+    "203_8": 442,
+    "204_2": 443,
+    "204_3": 444,
+    "204_4": 445,
+    "204_5": 446,
+    "204_6": 447,
+    "204_9": 448,
+    "210_0": 449,
+    "210_4": 450,
+    "210_8": 451,
+    "210_9": 452,
+    "213_2": 453,
+    "213_8": 454,
+    "214_0": 455,
+    "214_4": 456,
+    "214_9": 457,
+    "215_0": 458,
+    "215_2": 459,
+    "215_3": 460,
+    "218_4": 461,
+    "218_5": 462,
+    "219_0": 463,
+    "219_2": 464,
+    "219_3": 465,
+    "220_0": 466,
+    "220_4": 467,
+    "220_5": 468,
+    "221_0": 469,
+    "221_2": 470,
+    "221_4": 471,
+    "227_0": 472,
+    "227_2": 473,
+    "227_3": 474,
+    "232_0": 475,
+    "232_4": 476,
+    "233_0": 477,
+    "233_4": 478,
+    "242_0": 479,
+    "242_2": 480,
+    "242_3": 481,
+    "243_4": 482,
+    "243_5": 483,
+    "246_0": 484,
+    "246_2": 485,
+    "252_0": 486,
+    "252_2": 487,
+    "252_5": 488,
+    "263_0": 489,
+    "263_4": 490,
+    "264_0": 491,
+    "264_4": 492,
+    "265_0": 493,
+    "265_4": 494,
+    "273_2": 495,
+    "273_5": 496,
+    "275_1": 497,
+    "275_5": 498,
+    "303_0": 499,
+    "303_8": 500,
+    "319_7": 501,
+    "319_8": 502,
+    "344_1": 503,
+    "344_3": 504,
+    "357_2": 505,
+    "357_6": 506,
+    "357_9": 507,
+    "363_0": 508,
+    "363_2": 509,
+    "363_7": 510,
+    "367_0": 511,
+    "367_2": 512,
+    "367_7": 513,
+    "368_0": 514,
+    "368_4": 515,
+    "371_0": 516,
+    "371_4": 517,
+    "372_0": 518,
+    "372_2": 519,
+    "374_0": 520,
+    "374_1": 521,
+    "374_4": 522,
+    "377_0": 523,
+    "377_3": 524,
+    "379_0": 525,
+    "379_2": 526,
+    "379_6": 527,
+    "382_0": 528,
+    "382_2": 529,
+    "382_7": 530,
+    "384_0": 531,
+    "384_7": 532,
+    "388_0": 533,
+    "388_4": 534,
+    "391_0": 535,
+    "391_2": 536,
+    "391_7": 537,
+    "394_0": 538,
+    "394_2": 539,
+    "394_7": 540,
+    "397_0": 541,
+    "397_7": 542,
+    "401_0": 543,
+    "401_2": 544,
+    "402_0": 545,
+    "402_2": 546,
+    "402_3": 547,
+    "404_0": 548,
+    "404_2": 549,
+    "404_3": 550,
+    "405_0": 551,
+    "405_2": 552,
+    "405_3": 553,
+    "406_0": 554,
+    "406_2": 555,
+    "406_3": 556,
+    "408_0": 557,
+    "408_8": 558,
+    "410_0": 559,
+    "410_5": 560,
+    "449_3": 561,
+    "449_6": 562,
+    "459_0": 563,
+    "459_5": 564,
+    "463_0": 565,
+    "463_2": 566,
+    "463_3": 567,
+    "466_0": 568,
+    "466_2": 569,
+    "466_3": 570,
+    "467_0": 571,
+    "467_2": 572,
+    "467_3": 573,
+    "479_0": 574,
+    "479_5": 575,
+    "481_0": 576,
+    "481_5": 577,
+    "493_0": 578,
+    "493_3": 579,
+    "508_0": 580,
+    "508_4": 581,
+    "511_0": 582,
+    "511_1": 583,
+    "516_0": 584,
+    "516_2": 585,
+    "520_0": 586,
+    "520_7": 587,
+    "525_0": 588,
+    "525_3": 589,
+    "528_0": 590,
+    "528_5": 591,
+    "533_0": 592,
+    "533_2": 593,
+    "535_0": 594,
+    "535_2": 595,
+    "535_3": 596,
+    "535_8": 597,
+    "536_0": 598,
+    "536_4": 599,
+    "539_0": 600,
+    "539_3": 601,
+    "541_0": 602,
+    "541_8": 603,
+    "543_0": 604,
+    "543_1": 605,
+    "544_0": 606,
+    "544_2": 607,
+    "545_0": 608,
+    "545_1": 609,
+    "545_5": 610,
+    "547_0": 611,
+    "547_4": 612,
+    "548_0": 613,
+    "548_4": 614,
+    "551_0": 615,
+    "551_2": 616,
+    "551_7": 617,
+    "553_0": 618,
+    "553_7": 619,
+    "554_0": 620,
+    "554_5": 621,
+    "559_0": 622,
+    "559_3": 623,
+    "578_0": 624,
+    "578_7": 625,
+    "580_0": 626,
+    "580_3": 627,
+    "586_0": 628,
+    "586_1": 629,
+    "590_0": 630,
+    "590_3": 631,
+    "592_0": 632,
+    "592_4": 633,
+    "594_0": 634,
+    "594_7": 635,
+    "596_0": 636,
+    "596_5": 637,
+    "602_0": 638,
+    "602_1": 639,
+    "608_0": 640,
+    "608_3": 641,
+    "609_0": 642,
+    "609_4": 643,
+    "613_0": 644,
+    "613_4": 645,
+    "615_0": 646,
+    "615_1": 647,
+    "615_5": 648,
+    "620_0": 649,
+    "620_1": 650,
+    "626_0": 651,
+    "626_1": 652,
+    "632_0": 653,
+    "632_1": 654,
+    "646_0": 655,
+    "646_3": 656,
+    "651_0": 657,
+    "651_3": 658
+  }
+}
