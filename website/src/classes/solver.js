@@ -23,7 +23,6 @@ export class Solver {
 
 
     getVariables(variables) {
-        this.cfg = variables.cfg;
         this.game = variables.game;
         this.board = variables.board;
         this.tree = variables.dataset.tree;
@@ -32,7 +31,7 @@ export class Solver {
 
 
     createEvents() {
-        this.el.addEventListener('click', (e) => {
+        this.el.addEventListener('pointerup', (e) => {
             e.preventDefault();
             this.toggleComparison();
         });

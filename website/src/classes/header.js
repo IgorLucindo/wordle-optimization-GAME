@@ -15,12 +15,13 @@ export class Header {
 
 
     getVariables(variables) {
-        this.cfg = variables.cfg;
         this.game = variables.game;
     }
 
 
     createEvents() {
+        if (!('ontouchstart' in window) || navigator.maxTouchPoints === 0) return;
+        
         const infoBtn = this.el.querySelector('#info-btn');
         const footer = document.querySelector('footer');
         
@@ -39,9 +40,7 @@ export class Header {
         };
 
         // Create events
-        if (this.cfg.touch) {
-            infoBtn.addEventListener('touchend', clickInfoBtn);
-            window.addEventListener('touchend', clickWindow);
-        }
+        infoBtn.addEventListener('touchend', clickInfoBtn);
+        window.addEventListener('touchend', clickWindow);
     }
 }

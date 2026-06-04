@@ -32,7 +32,6 @@ export class Game {
 
 
     getVariables(variables) {
-        this.cfg = variables.cfg;
         this.dataset = variables.dataset;
         this.board = variables.board;
         this.keyboard = variables.keyboard;
@@ -44,16 +43,14 @@ export class Game {
 
 
     createEvents() {
-        const eventType = this.cfg.touch ? 'touchend' : 'click';
-
         // Reset button click event
-        this.resetButton.addEventListener(eventType, () => {
+        this.resetButton.addEventListener('pointerup', () => {
             this.board.create();
             this.start();
         });
 
         // Solve button end click event
-        this.solveButtonEnd.addEventListener(eventType, () => {
+        this.solveButtonEnd.addEventListener('pointerup', () => {
             if (!this.solver.isComparing) {
                 this.solver.toggleComparison();
             }
@@ -65,7 +62,7 @@ export class Game {
         });
 
         // Difficulty button click event
-        this.diffButton.addEventListener(eventType, () => {
+        this.diffButton.addEventListener('pointerup', () => {
             this.changeMode();
         });
     }

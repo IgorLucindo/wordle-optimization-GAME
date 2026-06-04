@@ -12,7 +12,6 @@ export class Keyboard {
 
 
     getVariables(variables) {
-        this.cfg = variables.cfg;
         this.game = variables.game;
     }
 
@@ -35,8 +34,7 @@ export class Keyboard {
                 const clickButton = () => this.game.handleKeyPress(keyText);
                 
                 // Create events
-                if (!this.cfg.touch) button.addEventListener('click', clickButton);
-                else button.addEventListener('touchend', clickButton);
+                button.addEventListener('pointerup', clickButton);
 
                 // Append button
                 rowDiv.appendChild(button);
