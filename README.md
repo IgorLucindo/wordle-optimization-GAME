@@ -143,8 +143,6 @@ This automatically discovers and evaluates all `data/*/decision_tree.json` files
 
 ---
 
----
-
 ## 🧩 Other Guessing Games (Mastermind & UCI Zoo)
 
 In addition to Wordle, the same solver can build decision trees for two other

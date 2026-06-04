@@ -1,21 +1,10 @@
 from classes.device_optimizer import DeviceOptimizer
+from utils.xp_utils import cp, HAS_CUPY
 from collections import deque
 import numpy as np
 import threading
 import time
 import sys
-
-
-def _get_score_rule(configs):
-    k, score = configs['k'], configs['score']
-    if k == 1:
-        strategy = "greedy"
-    elif k == -1:
-        strategy = "subtree-full"
-    else:
-        strategy = f"subtree-{k}"
-    
-    return f"{strategy} | {score}"
 
 
 class Guess_Tree:
@@ -41,8 +30,7 @@ class Guess_Tree:
         self.T_names = T
         self.tree = {
             'vertices': [],
-            'successors': {},
-            'score_rule': _get_score_rule(configs),
+            'successors': {}
         }
         self._stop_diagnosis = False
         self._diagnosis_thread = None
@@ -122,6 +110,9 @@ class Guess_Tree:
                 g_start = None
             else:
                 G_arg = G_curr if self._constrained_guessing else self.G
+                # Ensure G_arg matches the context selected by get_context (CPU vs GPU)
+                if xp is np and HAS_CUPY and isinstance(G_arg, cp.ndarray):
+                    G_arg = cp.asnumpy(G_arg)
                 g_star, is_target_flag = get_best_guess(T_curr, G_arg, F)
 
             if is_target_flag:

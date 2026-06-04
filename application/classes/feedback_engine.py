@@ -80,18 +80,21 @@ class FeedbackEngine:
         """
         if self.use_gpu:
             try:
-                F = self._build_wordle_feedback_matrix_GPU(T, G)
+                F = self._build_wordle_feedback_matrix(T, G)
             except Exception as e:
                 # Check if it's a CUDA OOM error
                 if 'out of memory' in str(e).lower() or 'OutOfMemoryError' in str(type(e).__name__):
                     print(f"⚠ GPU out of memory ({len(T)}×{len(G)} matrix). Falling back to CPU...")
-                    F_cpu = self._build_wordle_feedback_matrix_CPU(T, G)
+                    old_gpu = self.use_gpu
+                    self.use_gpu = False
+                    F_np = self._build_wordle_feedback_matrix(T, G)
+                    self.use_gpu = old_gpu
                     print("✓ CPU build complete. Converting to GPU...")
-                    F = cp.array(F_cpu)
+                    F = cp.array(F_np)
                 else:
                     raise
         else:
-            F = self._build_wordle_feedback_matrix_CPU(T, G)
+            F = self._build_wordle_feedback_matrix(T, G)
 
         # Calculate base from word length: 3^L (ternary feedback per position)
         word_length = len(T[0])
@@ -100,99 +103,72 @@ class FeedbackEngine:
 
     def _mastermind_engine(self, T, G, rules):
         """Mastermind black/white peg feedback engine."""
+        xp = cp if self.use_gpu else np
         params = rules['generator_params']
         pegs = params['pegs']
         colors = params['colors']
 
         codes = [tuple(int(x) for x in name) for name in T]
         n = len(codes)
-        codes_arr = np.array(codes, dtype=np.int8)
+        codes_arr = xp.array(codes, dtype=xp.int8)
 
         # Black counts: F_black[i_t, i_g] = # positions where codes agree
-        black = (codes_arr[:, None, :] == codes_arr[None, :, :]).sum(axis=2).astype(np.int16)
+        black = (codes_arr[:, None, :] == codes_arr[None, :, :]).sum(axis=2).astype(xp.int16)
 
         # Per-code color counts
-        counts = np.zeros((n, colors), dtype=np.int16)
+        counts = xp.zeros((n, colors), dtype=xp.int16)
         for c in range(colors):
             counts[:, c] = (codes_arr == c).sum(axis=1)
 
         # Common multiset intersection
-        common = np.minimum(counts[:, None, :], counts[None, :, :]).sum(axis=2).astype(np.int16)
+        common = xp.minimum(counts[:, None, :], counts[None, :, :]).sum(axis=2).astype(xp.int16)
         white = common - black
 
         pegs_plus_1 = pegs + 1
-        F = (black * pegs_plus_1 + white).astype(np.uint8)
+        F = (black * pegs_plus_1 + white).astype(xp.uint8)
         base = pegs_plus_1 * pegs_plus_1
 
         return F, base
 
     def _attribute_engine(self, T, G, raw_features):
         """Attribute matrix feedback engine."""
-        F = raw_features.astype(np.uint8)
+        xp = cp if self.use_gpu else np
+        F = xp.array(raw_features, dtype=xp.uint8)
         max_val = int(raw_features.max())
         base = max(2, max_val + 1)
         return F, base
 
-    def _build_wordle_feedback_matrix_CPU(self, T, G):
-        """Build Wordle feedback matrix (CPU)."""
-        K, nG, L = len(T), len(G), 5
-        T_int = [[ord(c) - 97 for c in w] for w in T]
-        G_int = [[ord(c) - 97 for c in w] for w in G]
-        F = np.zeros((K, nG), dtype=np.uint8)
-        powers = [3 ** (L - 1 - i) for i in range(L)]
-        c_t = np.zeros((K, 26), dtype=np.int16)
-        for t_idx, t_word in enumerate(T_int):
-            for ch in t_word:
-                c_t[t_idx][ch] += 1
-        for t_idx in range(K):
-            target = T_int[t_idx]
-            for g_idx in range(nG):
-                guess = G_int[g_idx]
-                f_row = [0] * L
-                c_prime = c_t[t_idx].copy()
-                for i in range(L):
-                    if guess[i] == target[i]:
-                        f_row[i] = 2
-                        c_prime[guess[i]] -= 1
-                for i in range(L):
-                    if f_row[i] == 0 and c_prime[guess[i]] > 0:
-                        f_row[i] = 1
-                        c_prime[guess[i]] -= 1
-                code = 0
-                for i in range(L):
-                    code += f_row[i] * powers[i]
-                F[t_idx, g_idx] = code
-        return F
+    def _build_wordle_feedback_matrix(self, T, G):
+        """Build Wordle feedback matrix using xp (numpy or cupy based on use_gpu)."""
+        xp = cp if self.use_gpu else np
 
-    def _build_wordle_feedback_matrix_GPU(self, T, G):
-        """Build Wordle feedback matrix (GPU)."""
-        # Encode words to GPU arrays
-        key_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in T])
-        all_words = cp.stack([cp.array([ord(c) - 97 for c in w], dtype=cp.int8) for w in G])
+        key_words = xp.stack([xp.array([ord(c) - 97 for c in w], dtype=xp.int8) for w in T])
+        all_words = xp.stack([xp.array([ord(c) - 97 for c in w], dtype=xp.int8) for w in G])
 
         K = key_words.shape[0]
         nG = all_words.shape[0]
-        L = key_words.shape[1]  # 5 for Wordle
+        L = key_words.shape[1]
 
         # Compute letter counts for each target
-        flat_idx = cp.ravel(key_words) + cp.repeat(cp.arange(K), L) * 26
-        count_t = cp.bincount(flat_idx, minlength=K * 26).reshape(K, 26).astype(cp.int32)
+        flat_idx = (xp.ravel(key_words).astype(xp.int64) +
+                    xp.repeat(xp.arange(K, dtype=xp.int64), L) * 26)
+        count_t = xp.bincount(flat_idx, minlength=K * 26).reshape(K, 26).astype(xp.int32)
 
         # Compute equality mask for greens
         equal = key_words[:, None, :] == all_words[None, :, :]
 
         # Initialize feedback
-        feedback = cp.zeros((K, nG, L), dtype=cp.uint8)
+        feedback = xp.zeros((K, nG, L), dtype=xp.uint8)
         feedback[equal] = 2
 
         # Compute green counts per letter per pair
-        green_counts = cp.zeros((K, nG, 26), dtype=cp.int32)
+        green_counts = xp.zeros((K, nG, 26), dtype=xp.int32)
         for l in range(L):
             mask_l = equal[:, :, l]
-            k, g = cp.where(mask_l)
-            if len(k):
-                c = key_words[k, l]
-                green_counts[k, g, c] += 1
+            k_idx, g_idx = xp.where(mask_l)
+            if len(k_idx):
+                c = key_words[k_idx, l]
+                green_counts[k_idx, g_idx, c] += 1
 
         # Remaining counts after greens
         remaining_counts = count_t[:, None, :] - green_counts
@@ -201,17 +177,17 @@ class FeedbackEngine:
         for i in range(L):
             mask = (feedback[:, :, i] == 0)
             letter_i = all_words[:, i]
-            idx_k = cp.arange(K)[:, None]
-            idx_g = cp.arange(nG)[None, :]
-            idx_c = letter_i[None, :]
+            idx_k = xp.arange(K, dtype=xp.int64)[:, None]
+            idx_g = xp.arange(nG, dtype=xp.int64)[None, :]
+            idx_c = letter_i[None, :].astype(xp.int64)
             rem = remaining_counts[idx_k, idx_g, idx_c]
             cond = (rem > 0) & mask
             feedback[:, :, i][cond] = 1
-            remaining_counts[idx_k, idx_g, idx_c] -= cond.astype(cp.int32)
+            remaining_counts[idx_k, idx_g, idx_c] -= cond.astype(xp.int32)
 
-        # Compute the encoded feedback codes
-        powers = cp.power(3, cp.arange(L - 1, -1, -1), dtype=cp.uint8)
-        F = cp.sum(feedback * powers[None, None, :], axis=2, dtype=cp.uint8)
+        # Encode feedback as powers of 3
+        powers = xp.power(3, xp.arange(L - 1, -1, -1)).astype(xp.uint8)
+        F = xp.sum(feedback * powers[None, None, :], axis=2, dtype=xp.uint8)
         return F
 
     @staticmethod

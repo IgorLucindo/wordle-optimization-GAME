@@ -1,5 +1,19 @@
 import json
+import os
 import numpy as np
+from classes.instance_loader import InstanceLoader
+
+
+def _get_score_rule(configs):
+    k, score = configs['k'], configs['score']
+    if k == 1:
+        strategy = "greedy"
+    elif k == -1:
+        strategy = "subtree-full"
+    else:
+        strategy = f"subtree-{k}"
+    
+    return f"{strategy} | {score}"
 
 
 class Results:
@@ -9,20 +23,38 @@ class Results:
         self.configs = configs
 
         # Result Containers
-        self.tree = {'vertices': [], 'successors': {}, 'score_rule': ''}
+        self.tree = {'vertices': [], 'successors': {}}
         self.stats = {
-            'score_rule': '',
+            'metadata': {},
             'exp_guesses': 0, 'std_guesses': 0, 'max_guesses': 0,
             'distribution': None, 'build_runtime': 0, '#vertices': 0
         }
 
 
-    def set_data(self, tree, runtime):
+    def set_data(self, tree, runtime, n_G, n_T):
         """
-        Ingests the raw data from the solver
+        Ingests the raw data from the solver and prepares metadata,
+        merging with any existing saved tree that shares the same score_rule.
         """
         self.tree = tree
-        self.stats['score_rule'] = tree['score_rule']
+
+        runtime_key = 'cpu_runtime' if self.configs['explicit_cpu'] else 'gpu_runtime'
+        score_rule = _get_score_rule(self.configs)
+        metadata = {'score_rule': score_rule, runtime_key: round(runtime, 3)}
+        metadata['n_G'] = n_G
+        metadata['n_T'] = n_T
+
+        filepath = f"data/{self.configs['data']}/decision_tree.json"
+        if os.path.exists(filepath):
+            existing = InstanceLoader.load_tree(filepath)
+            if existing['metadata']['score_rule'] == score_rule:
+                merged = existing['metadata']
+                merged[runtime_key] = round(runtime, 3)
+                merged['n_G'] = n_G
+                merged['n_T'] = n_T
+                metadata = merged
+
+        self.stats['metadata'] = metadata
         self.stats['build_runtime'] = runtime
         self.stats['#vertices'] = len(tree['vertices'])
 
@@ -54,7 +86,7 @@ class Results:
 
         print(
             f"\n\n"
-            f"Score Rule: {self.stats['score_rule']}\n"
+            f"Score Rule: {self.stats['metadata']['score_rule']}\n"
             f"Start guess: {self.tree['vertices'][0][1]}\n"
             f"Exp. guesses: {self.stats['exp_guesses']:.3f}\n"
             f"Std. guesses: {self.stats['std_guesses']:.3f}\n"
@@ -67,24 +99,33 @@ class Results:
 
     def save(self):
         """
-        Saves the tree to a JSON file in the instance-specific directory
+        Saves the tree to a JSON file in the instance-specific directory.
+        Metadata (including any previously recorded runtimes) is already
+        prepared by set_data.
         """
         if not self.flags['save_tree']:
             return
 
-        # Convert tree to JSON-serializable format
-        serializable_tree = {
-            'score_rule': self.tree['score_rule'],
+        filepath = f"data/{self.configs['data']}/decision_tree.json"
+        metadata = self.stats['metadata']
+        runtime_key = 'cpu_runtime' if self.configs['explicit_cpu'] else 'gpu_runtime'
+        is_update = os.path.exists(filepath) and len(metadata) > 2  # score_rule + both keys
+
+        self._write_tree(filepath, metadata, self.tree['vertices'], self.tree['successors'])
+
+        if is_update:
+            print(f"Tree already exists \u2014 updated {runtime_key}={metadata[runtime_key]}s in \"{filepath}\"\n")
+        else:
+            print(f"Tree saved in \"{filepath}\"\n")
+
+
+    @staticmethod
+    def _write_tree(filepath, metadata, vertices, successors):
+        serializable = {
+            'metadata': metadata,
             'vertices': [(int(v), g, bool(term), int(d) if d is not None else None)
-                        for v, g, term, d in self.tree['vertices']],
-            'successors': {f"{k[0]}_{k[1]}": int(v) for k, v in self.tree['successors'].items()}
+                         for v, g, term, d in vertices],
+            'successors': {f"{k[0]}_{k[1]}": int(v) for k, v in successors.items()}
         }
-
-        # Save to instance-specific directory
-        instance_name = self.configs.get('data', 'wordle')
-        filepath = f"data/{instance_name}/decision_tree.json"
-
-        with open(filepath, "w") as f:
-            json.dump(serializable_tree, f, indent=2)
-
-        print(f"Tree saved in \"{filepath}\"\n")
+        with open(filepath, 'w') as f:
+            json.dump(serializable, f, indent=2)

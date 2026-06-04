@@ -1,0 +1,11 @@
+{
+  "format": "csv",
+  "feedback_engine": "attribute_matrix",
+  "guesses_include_targets": false,
+  "constrained_guessing": false,
+  "data_files": {
+    "dataset": "attributes.csv",
+    "has_header": true
+  },
+  "description": "Auto-converted UCI Chess Krk dataset"
+}

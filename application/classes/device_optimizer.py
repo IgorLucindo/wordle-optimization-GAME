@@ -29,6 +29,7 @@ class DeviceOptimizer:
         self.xp = cp if configs['GPU'] else np
         self.F_gpu = F
         self.C_gpu = C
+        self.G_gpu = self.xp.arange(len(G))
         
         # Run initialization
         self._initialize_data_and_calibration(T, G, F, C)
@@ -42,7 +43,8 @@ class DeviceOptimizer:
             self.F_cpu = cp.asnumpy(F)
             self.C_cpu = cp.asnumpy(C) if C is not None else None
             
-            # Unique key based on k value AND the specific solver function being used
+            # Unique key based on dataset, k value, and the specific solver function being used
+            data_name = self.configs.get('data', 'unknown')
             k_val = self.configs.get('k', 1)
             if k_val == 1:
                 k_suffix = "_greedy"
@@ -51,7 +53,7 @@ class DeviceOptimizer:
             else:
                 k_suffix = f"_k{k_val}"
             solver_name = self.solvers_cpu[0].__name__
-            self.calibration_key = f"{k_suffix}_{solver_name}"
+            self.calibration_key = f"{data_name}{k_suffix}_{solver_name}"
             self.calibration_file = "application/results/calibration.json"
 
             cached_val = self._load_calibration()
@@ -63,9 +65,14 @@ class DeviceOptimizer:
             else:
                 self.threshold = self._calibrate_threshold(T, G)
                 self._save_calibration(self.threshold)
+
+            # If CPU is always faster, downgrade to CPU mode for the entire run
+            if self.threshold == float('inf'):
+                self.configs['GPU'] = False
+                self.xp = np
         else:
-            self.F_cpu = F
-            self.C_cpu = C
+            self.F_cpu = cp.asnumpy(F) if (HAS_CUPY and isinstance(F, cp.ndarray)) else F
+            self.C_cpu = cp.asnumpy(C) if (HAS_CUPY and isinstance(C, cp.ndarray)) else C
             self.threshold = float('inf') # Always CPU
 
 
@@ -86,18 +93,21 @@ class DeviceOptimizer:
         use_cpu = False
         
         # Measure Workload
+        # For non-constrained games G_curr is None; fall back to the full guess set
         n_t = len(T_curr) if hasattr(T_curr, '__len__') else 0
-        n_g = len(G_curr) if G_curr is not None and hasattr(G_curr, '__len__') else 0
+        G_effective = G_curr if G_curr is not None else self.G_gpu
+        n_g = len(G_effective) if hasattr(G_effective, '__len__') else 0
         workload = n_t * n_g
 
         # Check Conditions
-        # If GPU enabled but workload is tiny, switch to CPU
-        if self.configs['GPU'] and self.configs['constrained_guessing'] and G_curr is not None:
+        # If GPU enabled but workload is below threshold, switch to CPU
+        if self.configs['GPU']:
             if workload < self.threshold:
                 use_cpu = True
                 # Move data to CPU
                 T_curr = cp.asnumpy(T_curr)
-                G_curr = cp.asnumpy(G_curr)
+                if G_curr is not None:
+                    G_curr = cp.asnumpy(G_curr)
 
         # Return Context
         if use_cpu or not self.configs['GPU']:
@@ -122,8 +132,10 @@ class DeviceOptimizer:
         if self.flags['print_diagnosis']:
             print(f"  [Calibration] Calibrating CPU/GPU threshold for {self.calibration_key}...")
 
-        # Warm Up (JIT Compile) with tiny workload
-        warm_T, warm_G = np.arange(10), np.arange(50) 
+        # Warm Up (JIT Compile) with tiny workload (capped to actual matrix size)
+        n_T_full, n_G_full = self.F_cpu.shape
+        warm_T = np.arange(min(10, n_T_full))
+        warm_G = np.arange(min(50, n_G_full))
         self.solvers_cpu[0](warm_T, warm_G, self.F_cpu)
         self.solvers_gpu[0](cp.array(warm_T), cp.array(warm_G), self.F_gpu)
         cp.cuda.Stream.null.synchronize()

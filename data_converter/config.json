@@ -80,5 +80,81 @@
             "mycelium", "int-discolor", "sclerotia", "fruit-pods", "fruit-spots", 
             "seed", "mold-growth", "seed-discolor", "seed-size", "shriveling", "roots"
         ]
+    },
+    "audiology": {
+        "file": "audiology+standardized/audiology.standardized.data",
+        "missing_val": "?",
+        "label_col": -1,
+        "skip_cols": [69],
+        "guesses": [
+            "age_gt_60", "air", "airBoneGap", "ar_c", "ar_u", "bone",
+            "boneAbnormal", "bser", "history_buzzing", "history_dizziness",
+            "history_fluctuating", "history_fullness", "history_heredity",
+            "history_nausea", "history_noise", "history_recruitment",
+            "history_ringing", "history_roaring", "history_vomiting",
+            "late_wave_poor", "m_at_2k", "m_cond_lt_1k", "m_gt_1k",
+            "m_m_gt_2k", "m_m_sn", "m_m_sn_gt_1k", "m_m_sn_gt_2k",
+            "m_m_sn_gt_500", "m_p_sn_gt_2k", "m_s_gt_500", "m_s_sn",
+            "m_s_sn_gt_1k", "m_s_sn_gt_2k", "m_s_sn_gt_3k", "m_s_sn_gt_4k",
+            "m_sn_2_3k", "m_sn_gt_1k", "m_sn_gt_2k", "m_sn_gt_3k",
+            "m_sn_gt_4k", "m_sn_gt_500", "m_sn_gt_6k", "m_sn_lt_1k",
+            "m_sn_lt_2k", "m_sn_lt_3k", "middle_wave_poor", "mod_gt_4k",
+            "mod_mixed", "mod_s_mixed", "mod_s_sn_gt_500", "mod_sn",
+            "mod_sn_gt_1k", "mod_sn_gt_2k", "mod_sn_gt_3k", "mod_sn_gt_4k",
+            "mod_sn_gt_500", "notch_4k", "notch_at_4k", "o_ar_c", "o_ar_u",
+            "s_sn_gt_1k", "s_sn_gt_2k", "s_sn_gt_4k", "speech",
+            "static_normal", "tymp", "viith_nerve_signs", "wave_V_delayed",
+            "waveform_ItoV_prolonged"
+        ]
+    },
+    "chess_krkp": {
+        "file": "chess+king+rook+vs+king+pawn/kr-vs-kp.data",
+        "missing_val": null,
+        "label_col": -1,
+        "guesses": [
+            "bkblk", "bknwy", "bkon8", "bkona", "bkspr", "bkxbq",
+            "bkxcr", "bkxwp", "blxwp", "bxqsq", "cntxt", "dsopp",
+            "dwipd", "hdchk", "katri", "mulch", "qxmsq", "r2ar8",
+            "reskd", "reskr", "rimmx", "rkxwp", "rxmsq", "simpl",
+            "skach", "skewr", "skrxp", "spcop", "stlmt", "thrsk",
+            "wkcti", "wkna8", "wknck", "wkovl", "wkpos", "wtoeg"
+        ]
+    },
+    "chess_krk": {
+        "file": "chess+king+rook+vs+king/krkopt.data",
+        "missing_val": null,
+        "label_col": -1,
+        "guesses": ["wk_col", "wk_row", "wr_col", "wr_row", "bk_col", "bk_row"]
+    },
+    "nursery": {
+        "file": "nursery/nursery.data",
+        "missing_val": null,
+        "label_col": -1,
+        "guesses": ["parents", "has_nurs", "form", "children", "housing", "finance", "social", "health"]
+    },
+    "primary_tumor": {
+        "file": "primary+tumor/primary-tumor.data",
+        "missing_val": "?",
+        "label_col": 0,
+        "guesses": [
+            "age", "sex", "histologic_type", "degree_of_diffe",
+            "bone", "bone_marrow", "lung", "pleura", "peritoneum",
+            "liver", "brain", "skin", "neck", "supraclavicular",
+            "axillar", "mediastinum", "abdominal"
+        ]
+    },
+    "solar_flare": {
+        "file": "solar+flare/flare.data1",
+        "missing_val": null,
+        "label_col": 10,
+        "skip_cols": [11, 12],
+        "skiprows": 1,
+        "sep": "\\s+",
+        "guesses": [
+            "zurich_class", "largest_spot", "spot_distribution",
+            "activity", "evolution", "prev_24h_flare",
+            "historically_complex", "complex_this_pass",
+            "area", "area_largest_spot"
+        ]
     }
 }

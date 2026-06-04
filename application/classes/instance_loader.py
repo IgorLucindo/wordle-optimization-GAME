@@ -35,10 +35,6 @@ class InstanceLoader:
         self.instance_name = instance_name
         self.use_gpu = use_gpu and HAS_CUPY
 
-        # Force CPU for non-Wordle games (no GPU implementation yet)
-        if instance_name not in ('wordle', 'wordle_hard') and self.use_gpu:
-            self.use_gpu = False
-
         # Initialize feedback engine
         self.feedback_engine = FeedbackEngine(use_gpu=self.use_gpu)
 
@@ -245,7 +241,7 @@ class InstanceLoader:
             successors[(v_parent, feedback)] = child_v
 
         return {
-            'score_rule': data['score_rule'],
+            'metadata': data['metadata'],
             'vertices': vertices,
             'successors': successors
         }

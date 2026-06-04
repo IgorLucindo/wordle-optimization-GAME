@@ -38,14 +38,19 @@ def prompt_for_instance(instance_names):
     print("No --data provided. Please choose an instance:")
     for idx, name in enumerate(instance_names, start=1):
         print(f"  {idx}. {name}")
+    print(f"  {len(instance_names) + 1}. all")
 
     while True:
         user_input = input("Enter number or instance name: ").strip()
 
         if user_input.isdigit():
             selected_idx = int(user_input)
+            if selected_idx == len(instance_names) + 1:
+                return 'all'
             if 1 <= selected_idx <= len(instance_names):
                 return instance_names[selected_idx - 1]
+        elif user_input == 'all':
+            return 'all'
         elif user_input in instance_names:
             return user_input
 
@@ -53,7 +58,11 @@ def prompt_for_instance(instance_names):
 
 
 def resolve_instance_selection(instance_name_arg):
-    """Resolve chosen instance and dataset root for InstanceLoader."""
+    """Resolve chosen instance(s) and dataset root for InstanceLoader.
+    
+    Returns (selected, dataset_dir) where selected is either a single name
+    or the string 'all'.
+    """
     discovered = discover_available_instances('data')
     available_instances = sorted(discovered)
 
@@ -65,6 +74,11 @@ def resolve_instance_selection(instance_name_arg):
     selected_instance = instance_name_arg
     if selected_instance is None:
         selected_instance = prompt_for_instance(available_instances)
+
+    if selected_instance == 'all':
+        # Return the common dataset dir (all instances share the same base)
+        dataset_dir = discovered[available_instances[0]]
+        return 'all', dataset_dir
 
     if selected_instance not in discovered:
         options = ', '.join(available_instances)
@@ -108,6 +122,7 @@ def resolve_runtime_args(args):
     }
     configs = {
         'GPU': not args.cpu,
+        'explicit_cpu': args.cpu,
         'data': selected_instance,
         'k': parse_k_value(args.k),
         'score': args.score

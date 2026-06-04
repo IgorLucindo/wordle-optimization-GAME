@@ -114,7 +114,7 @@ def _get_best_guess_GPU_impl(T, G, F, base=243, guesses_include_targets=True, sc
     # Shortcut: return first target if few remain
     shortcut_threshold = 2 if guesses_include_targets else 1
     if n <= shortcut_threshold:
-        return T[0], guesses_include_targets
+        return T[0], True
 
     nG = len(G)
 
