@@ -1,0 +1,91 @@
+#game-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    touch-action: manipulation;
+}
+
+.cell {
+    width: 3vw;
+    height: 3vw;
+    border: 2px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    color: var(--text-color);
+    background-color: transparent;
+}
+
+/* Flip Animation */
+@keyframes flip {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+}
+
+.cell.animate-flip {
+    animation: flip 0.5s ease-in-out forwards;
+}
+
+.cell.animate-flip.fast {
+    animation-duration: 0.25s;
+}
+
+/* Shake Animation */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.cell.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
+/* Colors - These will be applied halfway through the flip via JS */
+.cell.correct {
+    background-color: var(--green);
+    border-color: var(--green);
+    color: white;
+}
+
+.cell.present {
+    background-color: var(--yellow);
+    border-color: var(--yellow);
+    color: white;
+}
+
+.cell.incorrect {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: white;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    #game-board {
+        margin-bottom: 5%;
+        gap: 15px;
+    }
+
+    .cell {
+        width: 12vw;
+        height: 12vw;
+        font-size: 1.5em;
+    }
+}

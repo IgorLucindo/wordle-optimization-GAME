@@ -1,0 +1,135 @@
+header {
+    display: grid;
+    grid-template-areas: "left center right";
+    grid-template-columns: 15% 30% 15%;
+    justify-content: center;
+    position: sticky;
+    gap: 10px;
+    top: 0;
+    width: 100%;
+    padding: 0.5% 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.box-1 { grid-area: left; }
+.box-2 { grid-area: center; }
+.box-3 { grid-area: right; }
+
+header > h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    user-select: none;
+}
+
+.header-buttons svg {
+    height: 28px;
+    width: auto;
+}
+
+.header-buttons div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    fill: var(--text-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: fill 0.3s ease color 0.3s ease;
+}
+
+@media (hover: hover) {
+    .header-buttons div:hover {
+        fill: var(--hover-color);
+        color: var(--hover-color);
+    }
+}
+
+.header-buttons div:active {
+    fill: var(--hover-color);
+    color: var(--hover-color);
+    transform: scale(1.15);
+}
+
+#solve-btn.active {
+    fill: var(--green);
+    color: var(--green);
+    transform: scale(1.1);
+}
+
+@keyframes tutorial-pulse {
+    0% { transform: translateY(-20%) scale(1); }
+    50% { transform: translateY(-20%) scale(1.25); }
+    100% { transform: translateY(-20%) scale(1); }
+}
+
+.tutorial-active {
+    animation: tutorial-pulse 0.6s ease-in-out 2;
+}
+
+.header-buttons a {
+    position: absolute;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transform: translateY(100%);
+}
+
+#solve-btn, #diff-btn {
+    transform: translateY(-20%);
+}
+
+#solve-btn.active, #diff-btn:active {
+    transform: translateY(-20%) scale(1.15);
+}
+
+#solve-btn svg {
+    position: relative;
+    top: -1px;
+}
+
+#diff-btn svg {
+    transform: scaleX(-1);
+}
+
+#info-btn {
+    display: none;
+}
+
+#theme-btn {
+    font-size: 1.2rem;
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    header {
+        padding: 2% 0;
+        grid-template-areas: 
+            "center center"
+            "left right";
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    header > h1 {
+        font-size: 1.7rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .header-buttons {
+        gap: 32%;
+    }
+
+    #info-btn {
+        display: block;
+    }
+    .theme-btn {
+        font-size: 1.3rem;
+    }
+}

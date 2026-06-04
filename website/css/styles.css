@@ -1,0 +1,110 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: manipulation;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 2%;
+    position: relative;
+}
+
+#message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 30px;
+}
+
+#message {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--text-color);
+}
+
+.msg-highlight {
+    font-style: italic;
+    color: var(--hover-color);
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    background-color: black;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#overlay.visible {
+    visibility: visible;
+    opacity: 0.3;
+}
+
+.tooltip {
+    position: absolute;
+    max-width: 90vw;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+    visibility: hidden;
+    opacity: 0;
+    color: white;
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 100%; 
+    left: var(--arrow-left-position, 50%);
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent; 
+}
+
+.tooltip.visible {
+    pointer-events: auto;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* in mobile */
+@media screen and (max-width: 768px) {
+    .container {
+        margin-top: 5%;
+        box-sizing: border-box;
+    }
+}
