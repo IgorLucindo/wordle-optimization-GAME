@@ -29,7 +29,6 @@ class DeviceOptimizer:
         self.xp = cp if configs['GPU'] else np
         self.F_gpu = F
         self.C_gpu = C
-        self.G_gpu = self.xp.arange(len(G))
         
         # Run initialization
         self._initialize_data_and_calibration(T, G, F, C)
@@ -43,8 +42,7 @@ class DeviceOptimizer:
             self.F_cpu = cp.asnumpy(F)
             self.C_cpu = cp.asnumpy(C) if C is not None else None
             
-            # Unique key based on dataset, k value, and the specific solver function being used
-            data_name = self.configs.get('data', 'unknown')
+            # Unique key based on k value AND the specific solver function being used
             k_val = self.configs.get('k', 1)
             if k_val == 1:
                 k_suffix = "_greedy"
@@ -53,33 +51,21 @@ class DeviceOptimizer:
             else:
                 k_suffix = f"_k{k_val}"
             solver_name = self.solvers_cpu[0].__name__
-            self.calibration_key = f"{data_name}{k_suffix}_{solver_name}"
+            self.calibration_key = f"{k_suffix}_{solver_name}"
             self.calibration_file = "application/results/calibration.json"
 
-            # When both solvers are the same function (subtree mode), skip calibration.
-            # The outer tree must always pass GPU arrays so the inner subtree optimizer
-            # can make its own CPU/GPU decision. Forcing CPU here would cause all inner
-            # calls to fast-exit to CPU (numpy fast-path), disabling GPU entirely.
-            if self.solvers_cpu[0] is self.solvers_gpu[0]:
-                self.threshold = 0  # Always GPU — inner subtree optimizer handles dispatch
+            cached_val = self._load_calibration()
+            
+            if cached_val is not None:
+                self.threshold = cached_val
+                if self.flags['print_diagnosis']:
+                    print(f"  [Calibration] Loaded threshold for '{self.calibration_key}': {self.threshold}")
             else:
-                cached_val = self._load_calibration()
-                
-                if cached_val is not None:
-                    self.threshold = cached_val
-                    if self.flags['print_diagnosis']:
-                        print(f"  [Calibration] Loaded threshold for '{self.calibration_key}': {self.threshold}")
-                else:
-                    self.threshold = self._calibrate_threshold(T, G)
-                    self._save_calibration(self.threshold)
-
-                # If CPU is always faster, downgrade to CPU mode for the entire run
-                if self.threshold == float('inf'):
-                    self.configs['GPU'] = False
-                    self.xp = np
+                self.threshold = self._calibrate_threshold(T, G)
+                self._save_calibration(self.threshold)
         else:
-            self.F_cpu = cp.asnumpy(F) if (HAS_CUPY and isinstance(F, cp.ndarray)) else F
-            self.C_cpu = cp.asnumpy(C) if (HAS_CUPY and isinstance(C, cp.ndarray)) else C
+            self.F_cpu = F
+            self.C_cpu = C
             self.threshold = float('inf') # Always CPU
 
 
@@ -105,9 +91,7 @@ class DeviceOptimizer:
         workload = n_t * n_g
 
         # Check Conditions
-        # If GPU enabled but workload is below threshold, switch to CPU.
-        # Only applies to constrained games where G shrinks as the tree deepens.
-        # For non-constrained games G is always the full set — no per-node switching.
+        # If GPU enabled but workload is tiny, switch to CPU
         if self.configs['GPU'] and self.configs['constrained_guessing'] and G_curr is not None:
             if workload < self.threshold:
                 use_cpu = True
@@ -138,10 +122,8 @@ class DeviceOptimizer:
         if self.flags['print_diagnosis']:
             print(f"  [Calibration] Calibrating CPU/GPU threshold for {self.calibration_key}...")
 
-        # Warm Up (JIT Compile) with tiny workload (capped to actual matrix size)
-        n_T_full, n_G_full = self.F_cpu.shape
-        warm_T = np.arange(min(10, n_T_full))
-        warm_G = np.arange(min(50, n_G_full))
+        # Warm Up (JIT Compile) with tiny workload
+        warm_T, warm_G = np.arange(10), np.arange(50) 
         self.solvers_cpu[0](warm_T, warm_G, self.F_cpu)
         self.solvers_gpu[0](cp.array(warm_T), cp.array(warm_G), self.F_gpu)
         cp.cuda.Stream.null.synchronize()
