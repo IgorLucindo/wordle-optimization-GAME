@@ -1,9 +1,10 @@
 {
   "metadata": {
     "score_rule": "subtree-15 | PC",
-    "gpu_runtime": 42.028,
+    "gpu_runtime": 43.03,
     "n_G": 1296,
-    "n_T": 1296
+    "n_T": 1296,
+    "cpu_runtime": 42.031
   },
   "vertices": [
     [

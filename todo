@@ -1,1 +1,5 @@
 complete validate_trees.py
+
+have optimality gap in results
+have sota approachs
+have instances with larger |G| so GPU performs better

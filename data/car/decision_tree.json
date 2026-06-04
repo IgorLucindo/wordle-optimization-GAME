@@ -3,7 +3,8 @@
     "score_rule": "subtree-15 | PC",
     "gpu_runtime": 2.001,
     "n_G": 6,
-    "n_T": 1728
+    "n_T": 1728,
+    "cpu_runtime": 2.005
   },
   "vertices": [
     [

@@ -63,7 +63,7 @@ def main():
     if not results_dir.exists():
         results_dir = Path('..') / 'results'
     results_dir.mkdir(parents=True, exist_ok=True)
-    out_path = results_dir / 'eval_results.csv'
+    out_path = results_dir / 'results.csv'
 
     columns = [
         'instance', '|G|', '|T|', '|V|',
